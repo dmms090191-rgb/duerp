@@ -314,7 +314,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       <UnifiedHeader currentPage="accueil" onLoginClick={() => setShowModal(true)} />
 
       {/* Modal de connexion */}
@@ -488,7 +488,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       )}
 
       {/* Hero Section with Background Image */}
-      <section className="pt-[80px] sm:pt-[100px] lg:pt-[140px] relative min-h-[70vh] sm:min-h-[80vh] lg:min-h-[85vh] bg-cover bg-center flex items-center justify-center overflow-hidden" style={{ backgroundImage: 'url(https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260)' }}>
+      <section className="pt-[80px] sm:pt-[100px] lg:pt-[140px] pb-12 sm:pb-16 md:pb-20 relative bg-cover bg-center flex items-center justify-center overflow-hidden" style={{ backgroundImage: 'url(https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260)' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/85 to-slate-800/90"></div>
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-blue-600/10 to-transparent"></div>
@@ -503,7 +503,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
             </div>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-6 sm:mb-8 leading-[1.1] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 sm:mb-6 md:mb-8 leading-[1.1] tracking-tight">
             <span className="block text-white drop-shadow-2xl mb-2">
               Obligations légales
             </span>
@@ -512,7 +512,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
             </span>
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 font-light mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 font-light mb-6 sm:mb-8 md:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
             Votre partenaire de confiance pour la conformité réglementaire et la sécurité au travail
           </p>
 
@@ -529,25 +529,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
             </button>
           </div>
         </div>
-
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
-          <div className="flex flex-col items-center gap-3 animate-bounce">
-            <span className="text-white/60 text-sm font-medium">Défiler vers le bas</span>
-            <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </div>
-        </div>
       </section>
 
       {/* Main Content Section */}
-      <section className="py-12 sm:py-16 md:py-24 lg:py-32 bg-white relative overflow-hidden">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-24 bg-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30"></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-100 rounded-full blur-3xl opacity-20 translate-y-1/2 -translate-x-1/2"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-12 sm:mb-16">
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
             <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-100 rounded-full mb-4 sm:mb-6">
               <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
               <span className="text-xs sm:text-sm font-bold tracking-wide uppercase text-blue-900">Notre Mission</span>
@@ -616,11 +607,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Security Section */}
-      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDZjMy4zMSAwIDYgMi42OSA2IDZzLTIuNjkgNi02IDYtNi0yLjY5LTYtNiAyLjY5LTYgNi02eiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMDUiLz48L2c+PC9zdmc+')] opacity-30"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-10 sm:mb-16">
+          <div className="text-center mb-6 sm:mb-10 md:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto px-4">
               Sécurisez votre activité, protégez vos salariés et restez en règle en toute simplicité
             </h2>
@@ -666,13 +657,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Video Section */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-blue-100 to-transparent rounded-full blur-3xl opacity-20"></div>
         <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-cyan-100 to-transparent rounded-full blur-3xl opacity-20"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-100 to-blue-100 rounded-full mb-6">
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-100 to-blue-100 rounded-full mb-4 sm:mb-6">
               <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
               <span className="text-sm font-bold tracking-wide uppercase text-red-900">Médias & Actualités</span>
             </div>
@@ -746,14 +737,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Services Section */}
-      <section className="py-24 md:py-32 bg-white relative overflow-hidden">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-cyan-50/50"></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-bl from-blue-100 to-transparent rounded-full blur-3xl opacity-30"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-100 to-transparent rounded-full blur-3xl opacity-30"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-100 rounded-full mb-6">
+          <div className="text-center mb-8 sm:mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-100 rounded-full mb-4 sm:mb-6">
               <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
               <span className="text-sm font-bold tracking-wide uppercase text-blue-900">Nos Services</span>
             </div>
@@ -835,7 +826,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Documents Section */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
+      <section className="py-8 sm:py-12 md:py-16 lg:py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDZjMy4zMSAwIDYgMi42OSA2IDZzLTIuNjkgNi02IDYtNi0yLjY5LTYtNiAyLjY5LTYgNi02eiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMDMiLz48L2c+PC9zdmc+')] opacity-50"></div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500 rounded-full blur-3xl opacity-10"></div>
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-cyan-500 rounded-full blur-3xl opacity-10"></div>
@@ -902,9 +893,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Footer */}
-      <footer className="text-gray-300 py-12" style={{ backgroundColor: '#0f1729' }}>
+      <footer className="text-gray-300 py-8 sm:py-10 md:py-12" style={{ backgroundColor: '#0f1729' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
             <div>
               <h4 className="text-white font-bold mb-4">À propos</h4>
               <p className="text-sm leading-relaxed mb-4">
