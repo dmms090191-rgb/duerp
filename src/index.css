@@ -6,6 +6,17 @@
   * {
     @apply scroll-smooth;
   }
+
+  html, body {
+    @apply overflow-x-hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  #root {
+    @apply overflow-x-hidden;
+    width: 100%;
+  }
 }
 
 @keyframes neon-blink {

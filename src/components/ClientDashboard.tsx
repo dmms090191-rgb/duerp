@@ -424,7 +424,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               <img
                 src="/kk.png"
                 alt="Cabinet FPE"
-                className="h-16 w-auto"
+                className="h-20 w-auto"
               />
             </div>
             <div className="text-right">

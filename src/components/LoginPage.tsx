@@ -488,22 +488,22 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       )}
 
       {/* Hero Section with Background Image */}
-      <section className="pt-[140px] relative min-h-[85vh] bg-cover bg-center flex items-center justify-center overflow-hidden" style={{ backgroundImage: 'url(https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260)' }}>
+      <section className="pt-[80px] sm:pt-[100px] lg:pt-[140px] relative min-h-[70vh] sm:min-h-[80vh] lg:min-h-[85vh] bg-cover bg-center flex items-center justify-center overflow-hidden" style={{ backgroundImage: 'url(https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260)' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/85 to-slate-800/90"></div>
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-blue-600/10 to-transparent"></div>
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.1),transparent_70%)]"></div>
         </div>
 
-        <div className="relative z-10 text-center text-white px-6 max-w-6xl mx-auto">
-          <div className="mb-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 shadow-xl">
+        <div className="relative z-10 text-center text-white px-4 sm:px-6 max-w-6xl mx-auto">
+          <div className="mb-6 sm:mb-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 shadow-xl">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm font-semibold tracking-wide uppercase text-white/90">Expertise Réglementaire</span>
+              <span className="text-xs sm:text-sm font-semibold tracking-wide uppercase text-white/90">Expertise Réglementaire</span>
             </div>
           </div>
 
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 leading-[1.1] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-6 sm:mb-8 leading-[1.1] tracking-tight">
             <span className="block text-white drop-shadow-2xl mb-2">
               Obligations légales
             </span>
@@ -512,7 +512,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
             </span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-blue-100 font-light mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-blue-100 font-light mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
             Votre partenaire de confiance pour la conformité réglementaire et la sécurité au travail
           </p>
 
@@ -541,19 +541,19 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Main Content Section */}
-      <section className="py-24 md:py-32 bg-white relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-24 lg:py-32 bg-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-50/50 via-white to-blue-50/30"></div>
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-100 rounded-full blur-3xl opacity-20 translate-y-1/2 -translate-x-1/2"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-100 rounded-full mb-6">
+          <div className="text-center mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-blue-100 rounded-full mb-4 sm:mb-6">
               <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-              <span className="text-sm font-bold tracking-wide uppercase text-blue-900">Notre Mission</span>
+              <span className="text-xs sm:text-sm font-bold tracking-wide uppercase text-blue-900">Notre Mission</span>
             </div>
 
-            <h2 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-4 sm:mb-6 leading-tight px-4">
               Mettez-vous en conformité
               <br />
               <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
@@ -561,11 +561,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
               </span>
             </h2>
 
-            <div className="max-w-4xl mx-auto mb-12">
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed mb-6">
+            <div className="max-w-4xl mx-auto mb-8 sm:mb-12">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed mb-4 sm:mb-6 px-4">
                 Le <span className="font-semibold text-gray-900">Cabinet FPE</span> (Formalités des Particuliers et des Entreprises) vous accompagne dans la mise en conformité réglementaire, à moindre coût, grâce à une plateforme numérique dédiée.
               </p>
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 leading-relaxed px-4">
                 Nous mettons notre expertise au service des entreprises pour les aider à respecter leurs obligations légales et administratives, notamment en matière de prévention des risques professionnels. Nous vous assistons dans la réalisation du Document Unique d'Évaluation des Risques Professionnels (DUERP),{' '}
                 <a
                   href="https://entreprendre.service-public.gouv.fr/vosdroits/F35360#:~:text=administrative%20(Premi%C3%A8re%20ministre)-,Le%20document%20unique%20d'%C3%A9valuation%20des%20risques%20professionnels%20(DUERP),peuvent%20%C3%AAtre%20expos%C3%A9s%20les%20salari%C3%A9s"
@@ -579,20 +579,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
               </p>
             </div>
 
-            <div className="max-w-5xl mx-auto mb-12">
-              <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-3xl p-1 shadow-2xl">
-                <div className="bg-white rounded-[22px] p-8 md:p-12">
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                    <div className="flex-shrink-0">
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <CheckCircle className="w-10 h-10 text-white" />
+            <div className="max-w-5xl mx-auto mb-8 sm:mb-12 px-4">
+              <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl sm:rounded-3xl p-1 shadow-2xl">
+                <div className="bg-white rounded-[15px] sm:rounded-[22px] p-6 sm:p-8 md:p-12">
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
+                    <div className="flex-shrink-0 mx-auto md:mx-0">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+                        <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                       </div>
                     </div>
-                    <div className="flex-1 text-left">
-                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                    <div className="flex-1 text-center md:text-left">
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                         Document Unique d'Évaluation des Risques (DUERP)
                       </h3>
-                      <p className="text-lg text-gray-700 leading-relaxed">
+                      <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
                         Nous vous assistons dans la réalisation du DUERP, obligatoire pour toutes les entreprises, et vous aidons à identifier et gérer les risques. Votre conformité est essentielle face aux contrôles.
                       </p>
                     </div>
@@ -601,12 +601,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
               </div>
             </div>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center px-4">
               <button
                 onClick={() => setShowContactModal(true)}
-                className="group px-10 py-5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl font-bold text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center gap-3"
+                className="group px-6 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-2xl font-bold text-base sm:text-lg hover:from-blue-700 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 flex items-center gap-3 w-full sm:w-auto justify-center"
               >
-                Comment élaborer mon DUERP
+                <span className="hidden sm:inline">Comment élaborer mon DUERP</span>
+                <span className="sm:hidden">Élaborer mon DUERP</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
               </button>
             </div>
@@ -615,47 +616,47 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Security Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxIDAgNiAyLjY5IDYgNnMtMi42OSA2LTYgNi02LTIuNjktNi02IDIuNjktNiA2LTZ6TTI0IDZjMy4zMSAwIDYgMi42OSA2IDZzLTIuNjkgNi02IDYtNi0yLjY5LTYtNiAyLjY5LTYgNi02eiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIuMDUiLz48L2c+PC9zdmc+')] opacity-30"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight max-w-4xl mx-auto">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-4 sm:mb-6 leading-tight max-w-4xl mx-auto px-4">
               Sécurisez votre activité, protégez vos salariés et restez en règle en toute simplicité
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 max-w-6xl mx-auto">
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-3xl opacity-75 group-hover:opacity-100 transition-opacity blur-xl"></div>
-              <div className="relative bg-white rounded-3xl p-10 shadow-2xl hover:shadow-3xl transition-all hover:-translate-y-2">
-                <div className="flex justify-center mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl sm:rounded-3xl opacity-75 group-hover:opacity-100 transition-opacity blur-xl"></div>
+              <div className="relative bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl hover:shadow-3xl transition-all hover:-translate-y-2">
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" />
                     </svg>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-center text-gray-900">Informations importantes</h3>
-                <p className="text-base leading-relaxed text-gray-700 text-center">
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center text-gray-900">Informations importantes</h3>
+                <p className="text-sm sm:text-base leading-relaxed text-gray-700 text-center">
                   En cas d'absence de déclaration ou de mise à jour de votre document unique tout entrepreneur et gestionnaire s'expose à des sanctions pénales et financières.
                 </p>
               </div>
             </div>
 
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl opacity-75 group-hover:opacity-100 transition-opacity blur-xl"></div>
-              <div className="relative bg-white rounded-3xl p-10 shadow-2xl hover:shadow-3xl transition-all hover:-translate-y-2">
-                <div className="flex justify-center mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
-                    <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl sm:rounded-3xl opacity-75 group-hover:opacity-100 transition-opacity blur-xl"></div>
+              <div className="relative bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl hover:shadow-3xl transition-all hover:-translate-y-2">
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
+                    <svg className="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
                       <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-center text-gray-900">Le DUERP</h3>
-                <p className="text-base leading-relaxed text-gray-700 text-center">
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center text-gray-900">Le DUERP</h3>
+                <p className="text-sm sm:text-base leading-relaxed text-gray-700 text-center">
                   Doit être présenté aux organismes suivants : l'inspection du travail (en cas de contrôle), la médecine du travail (en cas d'accident de travail), le prudhomme (en cas de litige entre le salarié et son employeur).
                 </p>
               </div>

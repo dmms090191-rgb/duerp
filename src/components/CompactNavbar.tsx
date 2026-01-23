@@ -21,7 +21,7 @@ export default function CompactNavbar({ currentPage }: CompactNavbarProps) {
               <img
                 src="/kk.png"
                 alt="Cabinet FPE"
-                className="h-14 my-1"
+                className="h-14 w-auto my-1"
               />
             </div>
 

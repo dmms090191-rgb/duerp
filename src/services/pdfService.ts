@@ -47,7 +47,7 @@ export const generateDUERPPDF = async (formData: FormData, clientId: number): Pr
 
     // Add logo
     try {
-      const logoUrl = '/image copy copy copy copy copy copy.png';
+      const logoUrl = '/kk.png';
       const logoBase64 = await loadImageAsBase64(logoUrl);
       doc.addImage(logoBase64, 'PNG', 15, yPosition, 45, 13);
     } catch (error) {

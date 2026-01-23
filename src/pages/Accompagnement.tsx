@@ -15,70 +15,70 @@ export default function Accompagnement() {
 
       {/* Hero Section */}
       <section
-        className="relative h-64 bg-cover bg-center flex items-center justify-center mt-32"
+        className="relative h-48 sm:h-56 md:h-64 bg-cover bg-center flex items-center justify-center mt-[60px] sm:mt-[80px] lg:mt-32"
         style={{
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=1260')`
         }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-wide">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-wide px-4">
           Accompagnement
         </h1>
       </section>
 
       {/* Main Content */}
       <main className="flex-grow bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
 
           {/* Title */}
-          <h2 className="text-3xl font-bold text-blue-900 mb-12 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-8 sm:mb-12 text-center">
             Comment ça marche
           </h2>
 
           {/* First Row - 3 Cards */}
-          <section className="mb-16">
-            <div className="grid md:grid-cols-3 gap-8">
+          <section className="mb-10 sm:mb-16">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
 
               {/* Card 1 */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
-                <div className="flex justify-center mb-6">
-                  <div className="bg-blue-100 rounded-full p-4">
-                    <User className="w-12 h-12 text-blue-700" />
+              <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <div className="bg-blue-100 rounded-full p-3 sm:p-4">
+                    <User className="w-10 h-10 sm:w-12 sm:h-12 text-blue-700" />
                   </div>
                 </div>
-                <h3 className="text-blue-800 font-bold text-center mb-4 text-lg">
+                <h3 className="text-blue-800 font-bold text-center mb-3 sm:mb-4 text-base sm:text-lg">
                   PRÉPARER LA DÉMARCHE DU DUERP
                 </h3>
-                <p className="text-gray-700 text-center leading-relaxed text-sm">
+                <p className="text-gray-700 text-center leading-relaxed text-xs sm:text-sm">
                   Le chef d'entreprise recense les différentes unités de travail au sein de son entreprise avec l'aide de notre expert.
                 </p>
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
-                <div className="flex justify-center mb-6">
-                  <div className="bg-blue-100 rounded-full p-4">
-                    <Search className="w-12 h-12 text-blue-700" />
+              <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <div className="bg-blue-100 rounded-full p-3 sm:p-4">
+                    <Search className="w-10 h-10 sm:w-12 sm:h-12 text-blue-700" />
                   </div>
                 </div>
-                <h3 className="text-blue-800 font-bold text-center mb-4 text-lg">
+                <h3 className="text-blue-800 font-bold text-center mb-3 sm:mb-4 text-base sm:text-lg">
                   EVALUER LES RISQUES PROFESSIONNELS
                 </h3>
-                <p className="text-gray-700 text-center leading-relaxed text-sm">
+                <p className="text-gray-700 text-center leading-relaxed text-xs sm:text-sm">
                   Le chef d'entreprise et l'assistant prévention des risques élaborent ensemble de manière interactive le document unique.
                 </p>
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
-                <div className="flex justify-center mb-6">
-                  <div className="bg-blue-100 rounded-full p-4">
-                    <FileText className="w-12 h-12 text-blue-700" />
+              <div className="bg-white rounded-xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300">
+                <div className="flex justify-center mb-4 sm:mb-6">
+                  <div className="bg-blue-100 rounded-full p-3 sm:p-4">
+                    <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-blue-700" />
                   </div>
                 </div>
-                <h3 className="text-blue-800 font-bold text-center mb-4 text-lg">
+                <h3 className="text-blue-800 font-bold text-center mb-3 sm:mb-4 text-base sm:text-lg">
                   ELABORER UN PROGRAMME D'ACTIONS
                 </h3>
-                <p className="text-gray-700 text-center leading-relaxed text-sm">
+                <p className="text-gray-700 text-center leading-relaxed text-xs sm:text-sm">
                   Le chef d'entreprise et l'assistant prévention des risques élaborent ensemble de manière interactive le document unique.
                 </p>
               </div>
@@ -87,8 +87,8 @@ export default function Accompagnement() {
           </section>
 
           {/* Second Row - 3 Blue Cards */}
-          <section className="mb-16">
-            <div className="grid md:grid-cols-3 gap-8">
+          <section className="mb-10 sm:mb-16">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
 
               {/* Card 4 */}
               <div className="bg-gradient-to-br from-blue-700 to-blue-900 rounded-xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 text-white">

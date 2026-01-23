@@ -12,19 +12,19 @@ export default function Footer() {
   };
 
   return (
-    <footer className="text-gray-300 py-12" style={{ backgroundColor: '#0f1729' }}>
+    <footer className="text-gray-300 py-8 sm:py-12" style={{ backgroundColor: '#0f1729' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           <div>
-            <h3 className="text-white font-bold mb-4">CABINET FPE</h3>
-            <p className="text-sm leading-relaxed">
+            <h3 className="text-white font-bold mb-3 sm:mb-4 text-sm sm:text-base">CABINET FPE</h3>
+            <p className="text-xs sm:text-sm leading-relaxed">
               Le cabinet FPE a pour but d'accompagner les entreprises dans leurs obligations sociales et en sécurité.
             </p>
           </div>
 
           <div>
-            <h3 className="text-white font-bold mb-4">DUERP</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-white font-bold mb-3 sm:mb-4 text-sm sm:text-base">DUERP</h3>
+            <ul className="space-y-2 text-xs sm:text-sm">
               <li>
                 <button
                   onClick={() => handleNavigate('/quest-ce-que-duerp')}
