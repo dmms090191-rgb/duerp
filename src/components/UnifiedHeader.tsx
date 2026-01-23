@@ -48,7 +48,7 @@ export default function UnifiedHeader({ currentPage, onLoginClick }: UnifiedHead
     <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 border-b border-gray-100 overflow-visible">
       <div className="max-w-7xl mx-auto px-8 py-4 flex flex-col items-center gap-2">
         <img
-          src="/kk.png"
+          src="/cabinet-fpe-logo.svg"
           alt="Cabinet FPE"
           className="h-20"
         />

@@ -422,7 +422,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
             </div>
             <div className="flex justify-center">
               <img
-                src="/kk.png"
+                src="/cabinet-fpe-logo.svg"
                 alt="Cabinet FPE"
                 className="h-16 w-auto"
               />
@@ -4042,7 +4042,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               <div
                 className="relative bg-cover bg-center py-20"
                 style={{
-                  backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("/ingenieur-civil-ouvrier-du-batiment-architectes-portant-casques-gilets-securite-travaillent-ensemble-chantier-construction-maison-dans-concept-travail-equipe-cooperation-1536x1025.jpg")'
+                  backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260")'
                 }}
               >
                 <h1 className="text-5xl font-bold text-white text-center">Tarifications DUERP</h1>

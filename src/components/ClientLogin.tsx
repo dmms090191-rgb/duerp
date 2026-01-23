@@ -184,7 +184,7 @@ const ClientLogin: React.FC<ClientLoginProps> = ({ onLoginSuccess }) => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="flex flex-col items-center py-2">
             <img
-              src="/kk.png"
+              src="/cabinet-fpe-logo.svg"
               alt="Cabinet FPE"
               className="h-40 md:h-48 w-auto mb-2"
             />

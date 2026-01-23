@@ -17,7 +17,7 @@ export default function QuestCeQuePenibilite() {
       <section
         className="relative h-80 bg-cover bg-center flex items-center justify-center mt-32"
         style={{
-          backgroundImage: `linear-gradient(135deg, rgba(30, 64, 175, 0.9), rgba(59, 130, 246, 0.8)), url('/blog-duerp.png.webp')`
+          backgroundImage: `linear-gradient(135deg, rgba(30, 64, 175, 0.9), rgba(59, 130, 246, 0.8)), url('https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg?auto=compress&cs=tinysrgb&w=1260')`
         }}
       >
         <div className="text-center px-4">

@@ -488,7 +488,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       )}
 
       {/* Hero Section with Background Image */}
-      <section className="pt-[140px] relative min-h-[85vh] bg-cover bg-center flex items-center justify-center overflow-hidden" style={{ backgroundImage: 'url(/ingenieur-civil-ouvrier-du-batiment-architectes-portant-casques-gilets-securite-travaillent-ensemble-chantier-construction-maison-dans-concept-travail-equipe-cooperation-1536x1025.jpg)' }}>
+      <section className="pt-[140px] relative min-h-[85vh] bg-cover bg-center flex items-center justify-center overflow-hidden" style={{ backgroundImage: 'url(https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260)' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-blue-900/85 to-slate-800/90"></div>
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-blue-600/10 to-transparent"></div>

@@ -14,7 +14,7 @@ const DuerpConforme: React.FC = () => {
       <section
         className="relative h-64 bg-cover bg-center flex items-center justify-center mt-32"
         style={{
-          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("/ingenieur-civil-ouvrier-du-batiment-architectes-portant-casques-gilets-securite-travaillent-ensemble-chantier-construction-maison-dans-concept-travail-equipe-cooperation-1536x1025.jpg")'
+          backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260")'
         }}
       >
         <div className="text-center">

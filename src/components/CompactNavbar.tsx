@@ -19,7 +19,7 @@ export default function CompactNavbar({ currentPage }: CompactNavbarProps) {
           <div className="flex justify-between items-center py-2">
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
               <img
-                src="/kk.png"
+                src="/cabinet-fpe-logo.svg"
                 alt="Cabinet FPE"
                 className="h-14 my-1"
               />

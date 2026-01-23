@@ -17,7 +17,7 @@ export default function QuestCeQueDUERP() {
       <section
         className="relative h-64 bg-cover bg-center flex items-center justify-center mt-32"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('/blog-duerp.png.webp')`
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url('https://images.pexels.com/photos/416405/pexels-photo-416405.jpeg?auto=compress&cs=tinysrgb&w=1260')`
         }}
       >
         <div className="text-center">
@@ -56,7 +56,7 @@ export default function QuestCeQueDUERP() {
 
                 <div className="flex justify-center h-full">
                   <img
-                    src="/ingenieur-civil-ouvrier-du-batiment-architectes-portant-casques-gilets-securite-travaillent-ensemble-chantier-construction-maison-dans-concept-travail-equipe-cooperation-1536x1025.jpg"
+                    src="https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260"
                     alt="Ingénieurs civils et ouvriers du bâtiment travaillant ensemble sur un chantier"
                     className="rounded-lg shadow-md w-full h-full object-cover"
                   />
@@ -108,7 +108,7 @@ export default function QuestCeQueDUERP() {
               <div className="grid md:grid-cols-2 gap-8 items-start">
                 <div className="flex justify-center order-2 md:order-1 h-full">
                   <img
-                    src="/2duerp.jpg"
+                    src="https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg?auto=compress&cs=tinysrgb&w=1260"
                     alt="Document unique d'évaluation des risques professionnels"
                     className="rounded-lg shadow-md w-full h-full object-cover"
                   />
