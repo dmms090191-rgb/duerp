@@ -422,7 +422,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
             </div>
             <div className="flex justify-center">
               <img
-                src="/cabinet.svg"
+                src="/kk.png"
                 alt="Cabinet FPE"
                 className="h-16 w-auto"
               />
