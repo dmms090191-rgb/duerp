@@ -274,9 +274,9 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex flex-col md:flex-row h-full">
       {/* Left Navigation Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 p-6">
+      <div className="w-full md:w-80 bg-white border-r border-gray-200 p-4 md:p-6">
         <div className="space-y-4">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Navigation</h3>
@@ -344,26 +344,26 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl">
-          <div className="mb-8">
+      <div className="flex-1 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
+        <div className="w-full">
+          <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                <Users className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Gestionnaire de leads</h1>
-              <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">v2.1</span>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900">Gestionnaire de leads</h1>
+              <span className="px-2 py-1 md:px-3 md:py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">v2.1</span>
             </div>
-            <p className="text-gray-600">Gérez vos prospects et suivez vos opportunités commerciales</p>
+            <p className="text-sm md:text-base text-gray-600">Gérez vos prospects et suivez vos opportunités commerciales</p>
           </div>
 
           {/* Bulk Import */}
           {/* Add Lead Form */}
           {activeTab === 'add' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
               <div className="flex items-center gap-3 mb-6">
-                <Plus className="w-6 h-6 text-blue-600" />
-                <h2 className="text-2xl font-semibold text-gray-900">Ajouter un lead</h2>
+                <Plus className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+                <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Ajouter un lead</h2>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -712,8 +712,8 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                   </button>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[800px]">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left">

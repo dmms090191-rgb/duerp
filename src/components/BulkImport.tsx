@@ -327,9 +327,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex flex-col md:flex-row h-full">
       {/* Left Navigation Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 p-6">
+      <div className="w-full md:w-80 bg-white border-r border-gray-200 p-4 md:p-6">
         <div className="space-y-4">
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Navigation</h3>
@@ -397,16 +397,16 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl">
-          <div className="mb-8">
+      <div className="flex-1 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
+        <div className="w-full">
+          <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                <Upload className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Import de masse</h1>
-                <p className="text-gray-600">Importez vos leads depuis un fichier CSV</p>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Import de masse</h1>
+                <p className="text-sm md:text-base text-gray-600">Importez vos leads depuis un fichier CSV</p>
               </div>
             </div>
           </div>
@@ -416,9 +416,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
             <>
               <div className="space-y-6">
                 {/* Format Configuration */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Upload className="w-5 h-5 text-green-600" />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Upload className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
                     Format des colonnes
                   </h3>
 
@@ -512,9 +512,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 </div>
 
                 {/* File Upload */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Plus className="w-5 h-5 text-green-600" />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Plus className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
                     Sélectionner le fichier
                   </h3>
 
@@ -615,9 +615,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
 
                 {/* Instructions Section */}
                 <div className="space-y-6">
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Eye className="w-5 h-5 text-blue-600" />
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Eye className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                       Instructions d'utilisation
                     </h3>
 
@@ -665,18 +665,18 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
           {/* List Tab */}
           {activeTab === 'list' && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
+              <div className="p-4 md:p-6 border-b border-gray-200">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <List className="w-6 h-6 text-green-600" />
-                    <h2 className="text-2xl font-semibold text-gray-900">Liste des leads masse</h2>
+                    <List className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
+                    <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Liste des leads masse</h2>
                     <span className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
                       {leads.length}
                     </span>
                   </div>
                   
                   {selectedLeads.length > 0 && (
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       <span className="text-sm text-gray-600">
                         {selectedLeads.length} sélectionné{selectedLeads.length > 1 ? 's' : ''}
                       </span>
@@ -685,7 +685,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                         className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
                       >
                         <ArrowRight className="w-4 h-4" />
-                        Transférer vers Clients
+                        <span className="hidden sm:inline">Transférer vers Clients</span>
+                        <span className="sm:hidden">Transférer</span>
                       </button>
                       <button
                         onClick={handleDeleteSelected}
@@ -713,8 +714,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                   </button>
                 </div>
               ) : (
-                <div className="overflow-x-auto border border-gray-300 rounded">
-                  <table className="w-full border-collapse table-auto">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[1000px] border-collapse table-auto">
                     <thead>
                       <tr className="bg-blue-50 border-b border-gray-300">
                         <th className="px-2 py-2 text-left border-r border-gray-300 w-8">

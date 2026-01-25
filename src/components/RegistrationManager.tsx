@@ -64,7 +64,7 @@ const RegistrationManager: React.FC<RegistrationManagerProps> = ({
             <p className="text-gray-500">Toutes les demandes d'inscription ont été traitées</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full max-w-full">
             <table className="w-full table-auto">
               <thead className="bg-gray-50">
                 <tr>

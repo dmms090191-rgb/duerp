@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save } from 'lucide-react';
+import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../services/pdfService';
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
@@ -37,6 +37,7 @@ interface ClientDashboardProps {
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout, isAdminViewing, onReturnToAdmin }) => {
   const { client } = clientData;
   const [activeTab, setActiveTab] = useState('info-juridiques');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [secteurActivite, setSecteurActivite] = useState('');
 
   const [nomConseiller, setNomConseiller] = useState('');
@@ -401,21 +402,28 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-white">
       <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-3 items-center py-4 gap-4">
-            <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-3 md:py-4">
+            <div className="flex items-center gap-3 md:gap-4">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden flex items-center justify-center w-10 h-10 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                aria-label="Toggle menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
               {isAdminViewing && onReturnToAdmin && (
                 <button
                   onClick={onReturnToAdmin}
-                  className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="hidden md:flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg md:rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
                   title="Retour au panel admin"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
                   <span className="font-semibold">Retour Admin</span>
                 </button>
               )}
               {isAdminViewing && (
-                <div>
+                <div className="hidden md:block">
                   <p className="text-xs text-blue-600 font-semibold">Mode visualisation admin</p>
                 </div>
               )}
@@ -424,134 +432,146 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               <img
                 src="/kk.png"
                 alt="Cabinet FPE"
-                className="h-20 w-auto"
+                className="h-14 md:h-16 lg:h-20 w-auto"
               />
             </div>
-            <div className="text-right">
+            <div className="w-10 md:w-auto">
             </div>
           </div>
         </div>
       </header>
 
-      <div className="pt-28 pb-16 flex">
-        <aside className="fixed left-0 top-28 bottom-0 w-72 bg-white/95 backdrop-blur-lg shadow-xl border-r border-blue-100 flex flex-col">
-          <nav className="p-6 space-y-2 flex-1 overflow-y-auto">
+      <div className="pt-20 md:pt-24 lg:pt-28 pb-8 md:pb-16 flex">
+        <aside className={`fixed left-0 top-20 md:top-24 lg:top-28 bottom-0 w-64 md:w-72 bg-white/95 backdrop-blur-lg shadow-xl border-r border-blue-100 flex flex-col transition-transform duration-300 z-30 ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}>
+          <nav className="p-4 md:p-6 space-y-2 flex-1 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`w-full flex items-center gap-3 px-5 py-4 rounded-xl font-semibold transition-all duration-200 text-sm ${
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 rounded-lg md:rounded-xl font-semibold transition-all duration-200 text-xs md:text-sm ${
                     activeTab === item.id
                       ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-105'
                       : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
                   }`}
                 >
-                  <Icon className="w-5 h-5" />
+                  <Icon className="w-4 h-4 md:w-5 md:h-5" />
                   <span className="text-left">{item.label}</span>
                 </button>
               );
             })}
           </nav>
-          <div className="p-6 border-t border-blue-100">
+          <div className="p-4 md:p-6 border-t border-blue-100">
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-lg md:rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-4 h-4 md:w-5 md:h-5" />
               <span>Déconnexion</span>
             </button>
           </div>
         </aside>
 
-        <div className="ml-72 flex-1 px-6 lg:px-8">
+        {isMobileMenuOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        <div className="lg:ml-72 flex-1 px-4 md:px-6 lg:px-8">
           {activeTab === 'info-juridiques' && (
             <>
-              <div className="mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 rounded-2xl shadow-2xl p-8 border border-blue-200">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
-                    <User className="w-8 h-8 text-white" />
+              <div className="mb-4 md:mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 rounded-xl md:rounded-2xl shadow-2xl p-4 md:p-8 border border-blue-200">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-lg">
+                    <User className="w-6 h-6 md:w-8 md:h-8 text-white" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-blue-100 uppercase tracking-wider mb-1">Client</p>
-                    <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+                    <p className="text-xs md:text-sm font-semibold text-blue-100 uppercase tracking-wider mb-1">Client</p>
+                    <h1 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">
                       {client.full_name}
                     </h1>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-blue-100">
-                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-100">
-                  <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                    <User className="w-7 h-7 text-white" />
+              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
+                <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
+                  <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                    <User className="w-5 h-5 md:w-7 md:h-7 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                       Renseignements Juridiques
                     </h2>
-                    <p className="text-sm text-gray-600 font-medium mt-1">Vos informations juridiques et personnelles</p>
+                    <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">Vos informations juridiques et personnelles</p>
                   </div>
                 </div>
 
-              <div className="space-y-5 max-w-3xl">
+              <div className="space-y-3 md:space-y-5 max-w-3xl">
                 {saveMessage && (
-                  <div className={`p-4 rounded-lg ${saveMessage.includes('succès') ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}`}>
+                  <div className={`p-3 md:p-4 rounded-lg text-sm md:text-base ${saveMessage.includes('succès') ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}`}>
                     {saveMessage}
                   </div>
                 )}
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Société
                   </label>
                   <input
                     type="text"
                     value={editableCompanyName}
                     onChange={(e) => setEditableCompanyName(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     SIRET
                   </label>
                   <input
                     type="text"
                     value={editableSiret}
                     onChange={(e) => setEditableSiret(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Nom
                   </label>
                   <input
                     type="text"
                     value={editableNom}
                     onChange={(e) => setEditableNom(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Prénom
                   </label>
                   <input
                     type="text"
                     value={editablePrenom}
                     onChange={(e) => setEditablePrenom(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Mot de passe
                   </label>
                   <div className="relative">
@@ -560,107 +580,107 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       value={editablePassword}
                       onChange={(e) => setEditablePassword(e.target.value)}
                       placeholder="Laisser vide pour ne pas modifier"
-                      className="w-full px-4 py-3 pr-12 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 md:pr-12 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                     >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      {showPassword ? <EyeOff className="w-4 h-4 md:w-5 md:h-5" /> : <Eye className="w-4 h-4 md:w-5 md:h-5" />}
                     </button>
                   </div>
                   {editablePassword && editablePassword.length < 6 && (
-                    <p className="text-sm text-red-600 mt-1">Le mot de passe doit contenir au moins 6 caractères</p>
+                    <p className="text-xs md:text-sm text-red-600 mt-1">Le mot de passe doit contenir au moins 6 caractères</p>
                   )}
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Adresse
                   </label>
                   <input
                     type="text"
                     value={editableAddress}
                     onChange={(e) => setEditableAddress(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Ville
                   </label>
                   <input
                     type="text"
                     value={editableVille}
                     onChange={(e) => setEditableVille(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Code postal
                   </label>
                   <input
                     type="text"
                     value={editableCodePostal}
                     onChange={(e) => setEditableCodePostal(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     E-mail
                   </label>
                   <input
                     type="email"
                     value={editableEmail}
                     onChange={(e) => setEditableEmail(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Numéro de téléphone
                   </label>
                   <input
                     type="text"
                     value={editablePhone}
                     onChange={(e) => setEditablePhone(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Numéro de portable
                   </label>
                   <input
                     type="text"
                     value={editablePortable}
                     onChange={(e) => setEditablePortable(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <button
                   onClick={handleSaveJuridicalInfo}
                   disabled={savingInfo}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full flex items-center justify-center gap-2 px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm md:text-base font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {savingInfo ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Enregistrement...
+                      <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-sm md:text-base">Enregistrement...</span>
                     </>
                   ) : (
                     <>
-                      <Save className="w-5 h-5" />
-                      Enregistrer les modifications
+                      <Save className="w-4 h-4 md:w-5 md:h-5" />
+                      <span className="text-sm md:text-base">Enregistrer les modifications</span>
                     </>
                   )}
                 </button>
@@ -670,38 +690,38 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'documents' && (
-            <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-blue-100">
-              <div className="flex items-center gap-4 mb-8">
-                <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                  <FileText className="w-7 h-7 text-white" />
+            <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
+              <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
+                <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                  <FileText className="w-5 h-5 md:w-7 md:h-7 text-white" />
                 </div>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Mes documents</h2>
+                <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Mes documents</h2>
               </div>
               {documents.length === 0 ? (
-                <div className="text-center py-16 bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl border-2 border-dashed border-blue-200">
-                  <FileText className="w-20 h-20 text-blue-300 mx-auto mb-4" />
-                  <p className="text-gray-600 font-medium">Aucun document disponible pour le moment</p>
-                  <p className="text-gray-500 text-sm mt-2">Remplissez le formulaire DUERP pour générer votre premier document</p>
+                <div className="text-center py-12 md:py-16 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg md:rounded-xl border-2 border-dashed border-blue-200">
+                  <FileText className="w-16 h-16 md:w-20 md:h-20 text-blue-300 mx-auto mb-3 md:mb-4" />
+                  <p className="text-sm md:text-base text-gray-600 font-medium px-4">Aucun document disponible pour le moment</p>
+                  <p className="text-xs md:text-sm text-gray-500 mt-2 px-4">Remplissez le formulaire DUERP pour générer votre premier document</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {documents.map((doc) => (
-                    <div key={doc.id} className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-all relative">
+                    <div key={doc.id} className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-all relative">
                       <button
                         onClick={() => handleDeleteDocument(doc.id, doc.file_path)}
-                        className="absolute top-3 right-3 flex items-center justify-center w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all transform hover:scale-110 shadow-md"
+                        className="absolute top-2 right-2 md:top-3 md:right-3 flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all transform hover:scale-110 shadow-md"
                         title="Supprimer le document"
                       >
-                        <X className="w-5 h-5" />
+                        <X className="w-4 h-4 md:w-5 md:h-5" />
                       </button>
-                      <div className="flex items-center justify-between pr-10">
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg">
-                            <FileText className="w-6 h-6 text-white" />
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between pr-8 md:pr-10 gap-4">
+                        <div className="flex items-center gap-3 md:gap-4">
+                          <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-blue-600 rounded-lg flex-shrink-0">
+                            <FileText className="w-5 h-5 md:w-6 md:h-6 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-bold text-gray-900">{doc.title}</h3>
-                            <p className="text-sm text-gray-600">Type: {doc.document_type}</p>
+                            <h3 className="text-base md:text-lg font-bold text-gray-900">{doc.title}</h3>
+                            <p className="text-xs md:text-sm text-gray-600">Type: {doc.document_type}</p>
                             <p className="text-xs text-gray-500">Créé le {formatDate(doc.created_at)}</p>
                           </div>
                         </div>
@@ -710,9 +730,9 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           download={`${doc.title}.pdf`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all transform hover:scale-105"
+                          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-lg transition-all transform hover:scale-105 text-sm md:text-base"
                         >
-                          <Download className="w-5 h-5" />
+                          <Download className="w-4 h-4 md:w-5 md:h-5" />
                           Télécharger
                         </a>
                       </div>
@@ -724,41 +744,41 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'diagnostic' && (
-            <div className="max-w-7xl mx-auto py-8">
+            <div className="max-w-7xl mx-auto py-4 md:py-8">
               {errorMessage && (
-                <div className="mb-6 bg-red-100 border-2 border-red-500 text-red-800 px-6 py-4 rounded-xl shadow-lg">
-                  <p className="font-bold text-lg">{errorMessage}</p>
+                <div className="mb-4 md:mb-6 bg-red-100 border-2 border-red-500 text-red-800 px-4 md:px-6 py-3 md:py-4 rounded-lg md:rounded-xl shadow-lg">
+                  <p className="font-bold text-base md:text-lg">{errorMessage}</p>
                 </div>
               )}
-              <div className="grid lg:grid-cols-3 gap-8">
+              <div className="grid lg:grid-cols-3 gap-4 md:gap-8">
                 <div className="lg:col-span-1">
-                  <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-blue-100 sticky top-28">
-                    <div className="flex items-center gap-4 mb-6 pb-6 border-b border-blue-100">
-                      <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                        <ClipboardCheck className="w-7 h-7 text-white" />
+                  <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100 lg:sticky lg:top-28">
+                    <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6 pb-4 md:pb-6 border-b border-blue-100">
+                      <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                        <ClipboardCheck className="w-5 h-5 md:w-7 md:h-7 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Diagnostic DUERP</h2>
+                        <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Diagnostic DUERP</h2>
                         <p className="text-xs text-gray-600 font-medium mt-1">Article L4121-1</p>
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                        <h3 className="text-lg font-bold text-blue-900 mb-3">Le DUERP</h3>
-                        <p className="text-sm text-gray-700 leading-relaxed">
+                    <div className="space-y-3 md:space-y-4">
+                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                        <h3 className="text-base md:text-lg font-bold text-blue-900 mb-2 md:mb-3">Le DUERP</h3>
+                        <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
                           Document unique d'évaluation des risques professionnels
                         </p>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                        <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                        <p className="text-xs md:text-sm text-gray-700 leading-relaxed font-medium">
                           Une évaluation des risques professionnels (EVRP) doit être menée au sein de votre entreprise afin d'adapter les conditions de travail et d'assurer la protection de la santé de vos salariés, une mise à jour de votre DUERP est donc indispensable !
                         </p>
                       </div>
 
-                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-5 rounded-xl border border-emerald-200">
-                        <h4 className="text-sm font-bold text-emerald-900 mb-2">Secteur d'activité</h4>
+                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-emerald-200">
+                        <h4 className="text-xs md:text-sm font-bold text-emerald-900 mb-2">Secteur d'activité</h4>
                         <p className="text-xs text-gray-600">
                           Sélectionnez votre secteur pour personnaliser votre diagnostic
                         </p>
@@ -768,21 +788,21 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 </div>
 
                 <div className="lg:col-span-2">
-                  <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-blue-100">
-                    <div className="mb-8 pb-6 border-b border-blue-100">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-2">Formulaire de diagnostic</h3>
-                      <p className="text-sm text-gray-600">Veuillez remplir les informations ci-dessous</p>
+                  <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
+                    <div className="mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
+                      <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-2">Formulaire de diagnostic</h3>
+                      <p className="text-xs md:text-sm text-gray-600">Veuillez remplir les informations ci-dessous</p>
                     </div>
 
-                    <div className="space-y-6">
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                        <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="space-y-4 md:space-y-6">
+                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                        <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                           Secteur d'activité <span className="text-red-500">*</span>
                         </label>
                         <select
                           value={secteurActivite}
                           onChange={(e) => setSecteurActivite(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="personnel-sante">A - Personnel de santé</option>
@@ -814,7 +834,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                             <label className="flex items-start gap-3 cursor-pointer">
                               <input
                                 type="checkbox"
-                                className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 checked={selectedActivities.includes('A01 - Pharmacie')}
                                 onChange={() => toggleActivity('A01 - Pharmacie')}
                               />
@@ -823,7 +843,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                             <label className="flex items-start gap-3 cursor-pointer">
                               <input
                                 type="checkbox"
-                                className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 checked={selectedActivities.includes('A02 - Laboratoire')}
                                 onChange={() => toggleActivity('A02 - Laboratoire')}
                               />
@@ -832,7 +852,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                             <label className="flex items-start gap-3 cursor-pointer">
                               <input
                                 type="checkbox"
-                                className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 checked={selectedActivities.includes('A03 - Médecine générale')}
                                 onChange={() => toggleActivity('A03 - Médecine générale')}
                               />
@@ -841,7 +861,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                             <label className="flex items-start gap-3 cursor-pointer">
                               <input
                                 type="checkbox"
-                                className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 checked={selectedActivities.includes('A04 - Médecin spécialistes')}
                                 onChange={() => toggleActivity('A04 - Médecin spécialistes')}
                               />
@@ -850,26 +870,26 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                             <label className="flex items-start gap-3 cursor-pointer">
                               <input
                                 type="checkbox"
-                                className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 checked={selectedActivities.includes('A05 - Infirmières')}
                                 onChange={() => toggleActivity('A05 - Infirmières')}
                               />
                               <span className="text-sm text-gray-800">A05 - Infirmières</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">A06 - Kinésithérapie, ostéopathe</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">A07 - Orthophoniste</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">A08 - Psychologue, psychanalyste, hypnose</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">A09 - Radiologue, échographe</span>
                             </label>
                           </div>
@@ -881,39 +901,39 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">B - Commerce de produits de grande consommation</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B01 - Commerce alimentaire et non alimentaire généraliste (grande distribution)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B02 - Commerce alimentaire spécialisé (boulangerie, boucherie, poissonnerie, bio, caviste...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B03 - Commerce non alimentaire généraliste ou spécialisé (grands magasins, produits techniques, solderies, bazars...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B04 - Eventaires, marchés de plein air</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B05 - Commerce de tabac (débits de tabac), cigarette électronique</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B06 - Equipement de la personne (habillement, chaussures, accessoires...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B07 - Equipement de la maison (ameublement, appareils électro-ménagers, décoration, consommables....)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B08 - Horlogerie, bijouterie</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">B09 - Biens d'occasion (antiquaires, dépôts-vente, brocantes...)</span>
                             </label>
                           </div>
@@ -925,23 +945,23 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">C - Commerce électronique, vente hors magasin</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">C01 - Vente en ligne, vente à distance</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">C02 - Foires et salons</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">C03 - Distribution automatique</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">C04 - Vente en réunion</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">C05 - Vente directe, démarchage</span>
                             </label>
                           </div>
@@ -953,39 +973,39 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">D - Immobilier, logement</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D01 - Promotion, construction</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D02 - Travaux d'architecte</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D03 - Ingénierie, expertises (géomètres-expert, expertise technique, diagnostics immobiliers...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D04 - Transactions immobilières, administration de biens immobiliers</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D05 - Gestion, vente de biens immobiliers (agences immobilières, mandataires immobiliers, viager...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D06 - Facilitation pour valoriser la vente d'un bien immobilier (conseil dans le domaine immobilier, mise en scène d'intérieur...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D07 - Syndics de copropriétés</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D08 - Déménagement</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">D09 - Entreposage, stockage (garde-meuble...)</span>
                             </label>
                           </div>
@@ -997,27 +1017,27 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">E - Energie, eau, assainissement</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">E01 - Distribution d'électricité et/ou distribution de gaz</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">E02 - Distribution de fioul domestique, combustibles solides (bois, charbon), gaz de pétrole liquéfiés (GPL)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">E03 - Distribution d'eau chaude (chauffage urbain)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">E04 - Energies renouvelables</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">E05 - Services Publics de l'eau et de l'assainissement collectif et non collectif</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">E06 - Collecte, traitement des eaux</span>
                             </label>
                           </div>
@@ -1029,35 +1049,35 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">F - Travaux du bâtiment, travaux d'aménagement extérieur et intérieur</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F01 - Installation de cuisines et salles de bains</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F02 - Installation de piscines</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F03 - Installation et réparation d'équipements (chauffage, climatisation, efficacité énergétique...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F04 - Aménagement de l'habitat, travaux d'installation, de réparation, de rénovation et activités de décoration</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F05 - Aménagement extérieur (gros travaux)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F06 - Réparation de matériels (électroménager, télévision, vidéo...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F07 - Dépannages urgents à domicile</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">F08 - Location de matériels</span>
                             </label>
                           </div>
@@ -1069,43 +1089,43 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">G - Transport public de voyageurs, transport de marchandises</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G01 - Transport ferroviaire de voyageurs</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G02 - Transports publics urbains et suburbains</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G03 - Autocars</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G04 - Taxis, véhicules de transport avec chauffeur (VTC)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G05 - Transport maritime, transport fluvial</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G06 - Transport aérien</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G07 - Services aéroportuaires</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G08 - Transport scolaire</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G09 - Remontées mécaniques et téléphériques</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">G10 - Transport de marchandises, livraisons</span>
                             </label>
                           </div>
@@ -1117,63 +1137,63 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">H - Automobile</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H01 - Construction et/ou commerce de véhicules (automobile, motocycle, cycle, bateau, aéronef...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H02 - Location longue durée (LDD), location avec option d'achat (LOA) de véhicules</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H03 - Location de courte durée de véhicules : contrats spécifiques, autopartage, véhicules en libre-service</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H04 - Accessoires pour véhicules</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H05 - Entretien et réparation de véhicules (concessionnaires, agents, réparateurs indépendants, centres auto...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H06 - Engins motorisés non réceptionnés (mini-motos, quads, trottinettes électriques, gyropodes...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H07 - Contrôle technique de véhicules</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H08 - Stationnement des véhicules (parcmètres, parcs de stationnement...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H09 - Autoroutes (péages)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H10 - Dépannage, remorquage</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H11 - Enlèvement de véhicules, fourrières</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H12 - Destruction des véhicules hors d'usage (VHU)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H13 - Distribution de carburants (stations-services)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H14 - Lavage des véhicules (haute pression...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">H15 - Formation des conducteurs (auto-ecole)</span>
                             </label>
                           </div>
@@ -1185,27 +1205,27 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">I - Hôtellerie, restauration</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">I01 - Hôtellerie</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">I02 - Centrales de réservation hôtelière</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">I03 - Restauration</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">I04 - Organisation d'évènements</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">I05 - Livraison de repas à domicile</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">I06 - Débits de boissons (cafés, brasserie)</span>
                             </label>
                           </div>
@@ -1217,23 +1237,23 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">J - Tourisme, voyage</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">J01 - Agences de voyage, voyagistes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">J02 - Villages, clubs de vacances</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">J03 - Biens immobiliers saisonniers et temporaires</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">J04 - Séjours en temps partagé</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">J05 - Hôtellerie de plein air (camping, caravaning...)</span>
                             </label>
                           </div>
@@ -1245,51 +1265,51 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">K - Culture, loisirs, sport</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K01 - Biens culturels (livres, musique, peinture, photos...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K02 - Presse</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K03 - Articles de puériculture, jouets</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K04 - Articles de sport, articles de loisirs</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K05 - Location d'articles de loisirs et de sport</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K06 - Activités et manifestations sportives (leçons, locations d'installations sportives, billetterie...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K07 - Activités récréatives et de loisirs (parcs d'attraction, parcours acrobatiques...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K08 - Théâtres, spectacles, musées</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K09 - Cinéma</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K10 - Travaux photographiques</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K11 - Coffret-cadeau (séjours, gastronomie, bien-être, sport-aventure, multi-activités...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">K12 - Jeux de hasard et d'argent</span>
                             </label>
                           </div>
@@ -1301,27 +1321,27 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">L - Bricolage, jardinage, animaux</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">L01 - Bricolage et équipements spécialisés (matériels agricoles, d'espaces verts...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">L02 - Fleurs, plantes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">L03 - Aménagement paysager (y compris élagage et abattage)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">L04 - Jardinerie, animalerie (animaux domestiques et leurs aliments, matériels d'élevage)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">L05 - Commercialisation d'animaux, services pour les animaux (toilettage, gardiennage...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">L06 - Soins vétérinaires et produits vétérinaires (médicaments, aliments et produits d'hygiène pour animaux)</span>
                             </label>
                           </div>
@@ -1333,51 +1353,51 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">M - Produits et services à la personne</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M01 - Parfumerie, produits de beauté</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M02 - Parapharmacie</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M03 - Matériels et dispositifs médicaux (optique, audition,...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M04 - Coiffure, instituts de beauté (produits et services)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M05 - Services d'esthétique corporelle (bronzage, onglerie, épilation, tatouage .....)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M06 - Services de bien-être (thalassothérapie, spa..., hypnose,...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M07 - Services à domicile (garde d'enfants, ménage...)</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M08 - Crèches, assistantes maternelles</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M09 - Maisons de retraite, établissements d'hébergement</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M10 - Cordonnerie, reproduction de clés,...</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M11 - Blanchisseries, teintureries, repassage, laveries en libre-service</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">M12 - Services funéraires</span>
                             </label>
                           </div>
@@ -1389,7 +1409,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">N - Franchise</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">N01 - Franchise</span>
                             </label>
                           </div>
@@ -1401,67 +1421,67 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">O - Métallurgie</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O01 - Sidérurgie</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O02 - Fabrication de tubes, tuyaux, profilés creux et accessoires correspondants en acier</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O03 - étirage à froid de barres</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O04 - Laminage à froid de feuillards</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O05 - Profilage à froid par formage ou pliage</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O06 - Tréfilage à froid</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O07 - Production de métaux précieux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O08 - Métallurgie de l'aluminium</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O09 - Métallurgie du plomb, du zinc ou de l'étain</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O10 - Métallurgie du cuivre</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O11 - Métallurgie des autres métaux non ferreux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O12 - élaboration et transformation de matières nucléaires</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O13 - Fonderie de fonte</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O14 - Fonderie d'acier</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O15 - Fonderie de métaux légers</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">O16 - Fonderie d'autres métaux non ferreux</span>
                             </label>
                           </div>
@@ -1473,75 +1493,75 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">P - Fabrication de produits métalliques</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P01 - Fabrication de structures métalliques et de parties de structures</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P02 - Fabrication de portes et fenêtres en métal</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P03 - Fabrication de radiateurs et de chaudières pour le chauffage central</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P04 - Fabrication d'autres réservoirs, citernes et conteneurs métalliques</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P05 - Fabrication de générateurs de vapeur, à l'exception des chaudières pour le chauffage central</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P06 - Fabrication d'armes et de munitions</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P07 - Forge, estampage, matriçage , métallurgie des poudres</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P08 - Découpage, emboutissage</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P09 - Traitement et revêtement des métaux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P10 - Décolletage</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P11 - Mécanique industrielle</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P12 - Fabrication de coutellerie</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P13 - Fabrication de serrures et de ferrures</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P14 - Fabrication de moules et modèles</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P15 - Fabrication d'autres outillages</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P16 - Fabrication de fûts et emballages métalliques similaires</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P17 - Fabrication d'emballages métalliques légers</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">P18 - Fabrication d'articles en fils métalliques, de chaînes et de ressorts</span>
                             </label>
                           </div>
@@ -1553,27 +1573,27 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">Q - Tri et collecte des déchets</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">Q01 - Collecte des déchets non dangereux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">Q02 - Collecte des déchets dangereux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">Q03 - Traitement et élimination des déchets non dangereux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">Q04 - Traitement et élimination des déchets dangereux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">Q05 - Démantèlement d'épaves</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">Q06 - Récupération de déchets triés</span>
                             </label>
                           </div>
@@ -1585,127 +1605,127 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">R - Culture et production animale chasse et services annexes</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0111Z Culture de céréales (à l'exception du riz), de légumineuses et de graines oléagineuses</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0112Z Culture du riz</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0113Z Culture de légumes, de melons, de racines et de tubercules</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0114Z Culture de la canne à sucre</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0115Z Culture du tabac</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0116Z Culture de plantes à fibres</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0119Z Autres cultures non permanentes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0121Z Culture de la vigne</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0122Z Culture de fruits tropicaux et subtropicaux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0123Z Culture d'agrumes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0124Z Culture de fruits à pépins et à noyau</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0125Z Culture d'autres fruits d'arbres ou d'arbustes et de fruits à coque</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0126Z Culture de fruits oléagineux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0127Z Culture de plantes à boissons</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0128Z Culture de plantes à épices, aromatiques, médicinales et pharmaceutiques</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0129Z Autres cultures permanentes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0130Z Reproduction de plantes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0141Z Élevage de vaches laitières</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0142Z Élevage d'autres bovins et de buffles</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0143Z Élevage de chevaux et d'autres équidés</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0144Z Élevage de chameaux et d'autres camélidés</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0145Z Élevage d'ovins et de caprins</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0146Z Élevage de porcins</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0147Z Élevage de volailles</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0149Z Élevage d'autres animaux</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0150Z Culture et élevage associés</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0161Z Activités de soutien aux cultures</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0162Z Activités de soutien à la production animale</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0163Z Traitement primaire des récoltes</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0164Z Traitement des semences</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0170Z Chasse, piégeage et services annexes</span>
                             </label>
                           </div>
@@ -1717,19 +1737,19 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">S - Sylviculture et exploitation forestière</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0210Z Sylviculture et autres activités forestières</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0220Z Exploitation forestière</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0230Z Récolte de produits forestiers non ligneux poussant à l'état sauvage</span>
                             </label>
                             <label className="flex items-start gap-3 cursor-pointer">
-                              <input type="checkbox" className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
+                              <input type="checkbox" className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500" />
                               <span className="text-sm text-gray-800">0240Z Services de soutien à l'exploitation forestière</span>
                             </label>
                           </div>
@@ -1979,7 +1999,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.circulation.includes('Intervention hors site')}
                                   onChange={() => toggleCategory('circulation', 'Intervention hors site')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Intervention hors site</span>
                               </label>
@@ -2018,7 +2038,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.circulation.includes('Tout déplacement hors société / dépannage / commercial')}
                                   onChange={() => toggleCategory('circulation', 'Tout déplacement hors société / dépannage / commercial')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Tout déplacement hors société / dépannage / commercial</span>
                               </label>
@@ -2057,7 +2077,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.circulation.includes('Entreprise intervenant sur site')}
                                   onChange={() => toggleCategory('circulation', 'Entreprise intervenant sur site')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Entreprise intervenant sur site</span>
                               </label>
@@ -2096,7 +2116,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.circulation.includes('Circulation et stationnement des véhicules')}
                                   onChange={() => toggleCategory('circulation', 'Circulation et stationnement des véhicules')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Circulation et stationnement des véhicules</span>
                               </label>
@@ -2135,7 +2155,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.circulation.includes('Chargement / Déchargement')}
                                   onChange={() => toggleCategory('circulation', 'Chargement / Déchargement')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Chargement / Déchargement</span>
                               </label>
@@ -2174,7 +2194,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.circulation.includes('Transport de personnes')}
                                   onChange={() => toggleCategory('circulation', 'Transport de personnes')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Transport de personnes</span>
                               </label>
@@ -2247,7 +2267,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.stockage.includes('Stockage des produits d\'entretien (Substances dangereuses / Produits inflammables)')}
                                   onChange={() => toggleCategory('stockage', 'Stockage des produits d\'entretien (Substances dangereuses / Produits inflammables)')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Stockage des produits d'entretien (Substances dangereuses / Produits inflammables)</span>
                               </label>
@@ -2286,7 +2306,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.stockage.includes('Stockage de déchets dangereux')}
                                   onChange={() => toggleCategory('stockage', 'Stockage de déchets dangereux')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Stockage de déchets dangereux</span>
                               </label>
@@ -2325,7 +2345,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.stockage.includes('Stockage de déchets banals')}
                                   onChange={() => toggleCategory('stockage', 'Stockage de déchets banals')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Stockage de déchets banals</span>
                               </label>
@@ -2364,7 +2384,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.stockage.includes('Gaz (stockage / manutention et distribution)')}
                                   onChange={() => toggleCategory('stockage', 'Gaz (stockage / manutention et distribution)')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Gaz (stockage / manutention et distribution)</span>
                               </label>
@@ -2437,7 +2457,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.enginsMecaniques.includes('Engins mécaniques (Pont élévateur / Levage / Chariot élévateur)')}
                                   onChange={() => toggleCategory('enginsMecaniques', 'Engins mécaniques (Pont élévateur / Levage / Chariot élévateur)')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Engins mécaniques (Pont élévateur / Levage / Chariot élévateur)</span>
                               </label>
@@ -2476,7 +2496,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.enginsMecaniques.includes('Accumulateurs / Chargeurs transpalette / Tire pal / Transpalette')}
                                   onChange={() => toggleCategory('enginsMecaniques', 'Accumulateurs / Chargeurs transpalette / Tire pal / Transpalette')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Accumulateurs / Chargeurs transpalette / Tire pal / Transpalette</span>
                               </label>
@@ -2515,7 +2535,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.enginsMecaniques.includes('Compresseurs d\'air / Centrifuges')}
                                   onChange={() => toggleCategory('enginsMecaniques', 'Compresseurs d\'air / Centrifuges')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Compresseurs d'air / Centrifuges</span>
                               </label>
@@ -2588,7 +2608,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Fonderie')}
                                   onChange={() => toggleCategory('usineProduction', 'Fonderie')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Fonderie</span>
                               </label>
@@ -2627,7 +2647,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Fabrication / transformation de matières plastiques')}
                                   onChange={() => toggleCategory('usineProduction', 'Fabrication / transformation de matières plastiques')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Fabrication / transformation de matières plastiques</span>
                               </label>
@@ -2666,7 +2686,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Production / transformation d\'electricité')}
                                   onChange={() => toggleCategory('usineProduction', 'Production / transformation d\'electricité')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Production / transformation d'electricité</span>
                               </label>
@@ -2705,7 +2725,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Dépôt d\'encres / vernis / peintures')}
                                   onChange={() => toggleCategory('usineProduction', 'Dépôt d\'encres / vernis / peintures')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Dépôt d'encres / vernis / peintures</span>
                               </label>
@@ -2744,7 +2764,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Traitement du bois')}
                                   onChange={() => toggleCategory('usineProduction', 'Traitement du bois')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Traitement du bois</span>
                               </label>
@@ -2783,7 +2803,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Traitement de déchets')}
                                   onChange={() => toggleCategory('usineProduction', 'Traitement de déchets')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Traitement de déchets</span>
                               </label>
@@ -2822,7 +2842,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.usineProduction.includes('Stations d\'épuration')}
                                   onChange={() => toggleCategory('usineProduction', 'Stations d\'épuration')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Stations d'épuration</span>
                               </label>
@@ -2895,7 +2915,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.thermique.includes('Frigidaire réfrigérateur / Chambre froide')}
                                   onChange={() => toggleCategory('thermique', 'Frigidaire réfrigérateur / Chambre froide')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Frigidaire réfrigérateur / Chambre froide</span>
                               </label>
@@ -2934,7 +2954,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.thermique.includes('Chaufferies chauffage et process')}
                                   onChange={() => toggleCategory('thermique', 'Chaufferies chauffage et process')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Chaufferies chauffage et process</span>
                               </label>
@@ -2973,7 +2993,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.thermique.includes('Climatisation')}
                                   onChange={() => toggleCategory('thermique', 'Climatisation')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Climatisation</span>
                               </label>
@@ -3046,7 +3066,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.machineUsine.includes('Emballages /conditionnement')}
                                   onChange={() => toggleCategory('machineUsine', 'Emballages /conditionnement')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Emballages /conditionnement</span>
                               </label>
@@ -3085,7 +3105,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.machineUsine.includes('Montage /assemblage')}
                                   onChange={() => toggleCategory('machineUsine', 'Montage /assemblage')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Montage /assemblage</span>
                               </label>
@@ -3124,7 +3144,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.machineUsine.includes('Maintenance des équipements')}
                                   onChange={() => toggleCategory('machineUsine', 'Maintenance des équipements')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Maintenance des équipements</span>
                               </label>
@@ -3163,7 +3183,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.machineUsine.includes('Entretien des infrastructures')}
                                   onChange={() => toggleCategory('machineUsine', 'Entretien des infrastructures')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Entretien des infrastructures</span>
                               </label>
@@ -3236,7 +3256,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.autre.includes('Animaux vivants')}
                                   onChange={() => toggleCategory('autre', 'Animaux vivants')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Animaux vivants</span>
                               </label>
@@ -3309,7 +3329,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.manutentionCirculation.includes('Risque de chute de personnes')}
                                   onChange={() => toggleCategory('manutentionCirculation', 'Risque de chute de personnes')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque de chute de personnes</span>
                               </label>
@@ -3348,7 +3368,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.manutentionCirculation.includes('Risque lié à la manutention manuelle')}
                                   onChange={() => toggleCategory('manutentionCirculation', 'Risque lié à la manutention manuelle')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié à la manutention manuelle</span>
                               </label>
@@ -3387,7 +3407,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.manutentionCirculation.includes('Risque lié à la manutention mécanisée')}
                                   onChange={() => toggleCategory('manutentionCirculation', 'Risque lié à la manutention mécanisée')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié à la manutention mécanisée</span>
                               </label>
@@ -3426,7 +3446,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.manutentionCirculation.includes('Risque lié aux circulations et aux déplacements dans l\'entreprise')}
                                   onChange={() => toggleCategory('manutentionCirculation', 'Risque lié aux circulations et aux déplacements dans l\'entreprise')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux circulations et aux déplacements dans l'entreprise</span>
                               </label>
@@ -3465,7 +3485,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.manutentionCirculation.includes('Risque lié aux effondrements et aux chutes d\'objets')}
                                   onChange={() => toggleCategory('manutentionCirculation', 'Risque lié aux effondrements et aux chutes d\'objets')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux effondrements et aux chutes d'objets</span>
                               </label>
@@ -3504,7 +3524,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.manutentionCirculation.includes('Risque lié à la circulation de véhicule')}
                                   onChange={() => toggleCategory('manutentionCirculation', 'Risque lié à la circulation de véhicule')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié à la circulation de véhicule</span>
                               </label>
@@ -3577,7 +3597,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.ambiance.includes('Risque lié au bruit')}
                                   onChange={() => toggleCategory('ambiance', 'Risque lié au bruit')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié au bruit</span>
                               </label>
@@ -3616,7 +3636,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.ambiance.includes('Risque lié aux vibrations')}
                                   onChange={() => toggleCategory('ambiance', 'Risque lié aux vibrations')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux vibrations</span>
                               </label>
@@ -3655,7 +3675,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.ambiance.includes('Risque lié aux ambiances thermiques')}
                                   onChange={() => toggleCategory('ambiance', 'Risque lié aux ambiances thermiques')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux ambiances thermiques</span>
                               </label>
@@ -3694,7 +3714,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.ambiance.includes('Risque lié aux rayonnements')}
                                   onChange={() => toggleCategory('ambiance', 'Risque lié aux rayonnements')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux rayonnements</span>
                               </label>
@@ -3733,7 +3753,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.ambiance.includes('Risque écran')}
                                   onChange={() => toggleCategory('ambiance', 'Risque écran')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque écran</span>
                               </label>
@@ -3806,7 +3826,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.equipementOrganisation.includes('Risque lié aux outils')}
                                   onChange={() => toggleCategory('equipementOrganisation', 'Risque lié aux outils')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux outils</span>
                               </label>
@@ -3845,7 +3865,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.equipementOrganisation.includes('Risque lié à l\'intervention d\'une entreprise extérieure')}
                                   onChange={() => toggleCategory('equipementOrganisation', 'Risque lié à l\'intervention d\'une entreprise extérieure')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié à l'intervention d'une entreprise extérieure</span>
                               </label>
@@ -3884,7 +3904,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.equipementOrganisation.includes('Risque lié à l\'organisation du travail')}
                                   onChange={() => toggleCategory('equipementOrganisation', 'Risque lié à l\'organisation du travail')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié à l'organisation du travail</span>
                               </label>
@@ -3923,7 +3943,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.equipementOrganisation.includes('Risque lié aux déplacement routiers')}
                                   onChange={() => toggleCategory('equipementOrganisation', 'Risque lié aux déplacement routiers')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque lié aux déplacement routiers</span>
                               </label>
@@ -3962,7 +3982,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                                   type="checkbox"
                                   checked={selectedCategories.equipementOrganisation.includes('Risque Psycho-Sociaux')}
                                   onChange={() => toggleCategory('equipementOrganisation', 'Risque Psycho-Sociaux')}
-                                  className="mt-1 w-5 h-5 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                                  className="mt-1 w-4 h-4 flex-shrink-0 rounded border-2 border-blue-300 text-blue-600 focus:ring-2 focus:ring-blue-500"
                                 />
                                 <span className="text-sm text-gray-800">Risque Psycho-Sociaux</span>
                               </label>
@@ -3997,35 +4017,35 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-white p-6 rounded-xl border-2 border-gray-200 shadow-sm">
-                        <label className="flex items-start gap-3 cursor-pointer mb-6">
+                      <div className="bg-white p-4 md:p-6 rounded-lg md:rounded-xl border-2 border-gray-200 shadow-sm">
+                        <label className="flex items-start gap-2 md:gap-3 cursor-pointer mb-4 md:mb-6">
                           <input
                             type="checkbox"
                             checked={accepteTermes}
                             onChange={(e) => setAccepteTermes(e.target.checked)}
-                            className="mt-1 w-5 h-5 rounded border-2 border-gray-400 text-blue-600 focus:ring-2 focus:ring-blue-500"
+                            className="mt-1 w-4 h-4 md:w-5 md:h-5 rounded border-2 border-gray-400 text-blue-600 focus:ring-2 focus:ring-blue-500"
                           />
-                          <span className="text-base font-medium text-gray-900">J'accepte les termes et conditions de prise en charge *</span>
+                          <span className="text-sm md:text-base font-medium text-gray-900">J'accepte les termes et conditions de prise en charge *</span>
                         </label>
 
-                        <div className="space-y-3 mb-6">
-                          <p className="text-sm text-gray-700">* Rapport de diagnostic conforme</p>
-                          <p className="text-sm text-gray-700">* Élaboration du Document Unique</p>
-                          <p className="text-sm text-gray-700">* Accès à votre portail numérique</p>
-                          <p className="text-sm text-gray-700">* Attestation de conformité DUERP</p>
-                          <p className="text-sm text-gray-700">* Suivi juridique en cas de contrôle</p>
+                        <div className="space-y-2 md:space-y-3 mb-4 md:mb-6">
+                          <p className="text-xs md:text-sm text-gray-700">* Rapport de diagnostic conforme</p>
+                          <p className="text-xs md:text-sm text-gray-700">* Élaboration du Document Unique</p>
+                          <p className="text-xs md:text-sm text-gray-700">* Accès à votre portail numérique</p>
+                          <p className="text-xs md:text-sm text-gray-700">* Attestation de conformité DUERP</p>
+                          <p className="text-xs md:text-sm text-gray-700">* Suivi juridique en cas de contrôle</p>
                         </div>
 
-                        <p className="text-sm text-gray-600 leading-relaxed">
+                        <p className="text-xs md:text-sm text-gray-600 leading-relaxed">
                           Nous vous remercions de bien vouloir procéder au règlement de la prise en charge afin de recevoir votre attestation de conformité, à présenter lors des contrôles. En attendant, le rapport conforme DUERP sera disponible sur votre portail numérique dans un délai de 14 jours ouvrés.
                         </p>
                       </div>
 
-                      <div className="pt-4">
+                      <div className="pt-3 md:pt-4">
                         <button
                           onClick={handleSubmit}
                           disabled={isGeneratingPDF}
-                          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                          className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm md:text-base"
                         >
                           {isGeneratingPDF ? 'Génération du PDF en cours...' : 'Valider'}
                         </button>
@@ -4038,81 +4058,81 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'duerp-conforme' && (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div className="bg-white rounded-xl md:rounded-2xl shadow-xl overflow-hidden">
               <div
-                className="relative bg-cover bg-center py-20"
+                className="relative bg-cover bg-center py-12 md:py-20"
                 style={{
                   backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260")'
                 }}
               >
-                <h1 className="text-5xl font-bold text-white text-center">Tarifications DUERP</h1>
+                <h1 className="text-3xl md:text-5xl font-bold text-white text-center px-4">Tarifications DUERP</h1>
               </div>
 
-              <div className="py-16 px-8">
-                <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold text-blue-800 mb-6">Votre DUERP conforme</h2>
-                  <p className="text-gray-900 leading-relaxed max-w-3xl mx-auto text-base">
+              <div className="py-8 md:py-16 px-4 md:px-8">
+                <div className="text-center mb-8 md:mb-12">
+                  <h2 className="text-2xl md:text-3xl font-bold text-blue-800 mb-4 md:mb-6">Votre DUERP conforme</h2>
+                  <p className="text-sm md:text-base text-gray-900 leading-relaxed max-w-3xl mx-auto">
                     Le cabinet FPE ayant pour but d'accompagner les entreprises dans leurs obligations légales et droit administratifs notamment sur la prévention des risques des salariés et la mise en conformité du DUERP (Document unique d'évaluation des risques professionnels),{' '}
                     <span className="text-blue-600 font-normal">selon l'article L4121-1 du Code du travail.</span>
                   </p>
                 </div>
 
-                <div className="flex justify-center mb-16">
-                  <div className="bg-[#4A7BA7] rounded-2xl shadow-2xl p-10 max-w-md w-full">
-                    <div className="flex justify-center mb-6">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
-                        <Users className="w-10 h-10 text-white" />
+                <div className="flex justify-center mb-10 md:mb-16">
+                  <div className="bg-[#4A7BA7] rounded-xl md:rounded-2xl shadow-2xl p-6 md:p-10 max-w-md w-full">
+                    <div className="flex justify-center mb-4 md:mb-6">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-2 md:p-3">
+                        <Users className="w-8 h-8 md:w-10 md:h-10 text-white" />
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-white text-center mb-8 tracking-wide">DUERP CONFORME</h3>
+                    <h3 className="text-lg md:text-xl font-bold text-white text-center mb-6 md:mb-8 tracking-wide">DUERP CONFORME</h3>
 
-                    <div className="space-y-5 text-white">
-                      <div className="flex items-center gap-4">
-                        <AlertTriangle className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Recensement et évaluation des risques</p>
+                    <div className="space-y-4 md:space-y-5 text-white">
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <AlertTriangle className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Recensement et évaluation des risques</p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <FileText className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Elaboration du document unique</p>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <FileText className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Elaboration du document unique</p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <FileCheck2 className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Attestation de prise en charge</p>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <FileCheck2 className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Attestation de prise en charge</p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <CheckCircle2 className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Rapport DUERP conforme</p>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Rapport DUERP conforme</p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <UserCircle2 className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Accès à votre portail numérique</p>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <UserCircle2 className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Accès à votre portail numérique</p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <UserCog className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Service expertise en cas de contrôle</p>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <UserCog className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Service expertise en cas de contrôle</p>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <Phone className="w-5 h-5 text-white flex-shrink-0" />
-                        <p className="text-sm font-normal">Suivie de vos demandes avec un conseiller</p>
+                      <div className="flex items-center gap-3 md:gap-4">
+                        <Phone className="w-4 h-4 md:w-5 md:h-5 text-white flex-shrink-0" />
+                        <p className="text-xs md:text-sm font-normal">Suivie de vos demandes avec un conseiller</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-center mb-8 max-w-3xl mx-auto">
-                  <p className="text-gray-900 text-base leading-relaxed mb-2">
+                <div className="text-center mb-6 md:mb-8 max-w-3xl mx-auto">
+                  <p className="text-sm md:text-base text-gray-900 leading-relaxed mb-2">
                     Vous souhaitez répondre à votre obligation réglementaire mais vous ne savez pas comment vous y prendre ?
                   </p>
-                  <p className="text-gray-900 text-base leading-relaxed mb-6">
+                  <p className="text-sm md:text-base text-gray-900 leading-relaxed mb-4 md:mb-6">
                     Le cabinet FPE vous propose des solutions sur-mesure pour répondre à votre obligation réglementaire
                   </p>
-                  <button className="bg-[#4A7BA7] hover:bg-[#3d6a91] text-white font-medium py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                  <button className="bg-[#4A7BA7] hover:bg-[#3d6a91] text-white font-medium py-2.5 md:py-3 px-6 md:px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-sm md:text-base">
                     Besoin d'aide ! contactez-nous
                   </button>
                 </div>
@@ -4121,52 +4141,52 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'opco' && (
-            <div className="max-w-4xl mx-auto py-8">
-              <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-blue-100">
-                <div className="bg-gradient-to-r from-blue-50 to-sky-100 px-8 py-6 border-b border-blue-200">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                      <Building2 className="w-6 h-6 text-white" />
+            <div className="max-w-4xl mx-auto py-4 md:py-8">
+              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl overflow-hidden border border-blue-100">
+                <div className="bg-gradient-to-r from-blue-50 to-sky-100 px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                      <Building2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
-                      <p className="text-sm text-gray-700 font-semibold">OPCO opérateur de compétences</p>
+                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
+                      <p className="text-xs md:text-sm text-gray-700 font-semibold">OPCO opérateur de compétences</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="px-8 py-10">
-                  <div className="mb-8">
-                    <h3 className="text-2xl font-bold text-blue-900 mb-4">OPCO opérateur de compétences</h3>
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 space-y-3">
-                      <p className="text-gray-700 font-medium">
+                <div className="px-4 md:px-8 py-6 md:py-10">
+                  <div className="mb-6 md:mb-8">
+                    <h3 className="text-xl md:text-2xl font-bold text-blue-900 mb-3 md:mb-4">OPCO opérateur de compétences</h3>
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 space-y-2 md:space-y-3">
+                      <p className="text-sm md:text-base text-gray-700 font-medium">
                         Organisme agréé par l'État chargé d'accompagner la formation professionnelle.
                       </p>
-                      <p className="text-gray-700 text-sm">
+                      <p className="text-xs md:text-sm text-gray-700">
                         Ces opérateurs de compétences ont pour missions de financer l'apprentissage, d'aider les branches à construire les certifications professionnelles et d'accompagner les PME pour définir leurs besoins.
                       </p>
                     </div>
                   </div>
 
-                  <div className="max-w-2xl mx-auto space-y-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-blue-900 mb-3">
+                  <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Avez vous déjà un compte OPCO ?
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                         <option value="oui">Oui</option>
                         <option value="non">Non</option>
                       </select>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         De quelle OPCO dépend la société ?
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                         <option value="afdas">OPCO AFDAS</option>
                         <option value="akto">OPCO AKTO</option>
@@ -4182,124 +4202,124 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       </select>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Nom de la société <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={nomSociete}
                         onChange={(e) => setNomSociete(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Nom de la société"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Siret / Siren <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={siretSiren}
                         onChange={(e) => setSiretSiren(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Siret / Siren"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Adresse <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={adresse}
                         onChange={(e) => setAdresse(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Adresse"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Ville <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={ville}
                         onChange={(e) => setVille(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Ville"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Code postal <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={codePostal}
                         onChange={(e) => setCodePostal(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Code postal"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Nom & prénom du gérant <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         value={nomPrenomGerant}
                         onChange={(e) => setNomPrenomGerant(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Nom & prénom du gérant"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Téléphone <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="tel"
                         value={telephone}
                         onChange={(e) => setTelephone(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Téléphone"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="block text-sm font-semibold text-blue-900 mb-3">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         E-mail <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="E-mail"
                       />
                     </div>
 
-                    <div className="border-t border-blue-200 pt-6">
-                      <p className="text-sm font-semibold text-blue-900 mb-4">
+                    <div className="border-t border-blue-200 pt-4 md:pt-6">
+                      <p className="text-xs md:text-sm font-semibold text-blue-900 mb-3 md:mb-4">
                         Merci de fournir les informations concernant le(s) salarié(s)
                       </p>
-                      <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center gap-2">
-                        <span className="text-xl">+</span> AJOUTER
+                      <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm md:text-base">
+                        <span className="text-lg md:text-xl">+</span> AJOUTER
                       </button>
                     </div>
 
-                    <div className="pt-4">
+                    <div className="pt-3 md:pt-4">
                       <button
                         onClick={handleSubmit}
                         disabled={isGeneratingPDF}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm md:text-base">
                         {isGeneratingPDF ? 'Génération du PDF en cours...' : 'Valider'}
                       </button>
                     </div>
@@ -4310,56 +4330,56 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'reglement' && (
-            <div className="max-w-4xl mx-auto py-8">
-              <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-blue-100">
-                <div className="bg-gradient-to-r from-blue-50 to-sky-100 px-8 py-6 border-b border-blue-200">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                      <FileCheck className="w-6 h-6 text-white" />
+            <div className="max-w-4xl mx-auto py-4 md:py-8">
+              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl overflow-hidden border border-blue-100">
+                <div className="bg-gradient-to-r from-blue-50 to-sky-100 px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                      <FileCheck className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
-                      <p className="text-sm text-gray-700 font-semibold">Dossier de prise en charge</p>
+                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
+                      <p className="text-xs md:text-sm text-gray-700 font-semibold">Dossier de prise en charge</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="relative bg-gradient-to-br from-blue-600 via-sky-600 to-cyan-700 h-48 overflow-hidden">
+                <div className="relative bg-gradient-to-br from-blue-600 via-sky-600 to-cyan-700 h-32 md:h-48 overflow-hidden">
                   <div className="absolute inset-0 bg-black opacity-10"></div>
-                  <div className="absolute inset-0 flex items-center justify-center px-8">
+                  <div className="absolute inset-0 flex items-center justify-center px-4 md:px-8">
                     <div className="text-center">
-                      <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-                        <Building2 className="w-8 h-8 text-white" />
+                      <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-full mb-2 md:mb-4">
+                        <Building2 className="w-6 h-6 md:w-8 md:h-8 text-white" />
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-2">Procédure de règlement</h3>
-                      <p className="text-blue-50 text-lg font-medium max-w-2xl">
+                      <h3 className="text-lg md:text-2xl font-bold text-white mb-1 md:mb-2">Procédure de règlement</h3>
+                      <p className="text-blue-50 text-sm md:text-lg font-medium max-w-2xl">
                         Veuillez compléter les informations ci-dessous pour finaliser votre prise en charge
                       </p>
                     </div>
                   </div>
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-                  <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
+                  <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-white/5 rounded-full -mr-24 md:-mr-32 -mt-24 md:-mt-32"></div>
+                  <div className="absolute bottom-0 left-0 w-36 h-36 md:w-48 md:h-48 bg-white/5 rounded-full -ml-18 md:-ml-24 -mb-18 md:-mb-24"></div>
                 </div>
 
-                <div className="px-8 py-10">
-                  <div className="mb-8">
-                    <div className="flex items-center gap-3 mb-6">
+                <div className="px-4 md:px-8 py-6 md:py-10">
+                  <div className="mb-6 md:mb-8">
+                    <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
-                      <h3 className="text-blue-700 font-bold text-lg tracking-wide uppercase">
+                      <h3 className="text-blue-700 font-bold text-sm md:text-lg tracking-wide uppercase">
                         Procédure de prise en charge
                       </h3>
                       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
                     </div>
                   </div>
 
-                  <div className="max-w-2xl mx-auto space-y-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-blue-900 mb-3">
-                        <User className="w-4 h-4 text-blue-600" />
+                  <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
+                        <User className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                         Nombre de salariés
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-xs md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Sélectionnez le nombre de salariés</option>
                         <option value="5">Jusqu'à 5 salariés (Rapport DUERP + Attestation de conformité) 830 € HT</option>
                         <option value="10">Jusqu'à 10 salariés (Rapport DUERP + Attestation de conformité) 1000 € HT</option>
@@ -4370,40 +4390,40 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       </select>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
-                      <label className="flex items-center gap-2 text-sm font-semibold text-blue-900 mb-3">
-                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
+                        <svg className="w-3 h-3 md:w-4 md:h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                         </svg>
                         Méthode de règlement
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Choisissez votre mode de paiement</option>
                         <option value="cb-1fois">Règlement CB en 1 fois</option>
                         <option value="cb-3fois">Règlement CB en 3 fois sans frais</option>
                       </select>
                     </div>
 
-                    <div className="pt-4">
-                      <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
-                        <FileCheck className="w-5 h-5" />
+                    <div className="pt-3 md:pt-4">
+                      <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base">
+                        <FileCheck className="w-4 h-4 md:w-5 md:h-5" />
                         Valider le règlement de prise en charge
                       </button>
                     </div>
                   </div>
 
-                  <div className="mt-10 pt-8 border-t border-gray-200">
-                    <div className="max-w-2xl mx-auto bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
-                      <div className="flex gap-4">
+                  <div className="mt-6 md:mt-10 pt-6 md:pt-8 border-t border-gray-200">
+                    <div className="max-w-2xl mx-auto bg-blue-50 border-l-4 border-blue-500 p-4 md:p-6 rounded-r-lg">
+                      <div className="flex gap-3 md:gap-4">
                         <div className="flex-shrink-0">
-                          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 md:w-6 md:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </div>
                         <div>
-                          <h4 className="text-blue-900 font-bold mb-2">Informations importantes</h4>
-                          <p className="text-sm text-blue-800 leading-relaxed">
+                          <h4 className="text-blue-900 font-bold mb-1 md:mb-2 text-sm md:text-base">Informations importantes</h4>
+                          <p className="text-xs md:text-sm text-blue-800 leading-relaxed">
                             Une fois le règlement de la prise en charge effectué, vous recevrez <strong>l'attestation</strong> à présenter lors d'un contrôle, ainsi qu'un <strong>rendez-vous téléphonique</strong> avec le service expertise pour remplir le rapport conforme, suivi du <strong>formulaire de remboursement</strong>.
                           </p>
                         </div>
@@ -4416,49 +4436,49 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'password' && (
-            <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-blue-100">
-              <div className="flex items-center gap-4 mb-8 pb-6 border-b border-blue-100">
-                <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                  <Lock className="w-7 h-7 text-white" />
+            <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
+              <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
+                <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                  <Lock className="w-5 h-5 md:w-7 md:h-7 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Changer votre mot de passe</h2>
-                  <p className="text-sm text-gray-600 font-medium mt-1">Bienvenue, {client.full_name}</p>
+                  <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Changer votre mot de passe</h2>
+                  <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">Bienvenue, {client.full_name}</p>
                 </div>
               </div>
-              <div className="max-w-md space-y-5">
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+              <div className="max-w-md space-y-4 md:space-y-5">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Mot de passe actuel
                   </label>
                   <input
                     type="password"
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                    className="w-full px-3 md:px-4 py-2.5 md:py-3 border-2 border-blue-200 rounded-lg bg-white text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
                     placeholder="Entrez votre mot de passe actuel"
                   />
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Nouveau mot de passe
                   </label>
                   <input
                     type="password"
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                    className="w-full px-3 md:px-4 py-2.5 md:py-3 border-2 border-blue-200 rounded-lg bg-white text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
                     placeholder="Entrez votre nouveau mot de passe"
                   />
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-5 rounded-xl border border-blue-200">
-                  <label className="block text-sm font-semibold text-blue-900 mb-2">
+                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Confirmer le nouveau mot de passe
                   </label>
                   <input
                     type="password"
-                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
+                    className="w-full px-3 md:px-4 py-2.5 md:py-3 border-2 border-blue-200 rounded-lg bg-white text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
                     placeholder="Confirmez votre nouveau mot de passe"
                   />
                 </div>
                 <button
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 px-6 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 md:py-4 px-5 md:px-6 rounded-lg md:rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] text-sm md:text-base"
                 >
                   Modifier le mot de passe
                 </button>
@@ -4467,124 +4487,124 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'dashboard' && (
-            <div className="grid lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                    <User className="w-6 h-6 text-white" />
+            <div className="grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            <div className="lg:col-span-2 space-y-4 md:space-y-6">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 lg:p-8">
+                <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg md:rounded-xl flex items-center justify-center">
+                    <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">Mes informations</h3>
+                  <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Mes informations</h3>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                    <User className="w-5 h-5 text-emerald-600 mt-0.5" />
+                <div className="space-y-3 md:space-y-4">
+                  <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
+                    <User className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-500">Nom complet</p>
-                      <p className="text-lg font-semibold text-gray-900">{client.full_name}</p>
+                      <p className="text-xs md:text-sm font-medium text-gray-500">Nom complet</p>
+                      <p className="text-sm md:text-base lg:text-lg font-semibold text-gray-900">{client.full_name}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                    <Mail className="w-5 h-5 text-emerald-600 mt-0.5" />
+                  <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
+                    <Mail className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-500">Email</p>
-                      <p className="text-lg font-semibold text-gray-900">{client.email}</p>
+                      <p className="text-xs md:text-sm font-medium text-gray-500">Email</p>
+                      <p className="text-sm md:text-base lg:text-lg font-semibold text-gray-900">{client.email}</p>
                     </div>
                   </div>
 
                   {client.phone && (
-                    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                      <Phone className="w-5 h-5 text-emerald-600 mt-0.5" />
+                    <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
+                      <Phone className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 mt-0.5" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-500">Téléphone</p>
-                        <p className="text-lg font-semibold text-gray-900">{client.phone}</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-500">Téléphone</p>
+                        <p className="text-sm md:text-base lg:text-lg font-semibold text-gray-900">{client.phone}</p>
                       </div>
                     </div>
                   )}
 
                   {client.company_name && (
-                    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                      <FileText className="w-5 h-5 text-emerald-600 mt-0.5" />
+                    <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
+                      <FileText className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 mt-0.5" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-500">Entreprise</p>
-                        <p className="text-lg font-semibold text-gray-900">{client.company_name}</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-500">Entreprise</p>
+                        <p className="text-sm md:text-base lg:text-lg font-semibold text-gray-900">{client.company_name}</p>
                       </div>
                     </div>
                   )}
 
                   {client.address && (
-                    <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                      <MapPin className="w-5 h-5 text-emerald-600 mt-0.5" />
+                    <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
+                      <MapPin className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 mt-0.5" />
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-500">Adresse</p>
-                        <p className="text-lg font-semibold text-gray-900">{client.address}</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-500">Adresse</p>
+                        <p className="text-sm md:text-base lg:text-lg font-semibold text-gray-900">{client.address}</p>
                       </div>
                     </div>
                   )}
 
-                  <div className="flex items-start gap-4 p-4 bg-gray-50 rounded-lg">
-                    <Calendar className="w-5 h-5 text-emerald-600 mt-0.5" />
+                  <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 bg-gray-50 rounded-lg">
+                    <Calendar className="w-4 h-4 md:w-5 md:h-5 text-emerald-600 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-500">Client depuis le</p>
-                      <p className="text-lg font-semibold text-gray-900">{formatDate(client.created_at)}</p>
+                      <p className="text-xs md:text-sm font-medium text-gray-500">Client depuis le</p>
+                      <p className="text-sm md:text-base lg:text-lg font-semibold text-gray-900">{formatDate(client.created_at)}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {client.project_description && (
-                <div className="bg-white rounded-2xl shadow-lg p-8">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                      <FileText className="w-6 h-6 text-white" />
+                <div className="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 lg:p-8">
+                  <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg md:rounded-xl flex items-center justify-center">
+                      <FileText className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Description du projet</h3>
+                    <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900">Description du projet</h3>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">{client.project_description}</p>
+                  <p className="text-sm md:text-base text-gray-700 leading-relaxed">{client.project_description}</p>
                 </div>
               )}
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {client.assigned_agent_name && (
-                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg p-8 text-white">
-                  <h3 className="text-xl font-bold mb-4">Votre agent</h3>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                      <User className="w-6 h-6 text-white" />
+                <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 lg:p-8 text-white">
+                  <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">Votre agent</h3>
+                  <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-full flex items-center justify-center">
+                      <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
                     <div>
-                      <p className="text-sm text-blue-100">Agent assigné</p>
-                      <p className="text-xl font-bold">{client.assigned_agent_name}</p>
+                      <p className="text-xs md:text-sm text-blue-100">Agent assigné</p>
+                      <p className="text-base md:text-lg lg:text-xl font-bold">{client.assigned_agent_name}</p>
                     </div>
                   </div>
-                  <p className="text-blue-100 text-sm">
+                  <p className="text-blue-100 text-xs md:text-sm">
                     Votre agent personnel vous accompagne dans votre projet de rénovation énergétique.
                   </p>
                 </div>
               )}
 
-              <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-8 text-white">
-                <h3 className="text-xl font-bold mb-4">Statut du compte</h3>
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-3 h-3 bg-green-300 rounded-full animate-pulse" />
-                  <span className="text-lg font-semibold capitalize">{client.status}</span>
+              <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 lg:p-8 text-white">
+                <h3 className="text-lg md:text-xl font-bold mb-3 md:mb-4">Statut du compte</h3>
+                <div className="flex items-center gap-2 mb-4 md:mb-6">
+                  <div className="w-2.5 h-2.5 md:w-3 md:h-3 bg-green-300 rounded-full animate-pulse" />
+                  <span className="text-base md:text-lg font-semibold capitalize">{client.status}</span>
                 </div>
-                <p className="text-emerald-100 text-sm">
+                <p className="text-emerald-100 text-xs md:text-sm">
                   Votre compte est actif. Vous pouvez nous contacter à tout moment pour toute question.
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Besoin d'aide ?</h3>
-                <p className="text-gray-600 mb-6">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 lg:p-8">
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">Besoin d'aide ?</h3>
+                <p className="text-xs md:text-sm text-gray-600 mb-4 md:mb-6">
                   Notre équipe est là pour vous accompagner dans votre projet de rénovation énergétique.
                 </p>
                 <a
                   href="mailto:contact@sjrenovpro.fr"
-                  className="block w-full text-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200"
+                  className="block w-full text-center bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-2.5 md:py-3 px-4 md:px-6 rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 text-sm md:text-base"
                 >
                   Nous contacter
                 </a>
@@ -4595,45 +4615,45 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
 
           {activeTab === 'chat' && (
             <div className="max-w-5xl mx-auto">
-              <div className="space-y-6">
-                <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-blue-100">
-                  <div className="flex items-center justify-between mb-6 pb-6 border-b border-blue-100">
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg">
-                        <MessageSquare className="w-7 h-7 text-white" />
+              <div className="space-y-4 md:space-y-6">
+                <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6 lg:p-8 border border-blue-100">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 pb-4 md:pb-6 border-b border-blue-100 gap-3">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                        <MessageSquare className="w-5 h-5 md:w-7 md:h-7 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Chat Client - Vendeur</h2>
-                        <p className="text-sm text-gray-600 font-medium mt-1">
+                        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Chat Client - Vendeur</h2>
+                        <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">
                           {client.vendeur && client.vendeur !== 'Super Admin'
                             ? `Communiquez avec ${client.vendeur}`
                             : 'Communiquez avec votre conseiller'}
                         </p>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-4 py-2 rounded-xl border border-green-200 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-sm font-semibold text-green-700">En ligne</span>
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-green-200 flex items-center gap-2 self-start md:self-auto">
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs md:text-sm font-semibold text-green-700">En ligne</span>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 mb-6 border border-blue-200">
-                    <div className="flex items-start gap-4">
-                      <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full shadow-lg flex-shrink-0">
-                        <User className="w-6 h-6 text-white" />
+                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 border border-blue-200">
+                    <div className="flex items-start gap-3 md:gap-4">
+                      <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full shadow-lg flex-shrink-0">
+                        <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-blue-900 mb-1">
+                        <p className="text-xs md:text-sm font-semibold text-blue-900 mb-1">
                           {client.vendeur && client.vendeur !== 'Super Admin'
                             ? 'Votre vendeur attitré'
                             : 'Votre conseiller'}
                         </p>
-                        <p className="text-2xl font-bold text-blue-800 mb-2">
+                        <p className="text-lg md:text-xl lg:text-2xl font-bold text-blue-800 mb-2">
                           {client.vendeur && client.vendeur !== 'Super Admin'
                             ? client.vendeur
                             : 'Cabinet FPE'}
                         </p>
-                        <p className="text-sm text-blue-700">
+                        <p className="text-xs md:text-sm text-blue-700">
                           {client.vendeur && client.vendeur !== 'Super Admin'
                             ? 'Votre vendeur est à votre disposition pour répondre à toutes vos questions en temps réel.'
                             : 'Notre équipe est à votre disposition pour répondre à toutes vos questions en temps réel.'}
@@ -4642,7 +4662,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-6 mb-6 text-white shadow-lg">
+                  <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 text-white shadow-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <MessageSquare className="w-6 h-6" />
                       <h3 className="text-xl font-bold">

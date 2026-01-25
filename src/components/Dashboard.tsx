@@ -35,7 +35,9 @@ import {
   Monitor,
   MessageSquare,
   Tag,
-  FileText
+  FileText,
+  Menu,
+  X
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -84,6 +86,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire'>('bulk-import');
   const [selectedClientForChat, setSelectedClientForChat] = React.useState<string | number | null>(null);
   const [selectedSellerForChat, setSelectedSellerForChat] = React.useState<string | null>(null);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   const pendingRegistrations = registrations.filter(reg => reg.statut === 'en_attente');
 
@@ -95,6 +98,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleOpenChatWithSeller = (sellerId: string) => {
     setSelectedSellerForChat(sellerId);
     setActiveTab('chat-vendeur');
+  };
+
+  const handleTabChange = (tab: typeof activeTab) => {
+    setActiveTab(tab);
+    setIsMobileSidebarOpen(false);
   };
 
   const stats = [
@@ -118,6 +126,12 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
             </div>
 
             <div className="flex items-center gap-4">
@@ -148,7 +162,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-6">
+      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-6 w-full box-border overflow-x-hidden">
         {/* Welcome Section */}
         <div className="mb-6 bg-gradient-to-r from-red-600 via-orange-600 to-red-700 rounded-2xl shadow-2xl p-8 border border-red-200">
           <div className="flex items-center gap-4">
@@ -183,13 +197,36 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Main Content with Sidebar */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 relative w-full box-border overflow-hidden lg:overflow-visible">
+          {/* Mobile Sidebar Overlay */}
+          {isMobileSidebarOpen && (
+            <div
+              className="lg:hidden fixed inset-0 bg-black/50 z-40"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+          )}
+
           {/* Sidebar Navigation */}
-          <aside className="w-52 flex-shrink-0">
-            <div className="bg-white rounded-xl shadow-sm p-3">
+          <aside className={`
+            w-52 flex-shrink-0 bg-white rounded-xl shadow-sm
+            lg:static lg:block
+            fixed top-0 left-0 h-full z-50
+            transition-transform duration-300 ease-in-out
+            ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+          `}>
+            <div className="p-3 h-full overflow-y-auto">
+              <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+                <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+                <button
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
               <nav className="space-y-1">
                 <button
-                  onClick={() => setActiveTab('bulk-import')}
+                  onClick={() => handleTabChange('bulk-import')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'bulk-import'
                       ? 'bg-blue-50 text-blue-700'
@@ -200,7 +237,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Import de masse
                 </button>
                 <button
-                  onClick={() => setActiveTab('leads-tab')}
+                  onClick={() => handleTabChange('leads-tab')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'leads-tab'
                       ? 'bg-blue-50 text-blue-700'
@@ -211,7 +248,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Clients
                 </button>
                 <button
-                  onClick={() => setActiveTab('leads')}
+                  onClick={() => handleTabChange('leads')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'leads'
                       ? 'bg-blue-50 text-blue-700'
@@ -222,7 +259,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Gestionnaire de leads
                 </button>
                 <button
-                  onClick={() => setActiveTab('sellers')}
+                  onClick={() => handleTabChange('sellers')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'sellers'
                       ? 'bg-blue-50 text-blue-700'
@@ -233,7 +270,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Gestionnaire vendeur
                 </button>
                 <button
-                  onClick={() => setActiveTab('admins')}
+                  onClick={() => handleTabChange('admins')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'admins'
                       ? 'bg-blue-50 text-blue-700'
@@ -244,7 +281,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Info Admin
                 </button>
                 <button
-                  onClick={() => setActiveTab('users-monitor')}
+                  onClick={() => handleTabChange('users-monitor')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'users-monitor'
                       ? 'bg-blue-50 text-blue-700'
@@ -255,7 +292,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Suivi des connexions
                 </button>
                 <button
-                  onClick={() => setActiveTab('all-accounts')}
+                  onClick={() => handleTabChange('all-accounts')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'all-accounts'
                       ? 'bg-blue-50 text-blue-700'
@@ -266,7 +303,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Tous les comptes
                 </button>
                 <button
-                  onClick={() => setActiveTab('chat')}
+                  onClick={() => handleTabChange('chat')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'chat'
                       ? 'bg-blue-50 text-blue-700'
@@ -277,7 +314,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Chat Client
                 </button>
                 <button
-                  onClick={() => setActiveTab('chat-vendeur')}
+                  onClick={() => handleTabChange('chat-vendeur')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'chat-vendeur'
                       ? 'bg-blue-50 text-blue-700'
@@ -288,7 +325,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Chat Vendeur
                 </button>
                 <button
-                  onClick={() => setActiveTab('statuses')}
+                  onClick={() => handleTabChange('statuses')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'statuses'
                       ? 'bg-blue-50 text-blue-700'
@@ -299,7 +336,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                   Liste des Statuts
                 </button>
                 <button
-                  onClick={() => setActiveTab('argumentaire')}
+                  onClick={() => handleTabChange('argumentaire')}
                   className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                     activeTab === 'argumentaire'
                       ? 'bg-blue-50 text-blue-700'
@@ -314,7 +351,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           </aside>
 
           {/* Main Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0 w-full lg:w-auto overflow-x-hidden">
             {activeTab === 'bulk-import' && (
               <BulkImport
                 leads={bulkLeads}

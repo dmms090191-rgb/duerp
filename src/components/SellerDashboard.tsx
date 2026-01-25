@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, LogOut, User, Bell, Settings, MessageSquare, ArrowLeft, UserCheck, Edit, Calendar, Phone, Mail, Briefcase, Building2, Hash, FileText, Shield } from 'lucide-react';
+import { ShoppingBag, LogOut, User, Bell, Settings, MessageSquare, ArrowLeft, UserCheck, Edit, Calendar, Phone, Mail, Briefcase, Building2, Hash, FileText, Shield, Menu, X } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import SellerChatList from './SellerChatList';
 import SellerWorkChat from './SellerWorkChat';
@@ -32,6 +32,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
   const [activeTab, setActiveTab] = React.useState<'clients' | 'chat' | 'chat-travail' | 'argumentaire'>('clients');
   const [clients, setClients] = React.useState<Client[]>([]);
   const [loadingClients, setLoadingClients] = React.useState(true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   React.useEffect(() => {
     Object.keys(localStorage).forEach(key => {
@@ -41,6 +42,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
     });
     fetchClients();
   }, []);
+
+  const handleTabChange = (tab: typeof activeTab) => {
+    setActiveTab(tab);
+    setIsMobileSidebarOpen(false);
+  };
 
   const fetchClients = async () => {
     try {
@@ -73,6 +79,12 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
               {sellerData.isAdminViewing && onReturnToAdmin && (
                 <button
                   onClick={onReturnToAdmin}
@@ -122,9 +134,33 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
         </div>
       </header>
 
-      <div className="flex h-screen">
-        <aside className="w-64 bg-white border-r border-gray-200">
-          <div className="p-6">
+      <div className="flex h-screen relative w-full box-border overflow-hidden lg:overflow-visible">
+        {/* Mobile Sidebar Overlay */}
+        {isMobileSidebarOpen && (
+          <div
+            className="lg:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          />
+        )}
+
+        <aside className={`
+          w-64 bg-white border-r border-gray-200
+          lg:static lg:block
+          fixed top-0 left-0 h-full z-50
+          transition-transform duration-300 ease-in-out
+          ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
+          <div className="p-6 h-full overflow-y-auto">
+            <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
+              <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+              <button
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
             <div className="mb-8">
               <h2 className="text-lg font-bold text-gray-900 mb-1">
                 {sellerData.prenom} {sellerData.nom}
@@ -136,7 +172,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
             <nav className="space-y-2">
               <button
-                onClick={() => setActiveTab('clients')}
+                onClick={() => handleTabChange('clients')}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === 'clients'
                     ? 'bg-green-50 text-green-700'
@@ -147,7 +183,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 Clients
               </button>
               <button
-                onClick={() => setActiveTab('chat')}
+                onClick={() => handleTabChange('chat')}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === 'chat'
                     ? 'bg-green-50 text-green-700'
@@ -158,7 +194,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 Chat Client - Vendeur
               </button>
               <button
-                onClick={() => setActiveTab('chat-travail')}
+                onClick={() => handleTabChange('chat-travail')}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === 'chat-travail'
                     ? 'bg-green-50 text-green-700'
@@ -169,7 +205,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 Chat Travail
               </button>
               <button
-                onClick={() => setActiveTab('argumentaire')}
+                onClick={() => handleTabChange('argumentaire')}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   activeTab === 'argumentaire'
                     ? 'bg-green-50 text-green-700'
@@ -199,8 +235,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
           </div>
         </aside>
 
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          <div className="p-8">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50 min-w-0 w-full lg:w-auto">
+          <div className="p-4 sm:p-6 lg:p-8">
             {activeTab === 'clients' && (
               <div>
                 <div className="mb-6">
@@ -217,9 +253,9 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
                   </div>
                 ) : (
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-                    <div className="overflow-x-auto">
-                      <table className="w-full table-auto">
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 sm:p-4">
+                    <div className="overflow-x-auto -mx-2 sm:mx-0 w-full max-w-full">
+                      <table className="w-full table-auto min-w-max">
                         <thead>
                           <tr className="border-b border-gray-200">
                             <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">

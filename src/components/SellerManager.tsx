@@ -180,8 +180,8 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <div className="w-64 bg-white border-r border-gray-200 p-6">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-50">
+      <div className="w-full md:w-64 bg-white border-r border-gray-200 p-4 md:p-6">
         <div className="space-y-2">
           <button
             onClick={() => setActiveTab('add')}
@@ -208,7 +208,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           </button>
         </div>
 
-        <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg border border-blue-100">
+        <div className="mt-4 md:mt-8 p-4 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg border border-blue-100">
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Total sellers</span>
             <span className="font-medium text-gray-900">{sellers.length}</span>
@@ -216,23 +216,23 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
         </div>
       </div>
 
-      <div className="flex-1 p-6">
-        <div className="max-w-4xl">
-          <div className="mb-8">
+      <div className="flex-1 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
+        <div className="w-full">
+          <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900">Gestionnaire de Vendeurs</h1>
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900">Gestionnaire de Vendeurs</h1>
             </div>
-            <p className="text-gray-600">Gérez vos vendeurs et leurs accès</p>
+            <p className="text-sm md:text-base text-gray-600">Gérez vos vendeurs et leurs accès</p>
           </div>
 
           {activeTab === 'add' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
               <div className="flex items-center gap-3 mb-6">
-                <Plus className="w-6 h-6 text-green-600" />
-                <h2 className="text-2xl font-semibold text-gray-900">Ajouter un vendeur</h2>
+                <Plus className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
+                <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Ajouter un vendeur</h2>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -387,8 +387,8 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   </button>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[640px]">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left">

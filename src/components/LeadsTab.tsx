@@ -644,7 +644,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto border border-gray-300 rounded">
+          <div className="overflow-x-auto border border-gray-300 rounded w-full max-w-full">
             <table className="w-full border-collapse table-auto">
               <thead>
                 <tr className="bg-blue-50 border-b border-gray-300">
@@ -840,10 +840,10 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
       </div>
 
       {selectedLeadDetails && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-white uppercase">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded shadow-xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-3 sm:px-6 py-3 flex items-center justify-between">
+              <h2 className="text-base sm:text-xl font-bold text-white uppercase">
                 {selectedLeadDetails.status?.name || 'CONDUIT'}
               </h2>
               <div className="flex items-center gap-2">
@@ -868,11 +868,11 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
             </div>
 
-            <div className="border-b border-gray-300">
-              <div className="flex gap-2 px-6">
+            <div className="border-b border-gray-300 overflow-x-auto">
+              <div className="flex gap-1 sm:gap-2 px-3 sm:px-6 min-w-max">
                 <button
                   onClick={() => setActiveTab('information')}
-                  className={`px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                     activeTab === 'information'
                       ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
                       : 'text-gray-600 hover:text-blue-700 bg-gray-50'
@@ -882,7 +882,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 </button>
                 <button
                   onClick={() => setActiveTab('mail')}
-                  className={`px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                     activeTab === 'mail'
                       ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
                       : 'text-gray-600 hover:text-blue-700 bg-gray-50'
@@ -892,7 +892,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 </button>
                 <button
                   onClick={() => setActiveTab('liste-commentaire')}
-                  className={`px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                     activeTab === 'liste-commentaire'
                       ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
                       : 'text-gray-600 hover:text-blue-700 bg-gray-50'
@@ -902,7 +902,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 </button>
                 <button
                   onClick={() => setActiveTab('panel-client')}
-                  className={`px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
                     activeTab === 'panel-client'
                       ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
                       : 'text-gray-600 hover:text-blue-700 bg-gray-50'
@@ -913,11 +913,11 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
             </div>
 
-            <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-180px)] bg-gray-50">
+            <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gray-50">
               {/* Onglet Information */}
               {activeTab === 'information' && (
                 <>
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-4 bg-white p-6 rounded border border-gray-300">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-white p-4 sm:p-6 rounded border border-gray-300">
 
                 {/* Colonne Gauche */}
                 <div className="space-y-4">
@@ -1142,11 +1142,11 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
 
               {/* Bouton Enregistrer */}
-              <div className="flex justify-end gap-3">
+              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
                 <button
                   onClick={handleSaveLead}
                   disabled={saving}
-                  className="px-6 py-2.5 text-sm bg-green-600 text-white border border-green-600 rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-sm"
+                  className="w-full sm:w-auto px-6 py-2.5 text-sm bg-green-600 text-white border border-green-600 rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-sm"
                 >
                   {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
                 </button>
@@ -1156,7 +1156,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                     setEditedLead(null);
                     setActiveTab('information');
                   }}
-                  className="px-6 py-2.5 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded hover:bg-gray-200 transition-colors font-semibold"
+                  className="w-full sm:w-auto px-6 py-2.5 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded hover:bg-gray-200 transition-colors font-semibold"
                 >
                   Annuler
                 </button>
@@ -1166,8 +1166,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
               {/* Onglet Mail */}
               {activeTab === 'mail' && (
-                <div className="bg-white p-6 rounded border border-gray-300">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Envoyer un Mail</h3>
+                <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Envoyer un Mail</h3>
 
                   <div className="space-y-3">
                     <button
@@ -1205,11 +1205,11 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
               {/* Onglet Liste commentaire */}
               {activeTab === 'liste-commentaire' && (
-                <div className="bg-white p-6 rounded border border-gray-300">
-                  <h3 className="text-lg font-bold text-gray-800 mb-4">Liste des commentaires</h3>
+                <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Liste des commentaires</h3>
 
                   <div className="space-y-4">
-                    <div className="flex gap-4 pb-4 border-b border-gray-200">
+                    <div className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                           <Users className="w-5 h-5 text-blue-600" />
@@ -1224,7 +1224,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                       </div>
                     </div>
 
-                    <div className="flex gap-4 pb-4 border-b border-gray-200">
+                    <div className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
                           <Calendar className="w-5 h-5 text-green-600" />
@@ -1239,7 +1239,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                       </div>
                     </div>
 
-                    <div className="flex gap-4 pb-4 border-b border-gray-200">
+                    <div className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200">
                       <div className="flex-shrink-0">
                         <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
                           <Mail className="w-5 h-5 text-purple-600" />
@@ -1263,28 +1263,28 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
               {/* Onglet Panel client */}
               {activeTab === 'panel-client' && (
-                <div className="bg-white p-6 rounded border border-gray-300">
-                  <h3 className="text-lg font-bold text-gray-800 mb-6">Gestion du compte client</h3>
+                <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">Gestion du compte client</h3>
 
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     {/* Identifiants de connexion */}
-                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-6">
-                      <h4 className="font-bold text-blue-900 mb-4 text-lg flex items-center gap-2">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-4 sm:p-6">
+                      <h4 className="font-bold text-blue-900 mb-4 text-base sm:text-lg flex items-center gap-2">
                         <LogIn className="w-5 h-5" />
                         Identifiants de connexion
                       </h4>
 
                       <div className="space-y-4">
-                        <div className="bg-white rounded-lg p-4 border border-blue-200">
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
                           <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
                             Email
                           </label>
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                             <input
                               type="email"
                               value={editedLead?.email || ''}
                               onChange={(e) => handleFieldChange('email', e.target.value)}
-                              className="flex-1 px-4 py-3 text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                               placeholder="email@exemple.com"
                             />
                             <button
@@ -1295,24 +1295,25 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                                 }
                               }}
                               disabled={!editedLead?.email}
-                              className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-4 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                               title="Copier l'email"
                             >
-                              <Copy className="w-5 h-5" />
+                              <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <span className="sm:hidden">Copier</span>
                             </button>
                           </div>
                         </div>
 
-                        <div className="bg-white rounded-lg p-4 border border-blue-200">
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
                           <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
                             Identifiant (SIRET)
                           </label>
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                             <input
                               type="text"
                               value={editedLead?.siret || ''}
                               onChange={(e) => handleFieldChange('siret', e.target.value)}
-                              className="flex-1 px-4 py-3 text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                               placeholder="Numéro SIRET"
                             />
                             <button
@@ -1323,50 +1324,55 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                                 }
                               }}
                               disabled={!editedLead?.siret}
-                              className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-4 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                               title="Copier le SIRET"
                             >
-                              <Copy className="w-5 h-5" />
+                              <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
+                              <span className="sm:hidden">Copier</span>
                             </button>
                           </div>
                         </div>
 
-                        <div className="bg-white rounded-lg p-4 border border-blue-200">
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
                           <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
                             Mot de passe (Code à 6 chiffres)
                           </label>
-                          <div className="flex items-center gap-3">
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                             <input
                               type="text"
                               value={editedLead?.client_password || ''}
                               onChange={(e) => handleFieldChange('client_password', e.target.value)}
-                              className="flex-1 px-4 py-3 text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg tracking-wider focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg tracking-wider focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                               placeholder="Code 6 chiffres"
                               maxLength={6}
                             />
-                            <button
-                              onClick={() => {
-                                if (editedLead?.client_password) {
-                                  navigator.clipboard.writeText(editedLead.client_password);
-                                  alert('Mot de passe copié!');
-                                }
-                              }}
-                              disabled={!editedLead?.client_password}
-                              className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Copier le mot de passe"
-                            >
-                              <Copy className="w-5 h-5" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                const newPassword = (Math.floor(Math.random() * 900000) + 100000).toString();
-                                handleFieldChange('client_password', newPassword);
-                              }}
-                              className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                              title="Générer un nouveau mot de passe"
-                            >
-                              🔄
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  if (editedLead?.client_password) {
+                                    navigator.clipboard.writeText(editedLead.client_password);
+                                    alert('Mot de passe copié!');
+                                  }
+                                }}
+                                disabled={!editedLead?.client_password}
+                                className="flex-1 sm:flex-none px-4 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                title="Copier le mot de passe"
+                              >
+                                <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
+                                <span className="sm:hidden">Copier</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const newPassword = (Math.floor(Math.random() * 900000) + 100000).toString();
+                                  handleFieldChange('client_password', newPassword);
+                                }}
+                                className="flex-1 sm:flex-none px-4 py-2 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                                title="Générer un nouveau mot de passe"
+                              >
+                                🔄
+                                <span className="sm:hidden">Générer</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -193,7 +193,7 @@ const AllAccountsList: React.FC = () => {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full max-w-full">
           <table className="w-full table-auto">
             <thead>
               <tr className="border-b border-gray-200">
