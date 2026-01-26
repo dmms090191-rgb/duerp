@@ -16,24 +16,28 @@ interface FormData {
 }
 
 const loadImageAsBase64 = async (url: string): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'Anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      } else {
-        reject(new Error('Failed to get canvas context'));
-      }
-    };
-    img.onerror = () => reject(new Error('Failed to load image'));
-    img.src = url;
-  });
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status}`);
+    }
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          resolve(reader.result as string);
+        } else {
+          reject(new Error('Failed to convert blob to base64'));
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read blob'));
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Error loading image:', error);
+    throw error;
+  }
 };
 
 export const generateDUERPPDF = async (formData: FormData, clientId: number): Promise<string | null> => {
@@ -45,11 +49,19 @@ export const generateDUERPPDF = async (formData: FormData, clientId: number): Pr
     const pageWidth = doc.internal.pageSize.getWidth();
     let yPosition = 20;
 
-    // Add logo
+    // Add logo - fetch from pdf_configuration
     try {
-      const logoUrl = '/kk.png';
-      const logoBase64 = await loadImageAsBase64(logoUrl);
-      doc.addImage(logoBase64, 'PNG', 15, yPosition, 45, 13);
+      const { data: pdfConfig, error: configError } = await supabase
+        .from('pdf_configuration')
+        .select('logo_url')
+        .maybeSingle();
+
+      if (!configError && pdfConfig?.logo_url) {
+        const logoBase64 = await loadImageAsBase64(pdfConfig.logo_url);
+        doc.addImage(logoBase64, 'PNG', 15, yPosition, 45, 13);
+      } else {
+        console.warn('No logo configured in pdf_configuration');
+      }
     } catch (error) {
       console.error('Error loading logo:', error);
     }

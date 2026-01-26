@@ -5,6 +5,7 @@ import { leadService } from '../services/leadService';
 import { statusService } from '../services/statusService';
 import { sellerService } from '../services/sellerService';
 import { Status } from '../types/Status';
+import ClientEmailSender from './ClientEmailSender';
 
 interface Seller {
   id: string;
@@ -982,6 +983,15 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
               <div className="flex items-center gap-3 text-sm text-gray-600 border-t pt-4">
                 <Calendar className="w-4 h-4" />
                 <span>Créé le {selectedLead.dateCreation}</span>
+              </div>
+
+              {/* Envoi d'emails */}
+              <div className="border-t pt-6">
+                <ClientEmailSender
+                  clientId={selectedLead.id}
+                  clientName={`${selectedLead.prenom} ${selectedLead.nom}`}
+                  clientEmail={selectedLead.email}
+                />
               </div>
 
               {/* Actions */}

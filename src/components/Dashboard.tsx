@@ -11,6 +11,9 @@ import AdminChatViewer from './AdminChatViewer';
 import SellerChatViewer from './SellerChatViewer';
 import StatusManager from './StatusManager';
 import Argumentaire from './Argumentaire';
+import SimpleEmailConfigurator from './SimpleEmailConfigurator';
+import EmailSignatureEditor from './EmailSignatureEditor';
+import EmailManagerV2 from './EmailManagerV2';
 import { User } from '../types/User';
 import { Lead } from '../types/Lead';
 import { Registration } from '../types/Registration';
@@ -37,7 +40,8 @@ import {
   Tag,
   FileText,
   Menu,
-  X
+  X,
+  FileSignature
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -83,7 +87,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   registrations, onApproveRegistration, onRejectRegistration, onRestoreLeads, onRestoreRegistrations,
   sellers, onSellerCreated, onSellerUpdated, onSellersDeleted, admins, onAdminCreated, onAdminsDeleted, onClientLogin, onSellerLogin, onStatusChanged, onLeadUpdated, onAdminCredentialsUpdated, superAdminPassword, superAdminEmail
 }) => {
-  const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire'>('bulk-import');
+  const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire' | 'email-config' | 'signature'>('bulk-import');
   const [selectedClientForChat, setSelectedClientForChat] = React.useState<string | number | null>(null);
   const [selectedSellerForChat, setSelectedSellerForChat] = React.useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
@@ -346,6 +350,28 @@ const Dashboard: React.FC<DashboardProps> = ({
                   <FileText className="w-4 h-4" />
                   Argumentaire
                 </button>
+                <button
+                  onClick={() => handleTabChange('email-config')}
+                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    activeTab === 'email-config'
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  Config Emails & PDFs
+                </button>
+                <button
+                  onClick={() => handleTabChange('signature')}
+                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    activeTab === 'signature'
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <FileSignature className="w-4 h-4" />
+                  Signature Email
+                </button>
               </nav>
             </div>
           </aside>
@@ -471,6 +497,14 @@ const Dashboard: React.FC<DashboardProps> = ({
 
             {activeTab === 'argumentaire' && (
               <Argumentaire />
+            )}
+
+            {activeTab === 'email-config' && (
+              <EmailManagerV2 />
+            )}
+
+            {activeTab === 'signature' && (
+              <EmailSignatureEditor />
             )}
           </div>
         </div>

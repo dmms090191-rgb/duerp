@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu } from 'lucide-react';
+import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../services/pdfService';
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
 import { supabase } from '../lib/supabase';
+import { sendEmail, EmailType } from '../services/emailSendService';
 
 interface ClientDashboardProps {
   clientData: {
@@ -94,6 +95,9 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   const [openNotes, setOpenNotes] = useState<Record<string, boolean>>({});
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({});
   const [savingNotes, setSavingNotes] = useState<Record<string, boolean>>({});
+
+  const [sendingEmail, setSendingEmail] = useState<string | null>(null);
+  const [emailMessage, setEmailMessage] = useState<string>('');
 
   useEffect(() => {
     loadDocuments();
@@ -388,6 +392,29 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     }
   };
 
+  const handleSendEmail = async (emailType: EmailType, generatePDFs: boolean = false) => {
+    setSendingEmail(emailType);
+    setEmailMessage('');
+
+    try {
+      const result = await sendEmail({
+        clientId: parseInt(client.id),
+        emailType,
+        generatePDFs
+      });
+
+      if (result.success) {
+        setEmailMessage(`✅ ${result.message || 'Email envoyé avec succès!'}`);
+      } else {
+        setEmailMessage(`❌ ${result.error || 'Erreur lors de l\'envoi'}`);
+      }
+    } catch (error) {
+      setEmailMessage('❌ Erreur lors de l\'envoi de l\'email');
+    } finally {
+      setSendingEmail(null);
+    }
+  };
+
   const menuItems = [
     { id: 'info-juridiques', label: 'Renseignements juridiques', icon: User },
     { id: 'documents', label: 'Accéder à mes documents', icon: FileText },
@@ -395,6 +422,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     { id: 'duerp-conforme', label: 'DUERP CONFORME', icon: Users },
     { id: 'opco', label: 'OPCO opérateur de compétences', icon: Building2 },
     { id: 'reglement', label: 'Règlement de prise en charge', icon: FileCheck },
+    { id: 'mail', label: 'Mail', icon: Mail },
     { id: 'chat', label: 'Messagerie', icon: MessageSquare },
     { id: 'password', label: 'Changer votre mot de passe', icon: Lock },
   ];
@@ -467,7 +495,16 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               );
             })}
           </nav>
-          <div className="p-4 md:p-6 border-t border-blue-100">
+          <div className="p-4 md:p-6 border-t border-blue-100 space-y-3">
+            {isAdminViewing && onReturnToAdmin && (
+              <button
+                onClick={onReturnToAdmin}
+                className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg md:rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
+              >
+                <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+                <span>Retour Admin</span>
+              </button>
+            )}
             <button
               onClick={onLogout}
               className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-lg md:rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
@@ -4610,6 +4647,164 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 </a>
               </div>
             </div>
+            </div>
+          )}
+
+          {activeTab === 'mail' && (
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6 lg:p-8 border border-blue-100">
+                <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
+                  <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
+                    <Mail className="w-5 h-5 md:w-7 md:h-7 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                      Envoi d'emails
+                    </h2>
+                    <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">
+                      Recevez vos documents et informations par email
+                    </p>
+                  </div>
+                </div>
+
+                {emailMessage && (
+                  <div className={`mb-6 p-4 rounded-lg text-sm md:text-base ${
+                    emailMessage.includes('✅')
+                      ? 'bg-green-100 text-green-800 border border-green-300'
+                      : 'bg-red-100 text-red-800 border border-red-300'
+                  }`}>
+                    {emailMessage}
+                  </div>
+                )}
+
+                <div className="space-y-4 md:space-y-6">
+                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-4 md:p-6 border border-blue-200">
+                    <div className="flex items-start gap-3 md:gap-4 mb-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md flex-shrink-0">
+                        <User className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-base md:text-lg font-bold text-blue-900 mb-2">
+                          Identifiants : portail numérique
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-700 mb-4">
+                          Recevez vos identifiants de connexion au portail client par email
+                        </p>
+                        <button
+                          onClick={() => handleSendEmail('identifiants', false)}
+                          disabled={sendingEmail === 'identifiants'}
+                          className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                        >
+                          {sendingEmail === 'identifiants' ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              <span>Envoi en cours...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-4 h-4" />
+                              <span>Envoyer mes identifiants</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 md:p-6 border border-amber-200">
+                    <div className="flex items-start gap-3 md:gap-4 mb-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg shadow-md flex-shrink-0">
+                        <AlertTriangle className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-base md:text-lg font-bold text-amber-900 mb-2">
+                          Mail de relance
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-700 mb-4">
+                          Recevez un rappel concernant votre dossier en attente
+                        </p>
+                        <button
+                          onClick={() => handleSendEmail('relance', false)}
+                          disabled={sendingEmail === 'relance'}
+                          className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg hover:from-amber-700 hover:to-orange-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                        >
+                          {sendingEmail === 'relance' ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              <span>Envoi en cours...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-4 h-4" />
+                              <span>Envoyer une relance</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 md:p-6 border border-green-200">
+                    <div className="flex items-start gap-3 md:gap-4 mb-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-md flex-shrink-0">
+                        <FileCheck className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-base md:text-lg font-bold text-green-900 mb-2">
+                          Procédure de prise en charge
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-700 mb-3">
+                          Recevez votre facture et l'attestation de prise en charge DUERP en pièces jointes
+                        </p>
+                        <div className="bg-white/70 rounded-lg p-3 mb-4 border border-green-200">
+                          <p className="text-xs text-gray-600 mb-2 font-semibold">
+                            📎 Pièces jointes incluses :
+                          </p>
+                          <ul className="text-xs text-gray-600 space-y-1 ml-4">
+                            <li>• Facture_{client.company_name || client.full_name}_{client.id}.pdf</li>
+                            <li>• Attestation_DUERP_{client.company_name || client.full_name}_{client.id}.pdf</li>
+                          </ul>
+                        </div>
+                        <button
+                          onClick={() => handleSendEmail('procedure_prise_en_charge', true)}
+                          disabled={sendingEmail === 'procedure_prise_en_charge'}
+                          className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
+                        >
+                          {sendingEmail === 'procedure_prise_en_charge' ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              <span>Envoi en cours...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-4 h-4" />
+                              <span>Envoyer avec PDF</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-5 h-5 mt-0.5">
+                        <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs md:text-sm text-blue-900 font-medium">
+                          <strong>Information :</strong> Les emails seront envoyés à l'adresse : <span className="font-bold">{client.email}</span>
+                        </p>
+                        <p className="text-xs text-blue-700 mt-2">
+                          Tous les envois sont enregistrés dans l'historique et peuvent être consultés par votre conseiller.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 

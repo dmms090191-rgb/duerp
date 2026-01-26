@@ -6,6 +6,7 @@ import { statusService } from '../services/statusService';
 import { clientService } from '../services/clientService';
 import { Status } from '../types/Status';
 import { supabase } from '../lib/supabase';
+import ClientEmailSender from './ClientEmailSender';
 
 interface Seller {
   id: string;
@@ -1165,41 +1166,13 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               )}
 
               {/* Onglet Mail */}
-              {activeTab === 'mail' && (
+              {activeTab === 'mail' && editedLead && (
                 <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Envoyer un Mail</h3>
-
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => {
-                        // Fonctionnalité à implémenter plus tard
-                      }}
-                      className="w-full px-6 py-3 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-semibold shadow-sm flex items-center justify-center gap-2"
-                    >
-                      <Mail className="w-4 h-4" />
-                      Identifiants : portail numérique
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        // Fonctionnalité à implémenter plus tard
-                      }}
-                      className="w-full px-6 py-3 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors font-semibold shadow-sm flex items-center justify-center gap-2"
-                    >
-                      <Mail className="w-4 h-4" />
-                      Mail de relance
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        // Fonctionnalité à implémenter plus tard
-                      }}
-                      className="w-full px-6 py-3 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors font-semibold shadow-sm flex items-center justify-center gap-2"
-                    >
-                      <Mail className="w-4 h-4" />
-                      Procedure de prise en charge
-                    </button>
-                  </div>
+                  <ClientEmailSender
+                    clientId={editedLead.id}
+                    clientName={`${editedLead.prenom} ${editedLead.nom}`}
+                    clientEmail={editedLead.email}
+                  />
                 </div>
               )}
 
