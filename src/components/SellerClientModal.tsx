@@ -81,58 +81,61 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
   onClientLogin,
 }) => {
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded shadow-xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-3 sm:px-6 py-3 flex items-center justify-between">
-          <h2 className="text-base sm:text-xl font-bold text-white uppercase">
-            CLIENT - {client.prenom} {client.nom}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-white hover:text-gray-200 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-900/90 via-blue-800/90 to-indigo-900/90 backdrop-blur-xl flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300">
+      <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/20 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
+        <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 px-3 sm:px-8 py-4 sm:py-6 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+          <div className="relative flex items-center justify-between">
+            <h2 className="text-base sm:text-3xl font-extrabold text-white uppercase tracking-tight drop-shadow-lg">
+              CLIENT - {client.prenom} {client.nom}
+            </h2>
+            <button
+              onClick={onClose}
+              className="w-10 h-10 bg-white/10 hover:bg-white/25 backdrop-blur-xl rounded-xl flex items-center justify-center transition-all duration-300 hover:rotate-90 hover:scale-110 ring-2 ring-white/20"
+            >
+              <X className="w-5 h-5 text-white drop-shadow" />
+            </button>
+          </div>
         </div>
 
-        <div className="border-b border-gray-300 overflow-x-auto">
+        <div className="border-b-2 border-blue-200/50 overflow-x-auto bg-gradient-to-r from-blue-50/80 via-indigo-50/80 to-blue-50/80 backdrop-blur-sm">
           <div className="flex gap-1 sm:gap-2 px-3 sm:px-6 min-w-max">
             <button
               onClick={() => onTabChange('information')}
-              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
+              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'information'
-                  ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
-                  : 'text-gray-600 hover:text-blue-700 bg-gray-50'
+                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
+                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
               }`}
             >
               Information
             </button>
             <button
               onClick={() => onTabChange('liste-commentaire')}
-              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
+              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'liste-commentaire'
-                  ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
-                  : 'text-gray-600 hover:text-blue-700 bg-gray-50'
+                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
+                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
               }`}
             >
               Liste commentaire
             </button>
             <button
               onClick={() => onTabChange('mail')}
-              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
+              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'mail'
-                  ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
-                  : 'text-gray-600 hover:text-blue-700 bg-gray-50'
+                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
+                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
               }`}
             >
               Mail
             </button>
             <button
               onClick={() => onTabChange('panel-client')}
-              className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-colors whitespace-nowrap ${
+              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'panel-client'
-                  ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
-                  : 'text-gray-600 hover:text-blue-700 bg-gray-50'
+                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
+                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
               }`}
             >
               Panel client
@@ -140,79 +143,79 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
           </div>
         </div>
 
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gray-50">
+        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gradient-to-b from-white/80 to-blue-50/40 backdrop-blur-xl">
           {/* Onglet Information */}
           {modalTab === 'information' && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-white p-4 sm:p-6 rounded border border-gray-300">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
                 {/* Colonne Gauche */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Prénom :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Prénom :</label>
                     <input
                       type="text"
                       value={editedClient?.prenom || ''}
                       onChange={(e) => onFieldChange('prenom', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Téléphone :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Téléphone :</label>
                     <input
                       type="text"
                       value={editedClient?.phone || ''}
                       onChange={(e) => onFieldChange('phone', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Pays :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Pays :</label>
                     <input
                       type="text"
                       value={editedClient?.pays || 'France'}
                       onChange={(e) => onFieldChange('pays', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded bg-white"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300 bg-white"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Adresse :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Adresse :</label>
                     <input
                       type="text"
                       value={editedClient?.address || ''}
                       onChange={(e) => onFieldChange('address', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Date de création :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Date de création :</label>
                     <input
                       type="text"
                       value={new Date(editedClient?.created_at).toLocaleString('fr-FR')}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded bg-gray-100"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold shadow-sm"
                       readOnly
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">E-mail :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">E-mail :</label>
                     <input
                       type="email"
                       value={editedClient?.email || ''}
                       onChange={(e) => onFieldChange('email', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Statut du client :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Statut du client :</label>
                     <select
                       value={editedClient?.status_id || ''}
                       onChange={(e) => onFieldChange('status_id', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded bg-white font-semibold"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 bg-white font-bold shadow-sm hover:border-blue-300"
                     >
                       <option value="">Aucun statut</option>
                       {statuses.map((status) => (
@@ -224,22 +227,22 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Activité :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Activité :</label>
                     <input
                       type="text"
                       value={editedClient?.activite || ''}
                       onChange={(e) => onFieldChange('activite', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Rendez-vous :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Rendez-vous :</label>
                     <input
                       type="datetime-local"
                       value={editedClient?.rendez_vous ? new Date(editedClient.rendez_vous).toISOString().slice(0, 16) : ''}
                       onChange={(e) => onFieldChange('rendez_vous', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
                 </div>
@@ -247,111 +250,111 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 {/* Colonne Droite */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Nom :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Nom :</label>
                     <input
                       type="text"
                       value={editedClient?.nom || ''}
                       onChange={(e) => onFieldChange('nom', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded font-semibold uppercase"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-bold uppercase shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Portable :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Portable :</label>
                     <input
                       type="text"
                       value={editedClient?.portable || ''}
                       onChange={(e) => onFieldChange('portable', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Ville :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Ville :</label>
                     <input
                       type="text"
                       value={editedClient?.ville || ''}
                       onChange={(e) => onFieldChange('ville', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Code postal :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Code postal :</label>
                     <input
                       type="text"
                       value={editedClient?.code_postal || ''}
                       onChange={(e) => onFieldChange('code_postal', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Date de naissance :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Date de naissance :</label>
                     <input
                       type="text"
                       value={editedClient?.anniversaire || ''}
                       onChange={(e) => onFieldChange('anniversaire', e.target.value)}
                       placeholder="jj/mm/aaaa"
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Autre Courriel :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Autre Courriel :</label>
                     <input
                       type="email"
                       value={editedClient?.autre_courriel || ''}
                       onChange={(e) => onFieldChange('autre_courriel', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">SIRET :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">SIRET :</label>
                     <input
                       type="text"
                       value={editedClient?.siret || ''}
                       onChange={(e) => onFieldChange('siret', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Société :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Société :</label>
                     <input
                       type="text"
                       value={editedClient?.company_name || ''}
                       onChange={(e) => onFieldChange('company_name', e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Source :</label>
+                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Source :</label>
                     <input
                       type="text"
                       value={editedClient?.source || ''}
                       onChange={(e) => onFieldChange('source', e.target.value)}
                       placeholder="Source"
-                      className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded bg-white"
+                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300 bg-white"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Bouton Enregistrer */}
-              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
+              {/* Boutons Enregistrer */}
+              <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
                 <button
                   onClick={onSave}
                   disabled={saving}
-                  className="w-full sm:w-auto px-6 py-2.5 text-sm bg-blue-600 text-white border border-blue-600 rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-sm"
+                  className="w-full sm:w-auto px-8 py-4 text-sm bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed font-bold transform hover:scale-105 active:scale-95"
                 >
                   {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-6 py-2.5 text-sm bg-gray-100 text-gray-700 border border-gray-300 rounded hover:bg-gray-200 transition-colors font-semibold"
+                  className="w-full sm:w-auto px-8 py-4 text-sm bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 font-bold shadow-md hover:shadow-lg"
                 >
                   Annuler
                 </button>
@@ -361,26 +364,26 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
           {/* Onglet Liste commentaire */}
           {modalTab === 'liste-commentaire' && (
-            <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
-              <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Liste des commentaires</h3>
+            <div className="bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-blue-900 mb-6">Liste des commentaires</h3>
 
               {/* Formulaire d'ajout de commentaire */}
-              <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-2xl border-2 border-blue-300 shadow-lg">
+                <label className="block text-xs font-bold text-blue-700 uppercase tracking-widest mb-3">
                   Ajouter un commentaire
                 </label>
                 <textarea
                   value={newComment}
                   onChange={(e) => onCommentChange(e.target.value)}
                   placeholder="Écrivez votre commentaire ici..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 resize-none transition-all duration-300 font-semibold shadow-sm"
                   rows={3}
                 />
-                <div className="flex justify-end mt-2">
+                <div className="flex justify-end mt-3">
                   <button
                     onClick={onAddComment}
                     disabled={!newComment.trim() || addingComment}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
                     <MessageSquare className="w-4 h-4" />
                     {addingComment ? 'Ajout...' : 'Ajouter le commentaire'}
@@ -403,10 +406,10 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                   </div>
                 ) : (
                   comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200 last:border-b-0 group hover:bg-gray-50 transition-colors rounded-lg p-2">
+                    <div key={comment.id} className="flex gap-3 sm:gap-4 pb-4 border-b-2 border-blue-200 last:border-b-0 group hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 rounded-xl p-4 shadow-sm hover:shadow-md">
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <MessageSquare className="w-5 h-5 text-blue-600" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg ring-4 ring-blue-200/50">
+                          <MessageSquare className="w-6 h-6 text-white" />
                         </div>
                       </div>
                       <div className="flex-1">
@@ -443,40 +446,40 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
           {/* Onglet Mail */}
           {modalTab === 'mail' && (
-            <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
-              <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Envoi d'emails au client</h3>
+            <div className="bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-blue-900 mb-6">Envoi d'emails au client</h3>
               <ClientEmailSender client={client} />
             </div>
           )}
 
           {/* Onglet Panel client */}
           {modalTab === 'panel-client' && (
-            <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
-              <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4 sm:mb-6">Gestion du compte client</h3>
+            <div className="bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-blue-900 mb-6 sm:mb-8">Gestion du compte client</h3>
 
               <div className="space-y-4 sm:space-y-6">
                 {/* Identifiants de connexion */}
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-4 sm:p-6">
-                  <h4 className="font-bold text-blue-900 mb-4 text-base sm:text-lg flex items-center gap-2">
-                    <LogIn className="w-5 h-5" />
+                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 border-3 border-blue-300 rounded-2xl p-4 sm:p-8 shadow-xl">
+                  <h4 className="font-extrabold text-blue-900 mb-6 text-base sm:text-xl flex items-center gap-3">
+                    <LogIn className="w-6 h-6" />
                     Identifiants de connexion
                   </h4>
 
-                  <div className="space-y-4">
-                    <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
-                      <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
+                  <div className="space-y-5">
+                    <div className="bg-white rounded-2xl p-4 sm:p-5 border-2 border-blue-200 shadow-md hover:shadow-lg transition-all duration-300">
+                      <label className="block text-xs font-bold text-blue-600 mb-3 uppercase tracking-widest">
                         Email
                       </label>
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input
                           type="text"
                           value={editedClient?.email || ''}
                           readOnly
-                          className="flex-1 px-3 py-2 text-sm bg-gray-50 border border-gray-300 rounded font-mono"
+                          className="flex-1 px-4 py-3 text-sm bg-blue-50/50 border-2 border-blue-200 rounded-xl font-mono font-bold shadow-sm"
                         />
                         <button
                           onClick={() => onCopyToClipboard(editedClient?.email || '', 'email')}
-                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                           {copiedEmail ? (
                             <>
@@ -493,20 +496,20 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
-                      <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
+                    <div className="bg-white rounded-2xl p-4 sm:p-5 border-2 border-blue-200 shadow-md hover:shadow-lg transition-all duration-300">
+                      <label className="block text-xs font-bold text-blue-600 mb-3 uppercase tracking-widest">
                         Mot de passe
                       </label>
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input
                           type="text"
                           value={editedClient?.client_password || ''}
                           readOnly
-                          className="flex-1 px-3 py-2 text-sm bg-gray-50 border border-gray-300 rounded font-mono"
+                          className="flex-1 px-4 py-3 text-sm bg-blue-50/50 border-2 border-blue-200 rounded-xl font-mono font-bold shadow-sm"
                         />
                         <button
                           onClick={() => onCopyToClipboard(editedClient?.client_password || '', 'password')}
-                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center gap-2"
+                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                           {copiedPassword ? (
                             <>
@@ -527,12 +530,12 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
                 {/* Bouton de connexion au panel client */}
                 {onClientLogin && (
-                  <div className="border rounded-lg p-4 sm:p-6 bg-blue-50 border-blue-200">
-                    <h4 className="font-semibold mb-2 text-blue-900 flex items-center gap-2">
-                      <LogIn className="w-5 h-5" />
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-3 border-blue-300 rounded-2xl p-4 sm:p-8 shadow-xl">
+                    <h4 className="font-extrabold mb-3 text-blue-900 flex items-center gap-2 text-lg">
+                      <LogIn className="w-6 h-6" />
                       Accès au panel client
                     </h4>
-                    <p className="text-sm mb-4 text-blue-700">
+                    <p className="text-sm mb-6 text-blue-700 font-semibold">
                       Utilisez ce bouton pour vous connecter directement au panel client avec les identifiants de ce client.
                     </p>
                     <button
@@ -541,17 +544,17 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                         onClientLogin(editedClient);
                       }}
                       disabled={!editedClient?.siret || !editedClient?.client_password}
-                      className={`w-full px-6 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center gap-2 ${
+                      className={`w-full px-8 py-4 rounded-xl transition-all duration-300 font-extrabold flex items-center justify-center gap-3 shadow-xl transform ${
                         editedClient?.siret && editedClient?.client_password
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 hover:shadow-2xl hover:scale-105'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
-                      <LogIn className="w-5 h-5" />
+                      <LogIn className="w-6 h-6" />
                       Se connecter au panel client
                     </button>
                     {(!editedClient?.siret || !editedClient?.client_password) && (
-                      <p className="text-xs text-red-600 mt-2">
+                      <p className="text-xs text-red-600 mt-3 font-bold">
                         Le SIRET et le mot de passe doivent être définis pour se connecter.
                       </p>
                     )}
@@ -559,9 +562,9 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 )}
 
                 {/* Informations */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Note :</strong> Ces identifiants permettent au client de se connecter à son espace personnel.
+                <div className="bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-xl p-5 shadow-md">
+                  <p className="text-sm text-blue-900 font-semibold">
+                    <strong className="font-extrabold">Note :</strong> Ces identifiants permettent au client de se connecter à son espace personnel.
                   </p>
                 </div>
               </div>

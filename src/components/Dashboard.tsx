@@ -14,6 +14,7 @@ import Argumentaire from './Argumentaire';
 import SimpleEmailConfigurator from './SimpleEmailConfigurator';
 import EmailSignatureEditor from './EmailSignatureEditor';
 import EmailManagerV2 from './EmailManagerV2';
+import NotificationSystem from './NotificationSystem';
 import { User } from '../types/User';
 import { Lead } from '../types/Lead';
 import { Registration } from '../types/Registration';
@@ -109,6 +110,14 @@ const Dashboard: React.FC<DashboardProps> = ({
     setIsMobileSidebarOpen(false);
   };
 
+  const handleNotificationClick = (chatType: 'client' | 'seller', entityId: number | string) => {
+    if (chatType === 'client') {
+      handleOpenChatWithClient(entityId);
+    } else {
+      handleOpenChatWithSeller(String(entityId));
+    }
+  };
+
   const stats = [
     { label: 'Utilisateurs Actifs', value: '12,543', icon: Users, color: 'from-blue-500 to-blue-600' },
     { label: 'Revenus', value: '€25,420', icon: TrendingUp, color: 'from-green-500 to-green-600' },
@@ -139,9 +148,10 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             <div className="flex items-center gap-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                <Bell className="w-5 h-5" />
-              </button>
+              <NotificationSystem
+                adminEmail={user?.email || ''}
+                onNotificationClick={handleNotificationClick}
+              />
               <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
                 <Settings className="w-5 h-5" />
               </button>

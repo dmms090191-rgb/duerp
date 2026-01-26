@@ -494,17 +494,18 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
       </div>
 
       {selectedSellerDetails && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 px-8 py-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center ring-2 ring-white/50">
-                    <ShoppingBag className="w-8 h-8 text-white" />
+        <div className="fixed inset-0 bg-gradient-to-br from-blue-900/90 via-blue-800/90 to-indigo-900/90 backdrop-blur-xl flex items-center justify-center p-4 z-50 animate-in fade-in duration-300">
+          <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-white/20 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
+            <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 px-8 py-8 overflow-hidden">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+              <div className="relative flex items-center justify-between">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center ring-4 ring-white/30 shadow-lg transform hover:scale-110 transition-transform duration-300">
+                    <ShoppingBag className="w-9 h-9 text-white drop-shadow-lg" />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold text-white mb-1">Détails du Vendeur</h2>
-                    <p className="text-emerald-50 text-sm">Informations complètes du vendeur</p>
+                    <h2 className="text-4xl font-extrabold text-white mb-1 drop-shadow-lg tracking-tight">Détails du Vendeur</h2>
+                    <p className="text-blue-100 text-base font-medium">Informations complètes du vendeur</p>
                   </div>
                 </div>
                 <button
@@ -513,85 +514,91 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                     setIsEditingPassword(false);
                     setEditedPassword('');
                   }}
-                  className="w-10 h-10 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center transition-all duration-200 hover:rotate-90"
+                  className="w-12 h-12 bg-white/10 hover:bg-white/25 backdrop-blur-xl rounded-xl flex items-center justify-center transition-all duration-300 hover:rotate-90 hover:scale-110 ring-2 ring-white/20"
                 >
-                  <X className="w-6 h-6 text-white" />
+                  <X className="w-6 h-6 text-white drop-shadow" />
                 </button>
               </div>
             </div>
 
-            <div className="p-8 space-y-8 overflow-y-auto max-h-[calc(90vh-180px)]">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                    <User className="w-6 h-6 text-white" />
+            <div className="p-8 space-y-6 overflow-y-auto max-h-[calc(90vh-230px)] bg-gradient-to-b from-white/80 to-blue-50/40 backdrop-blur-xl">
+              <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 rounded-2xl p-8 border-2 border-blue-200 shadow-xl hover:shadow-2xl transition-all duration-300 overflow-hidden group">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-blue-400/10 to-blue-400/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                <div className="relative flex items-center gap-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-200/50 transform hover:scale-110 transition-transform duration-300">
+                    <User className="w-8 h-8 text-white drop-shadow" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900">
+                    <h3 className="text-3xl font-black text-gray-900 tracking-tight">
                       {selectedSellerDetails.prenom} {selectedSellerDetails.nom}
                     </h3>
-                    <p className="text-sm text-gray-600">Vendeur</p>
+                    <p className="text-base font-semibold text-blue-600 mt-1">Vendeur</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="group">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2 mb-3">
-                    <Mail className="w-4 h-4 text-emerald-600" />
+                  <label className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                    <Mail className="w-4 h-4 text-blue-500" />
                     Adresse Email
                   </label>
-                  <div className="bg-white border-2 border-gray-200 group-hover:border-emerald-400 px-5 py-4 rounded-xl transition-all duration-200 shadow-sm">
-                    <p className="text-base font-medium text-gray-900 break-all">{selectedSellerDetails.email}</p>
+                  <div className="relative bg-white border-2 border-blue-200 group-hover:border-blue-400 px-6 py-5 rounded-2xl transition-all duration-300 shadow-md group-hover:shadow-xl transform group-hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <p className="relative text-base font-semibold text-gray-900 break-all">{selectedSellerDetails.email}</p>
                   </div>
                 </div>
 
                 <div className="group">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2 mb-3">
-                    <Calendar className="w-4 h-4 text-emerald-600" />
+                  <label className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                    <Calendar className="w-4 h-4 text-blue-500" />
                     Date de Création
                   </label>
-                  <div className="bg-white border-2 border-gray-200 group-hover:border-emerald-400 px-5 py-4 rounded-xl transition-all duration-200 shadow-sm">
-                    <p className="text-base font-medium text-gray-900">{selectedSellerDetails.dateCreation}</p>
+                  <div className="relative bg-white border-2 border-blue-200 group-hover:border-blue-400 px-6 py-5 rounded-2xl transition-all duration-300 shadow-md group-hover:shadow-xl transform group-hover:-translate-y-1">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <p className="relative text-base font-semibold text-gray-900">{selectedSellerDetails.dateCreation}</p>
                   </div>
                 </div>
 
                 <div className="group md:col-span-2">
-                  <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2 mb-3">
-                    <Lock className="w-4 h-4 text-emerald-600" />
+                  <label className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2 mb-3">
+                    <Lock className="w-4 h-4 text-blue-500" />
                     Mot de Passe
                   </label>
                   {isEditingPassword ? (
-                    <div className="space-y-3">
-                      <input
-                        type="text"
-                        value={editedPassword}
-                        onChange={(e) => setEditedPassword(e.target.value)}
-                        className="w-full bg-white border-2 border-emerald-400 px-5 py-4 rounded-xl shadow-sm text-base font-mono font-semibold text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        placeholder="Nouveau mot de passe"
-                      />
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={editedPassword}
+                          onChange={(e) => setEditedPassword(e.target.value)}
+                          className="w-full bg-white border-3 border-blue-400 px-6 py-5 rounded-2xl shadow-lg text-base font-mono font-bold text-gray-900 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300"
+                          placeholder="Nouveau mot de passe"
+                        />
+                      </div>
                       <div className="flex gap-3">
                         <button
                           onClick={handleSavePassword}
-                          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+                          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                         >
                           <Save className="w-4 h-4" />
                           Enregistrer
                         </button>
                         <button
                           onClick={handleCancelEdit}
-                          className="flex items-center gap-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                          className="flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition-all duration-300 shadow-md hover:shadow-lg"
                         >
                           Annuler
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 px-5 py-4 rounded-xl shadow-sm flex items-center justify-between">
-                      <p className="text-base font-mono font-semibold text-gray-900">{selectedSellerDetails.motDePasse}</p>
+                    <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 border-3 border-blue-300 px-6 py-5 rounded-2xl shadow-lg flex items-center justify-between overflow-hidden group">
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-200/0 via-blue-200/50 to-blue-200/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                      <p className="relative text-base font-mono font-bold text-gray-900">{selectedSellerDetails.motDePasse}</p>
                       <button
                         onClick={handleEditPassword}
-                        className="flex items-center gap-2 bg-white text-emerald-600 px-3 py-2 rounded-lg hover:bg-emerald-50 transition-colors border border-emerald-200"
+                        className="relative flex items-center gap-2 bg-white text-blue-600 px-5 py-3 rounded-xl hover:bg-blue-50 transition-all duration-300 border-2 border-blue-300 shadow-md hover:shadow-lg font-bold transform hover:scale-105"
                       >
                         <Edit className="w-4 h-4" />
                         Modifier
@@ -602,14 +609,14 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
               </div>
             </div>
 
-            <div className="bg-gray-50 px-8 py-6 border-t border-gray-200 flex items-center justify-end gap-4">
+            <div className="bg-gradient-to-r from-gray-50 via-blue-50 to-indigo-50 px-8 py-6 border-t-2 border-blue-200 flex items-center justify-end gap-4">
               {onSellerLogin && (
                 <button
                   onClick={() => {
                     onSellerLogin(selectedSellerDetails);
                     setSelectedSellerDetails(null);
                   }}
-                  className="flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  className="flex items-center gap-3 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95"
                 >
                   <LogIn className="w-5 h-5" />
                   Se connecter en tant que ce vendeur
@@ -621,7 +628,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   setIsEditingPassword(false);
                   setEditedPassword('');
                 }}
-                className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 Fermer
               </button>

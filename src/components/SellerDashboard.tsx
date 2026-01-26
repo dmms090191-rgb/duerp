@@ -773,13 +773,13 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                                   <div className="flex items-center gap-2">
                                     <button
                                       onClick={() => handleOpenClientModal(client)}
-                                      className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors"
+                                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white text-xs font-bold rounded-lg hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
                                     >
-                                      <Edit className="w-3 h-3" />
+                                      <Edit className="w-3.5 h-3.5" />
                                       Modifier
                                     </button>
-                                    <button className="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors">
-                                      <MessageSquare className="w-3 h-3" />
+                                    <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95">
+                                      <MessageSquare className="w-3.5 h-3.5" />
                                       Chat
                                     </button>
                                   </div>
