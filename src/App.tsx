@@ -158,6 +158,7 @@ function App() {
           id: seller.id,
           nom: seller.full_name?.split(' ').pop() || '',
           prenom: seller.full_name?.split(' ')[0] || '',
+          full_name: seller.full_name,
           email: seller.email,
           motDePasse: '',
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
@@ -404,6 +405,32 @@ function App() {
     sessionStorage.removeItem('sellerData');
     sessionStorage.removeItem('isAdminViewingSeller');
     window.location.href = '/';
+  };
+
+  const handleSellerLoginAsClient = (client: any) => {
+    const clientData = {
+      user: { id: client.id, email: client.email },
+      token: 'seller-viewing-token',
+      client: {
+        id: client.id,
+        email: client.email,
+        full_name: `${client.prenom} ${client.nom}`,
+        phone: client.phone || client.telephone,
+        status: 'actif',
+        created_at: client.created_at || new Date().toISOString()
+      }
+    };
+    setClientData(clientData);
+    sessionStorage.setItem('clientData', JSON.stringify(clientData));
+    sessionStorage.setItem('isSellerViewingClient', 'true');
+    window.location.href = '/client/dashboard';
+  };
+
+  const handleReturnToSellerFromClient = () => {
+    setClientData(null);
+    sessionStorage.removeItem('clientData');
+    sessionStorage.removeItem('isSellerViewingClient');
+    window.location.href = '/seller/dashboard';
   };
 
   const handleClientLogout = async () => {
@@ -953,6 +980,7 @@ function App() {
         activite: client.activite || '',
         societe: client.company_name || '',
         siret: client.siret || '',
+        vendeur: client.vendeur || '',
         commentaires: client.vendeur || '',
         agentAssigne: client.assigned_agent_name,
         status_id: client.status_id,
@@ -1015,12 +1043,15 @@ function App() {
               (() => {
                 const storedData = sessionStorage.getItem('clientData');
                 const data = clientData || (storedData ? JSON.parse(storedData) : null);
+                const isSellerViewing = sessionStorage.getItem('isSellerViewingClient') === 'true';
                 return data ? (
                   <ClientDashboard
                     clientData={data}
                     onLogout={handleClientLogout}
                     isAdminViewing={isAdminViewingClient}
                     onReturnToAdmin={handleReturnToAdmin}
+                    isSellerViewing={isSellerViewing}
+                    onReturnToSeller={handleReturnToSellerFromClient}
                   />
                 ) : (
                   <Navigate to="/client-login" replace />
@@ -1057,6 +1088,7 @@ function App() {
                     onLeadsTransferred={handleLeadsTransferred}
                     transferredLeads={transferredLeads}
                     onReturnToAdmin={isAdminViewing ? handleReturnToAdminFromSeller : undefined}
+                    onClientLogin={handleSellerLoginAsClient}
                   />
                 ) : (
                   <Navigate to="/seller-login" replace />

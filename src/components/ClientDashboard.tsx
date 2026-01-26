@@ -33,9 +33,11 @@ interface ClientDashboardProps {
   onLogout: () => void;
   isAdminViewing?: boolean;
   onReturnToAdmin?: () => void;
+  isSellerViewing?: boolean;
+  onReturnToSeller?: () => void;
 }
 
-const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout, isAdminViewing, onReturnToAdmin }) => {
+const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout, isAdminViewing, onReturnToAdmin, isSellerViewing, onReturnToSeller }) => {
   const { client } = clientData;
   const [activeTab, setActiveTab] = useState('info-juridiques');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -422,20 +424,27 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     { id: 'duerp-conforme', label: 'DUERP CONFORME', icon: Users },
     { id: 'opco', label: 'OPCO opérateur de compétences', icon: Building2 },
     { id: 'reglement', label: 'Règlement de prise en charge', icon: FileCheck },
-    { id: 'mail', label: 'Mail', icon: Mail },
     { id: 'chat', label: 'Messagerie', icon: MessageSquare },
     { id: 'password', label: 'Changer votre mot de passe', icon: Lock },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-sky-50 to-white">
-      <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 border-b border-blue-100">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3 md:py-4">
-            <div className="flex items-center gap-3 md:gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-100 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.15),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(14,165,233,0.1),transparent_50%)]"></div>
+      <div className="relative z-0">
+      <header className="fixed top-0 left-0 right-0 z-40 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 opacity-95"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.8),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.6),transparent_50%)]"></div>
+        <div className="absolute inset-0 backdrop-blur-3xl"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4 md:py-5">
+            <div className="flex items-center gap-3 md:gap-4 flex-1">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden flex items-center justify-center w-10 h-10 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                className="lg:hidden flex items-center justify-center w-11 h-11 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
                 aria-label="Toggle menu"
               >
                 <Menu className="w-6 h-6" />
@@ -443,39 +452,67 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               {isAdminViewing && onReturnToAdmin && (
                 <button
                   onClick={onReturnToAdmin}
-                  className="hidden md:flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg md:rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
+                  className="hidden md:flex items-center gap-2.5 px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 text-sm font-bold"
                   title="Retour au panel admin"
                 >
-                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="font-semibold">Retour Admin</span>
+                  <ArrowLeft className="w-5 h-5" />
+                  <span>Retour Admin</span>
+                </button>
+              )}
+              {isSellerViewing && onReturnToSeller && (
+                <button
+                  onClick={onReturnToSeller}
+                  className="hidden md:flex items-center gap-2.5 px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 text-sm font-bold"
+                  title="Retour au panel vendeur"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  <span>Retour Vendeur</span>
                 </button>
               )}
               {isAdminViewing && (
                 <div className="hidden md:block">
-                  <p className="text-xs text-blue-600 font-semibold">Mode visualisation admin</p>
+                  <div className="px-4 py-2 bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl">
+                    <p className="text-xs text-white font-bold tracking-wide">MODE ADMIN</p>
+                  </div>
+                </div>
+              )}
+              {isSellerViewing && (
+                <div className="hidden md:block">
+                  <div className="px-4 py-2 bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl">
+                    <p className="text-xs text-white font-bold tracking-wide">MODE VENDEUR</p>
+                  </div>
                 </div>
               )}
             </div>
-            <div className="flex justify-center">
-              <img
-                src="/kk.png"
-                alt="Cabinet FPE"
-                className="h-14 md:h-16 lg:h-20 w-auto"
-              />
+
+            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl p-1 md:p-1.5 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
+                <img
+                  src="/kk copy.png"
+                  alt="Cabinet FPE"
+                  className="h-6 md:h-8 lg:h-10 w-auto"
+                />
+              </div>
             </div>
-            <div className="w-10 md:w-auto">
-            </div>
+
+            <div className="flex-1"></div>
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-600 shadow-lg"></div>
       </header>
 
-      <div className="pt-20 md:pt-24 lg:pt-28 pb-8 md:pb-16 flex">
-        <aside className={`fixed left-0 top-20 md:top-24 lg:top-28 bottom-0 w-64 md:w-72 bg-white/95 backdrop-blur-lg shadow-xl border-r border-blue-100 flex flex-col transition-transform duration-300 z-30 ${
+      <div className="pt-28 md:pt-32 lg:pt-36 pb-8 md:pb-16 flex">
+        <aside className={`fixed left-0 top-28 md:top-32 lg:top-36 bottom-0 w-64 md:w-72 flex flex-col transition-transform duration-300 z-30 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
-          <nav className="p-4 md:p-6 space-y-2 flex-1 overflow-y-auto">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-indigo-800/95 backdrop-blur-2xl"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.4),transparent_70%)]"></div>
+
+          <nav className="relative p-4 md:p-5 space-y-2 flex-1 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon;
+              const isActive = activeTab === item.id;
               return (
                 <button
                   key={item.id}
@@ -483,33 +520,51 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     setActiveTab(item.id);
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 rounded-lg md:rounded-xl font-semibold transition-all duration-200 text-xs md:text-sm ${
-                    activeTab === item.id
-                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-105'
-                      : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                  className={`w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 rounded-2xl font-bold transition-all duration-300 text-xs md:text-sm group relative overflow-hidden ${
+                    isActive
+                      ? 'bg-white text-blue-600 shadow-2xl transform scale-105'
+                      : 'text-white/90 hover:text-white hover:bg-white/20'
                   }`}
                 >
-                  <Icon className="w-4 h-4 md:w-5 md:h-5" />
-                  <span className="text-left">{item.label}</span>
+                  {isActive && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-white opacity-90"></div>
+                  )}
+                  {!isActive && (
+                    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
+                  )}
+                  <Icon className={`w-5 h-5 md:w-5 md:h-5 relative z-10 ${isActive ? 'text-blue-600' : 'text-white'} transition-all duration-300`} />
+                  <span className="text-left relative z-10">{item.label}</span>
+                  {isActive && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-blue-600 rounded-l-full"></div>
+                  )}
                 </button>
               );
             })}
           </nav>
-          <div className="p-4 md:p-6 border-t border-blue-100 space-y-3">
+          <div className="relative p-4 md:p-5 border-t border-white/20 space-y-2.5 bg-gradient-to-b from-transparent to-black/10">
             {isAdminViewing && onReturnToAdmin && (
               <button
                 onClick={onReturnToAdmin}
-                className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-lg md:rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
+                className="w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm"
               >
-                <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+                <ArrowLeft className="w-5 h-5" />
                 <span>Retour Admin</span>
+              </button>
+            )}
+            {isSellerViewing && onReturnToSeller && (
+              <button
+                onClick={onReturnToSeller}
+                className="w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Retour Vendeur</span>
               </button>
             )}
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 md:px-5 py-3 md:py-4 bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 rounded-lg md:rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 text-xs md:text-sm"
+              className="w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm border border-red-400/50"
             >
-              <LogOut className="w-4 h-4 md:w-5 md:h-5" />
+              <LogOut className="w-5 h-5" />
               <span>Déconnexion</span>
             </button>
           </div>
@@ -525,30 +580,37 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
         <div className="lg:ml-72 flex-1 px-4 md:px-6 lg:px-8">
           {activeTab === 'info-juridiques' && (
             <>
-              <div className="mb-4 md:mb-6 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 rounded-xl md:rounded-2xl shadow-2xl p-4 md:p-8 border border-blue-200">
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-lg">
-                    <User className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-xs md:text-sm font-semibold text-blue-100 uppercase tracking-wider mb-1">Client</p>
-                    <h1 className="text-2xl md:text-4xl font-bold text-white drop-shadow-lg">
-                      {client.full_name}
-                    </h1>
+              <div className="mb-4 md:mb-6 relative overflow-hidden rounded-3xl shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.8),transparent_60%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.5),transparent_60%)]"></div>
+                <div className="relative p-6 md:p-10">
+                  <div className="flex items-center gap-4 md:gap-6">
+                    <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl border-2 border-white/30">
+                      <User className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-xs md:text-sm font-bold text-white/80 uppercase tracking-widest mb-2">Profil Client</p>
+                      <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-2xl">
+                        {client.full_name}
+                      </h1>
+                    </div>
                   </div>
                 </div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400"></div>
               </div>
 
-              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
-                <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
-                  <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
-                    <User className="w-5 h-5 md:w-7 md:h-7 text-white" />
+              <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-blue-200/50 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
+                  <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+                    <User className="w-7 h-7 md:w-8 md:h-8 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                    <h2 className="text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">
                       Renseignements Juridiques
                     </h2>
-                    <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">Vos informations juridiques et personnelles</p>
+                    <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">Vos informations juridiques et personnelles</p>
                   </div>
                 </div>
 
@@ -559,16 +621,19 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   </div>
                 )}
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
-                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
-                    Société
-                  </label>
-                  <input
-                    type="text"
-                    value={editableCompanyName}
-                    onChange={(e) => setEditableCompanyName(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
+                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                      Société
+                    </label>
+                    <input
+                      type="text"
+                      value={editableCompanyName}
+                      onChange={(e) => setEditableCompanyName(e.target.value)}
+                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
+                    />
+                  </div>
                 </div>
 
                 <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
@@ -707,19 +772,23 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 <button
                   onClick={handleSaveJuridicalInfo}
                   disabled={savingInfo}
-                  className="w-full flex items-center justify-center gap-2 px-4 md:px-6 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm md:text-base font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative w-full overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 group-hover:from-blue-700 group-hover:via-indigo-700 group-hover:to-blue-700 transition-all duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  <div className="relative flex items-center justify-center gap-3 px-4 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-bold rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300">
                   {savingInfo ? (
                     <>
-                      <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-sm md:text-base">Enregistrement...</span>
+                      <div className="w-5 h-5 md:w-6 md:h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Enregistrement...</span>
                     </>
                   ) : (
                     <>
-                      <Save className="w-4 h-4 md:w-5 md:h-5" />
-                      <span className="text-sm md:text-base">Enregistrer les modifications</span>
+                      <Save className="w-5 h-5 md:w-6 md:h-6" />
+                      <span>Enregistrer les modifications</span>
                     </>
                   )}
+                  </div>
                 </button>
               </div>
             </div>
@@ -727,12 +796,16 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'documents' && (
-            <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
-              <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
-                <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
-                  <FileText className="w-5 h-5 md:w-7 md:h-7 text-white" />
+            <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-blue-200/50 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
+                <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+                  <FileText className="w-7 h-7 md:w-8 md:h-8 text-white" />
                 </div>
-                <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Mes documents</h2>
+                <div>
+                  <h2 className="text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">Mes Documents</h2>
+                  <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">Gérez et téléchargez vos documents</p>
+                </div>
               </div>
               {documents.length === 0 ? (
                 <div className="text-center py-12 md:py-16 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg md:rounded-xl border-2 border-dashed border-blue-200">
@@ -4473,51 +4546,64 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'password' && (
-            <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-8 border border-blue-100">
-              <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
-                <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
-                  <Lock className="w-5 h-5 md:w-7 md:h-7 text-white" />
+            <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-blue-200/50 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
+                <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+                  <Lock className="w-7 h-7 md:w-8 md:h-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Changer votre mot de passe</h2>
-                  <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">Bienvenue, {client.full_name}</p>
+                  <h2 className="text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">Changer votre mot de passe</h2>
+                  <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">Bienvenue, {client.full_name}</p>
                 </div>
               </div>
-              <div className="max-w-md space-y-4 md:space-y-5">
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
-                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
-                    Mot de passe actuel
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full px-3 md:px-4 py-2.5 md:py-3 border-2 border-blue-200 rounded-lg bg-white text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
-                    placeholder="Entrez votre mot de passe actuel"
-                  />
+              <div className="relative max-w-md space-y-5 md:space-y-6">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
+                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                      Mot de passe actuel
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
+                      placeholder="Entrez votre mot de passe actuel"
+                    />
+                  </div>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
-                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
-                    Nouveau mot de passe
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full px-3 md:px-4 py-2.5 md:py-3 border-2 border-blue-200 rounded-lg bg-white text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
-                    placeholder="Entrez votre nouveau mot de passe"
-                  />
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
+                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                      Nouveau mot de passe
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
+                      placeholder="Entrez votre nouveau mot de passe"
+                    />
+                  </div>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
-                  <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
-                    Confirmer le nouveau mot de passe
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full px-3 md:px-4 py-2.5 md:py-3 border-2 border-blue-200 rounded-lg bg-white text-sm md:text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium"
-                    placeholder="Confirmez votre nouveau mot de passe"
-                  />
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
+                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                      Confirmer le nouveau mot de passe
+                    </label>
+                    <input
+                      type="password"
+                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
+                      placeholder="Confirmez votre nouveau mot de passe"
+                    />
+                  </div>
                 </div>
-                <button
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 md:py-4 px-5 md:px-6 rounded-lg md:rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] text-sm md:text-base"
-                >
-                  Modifier le mot de passe
+                <button className="relative w-full overflow-hidden group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 group-hover:from-blue-700 group-hover:via-indigo-700 group-hover:to-blue-700 transition-all duration-500"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  <div className="relative flex items-center justify-center gap-3 px-5 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-bold rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300">
+                    <Lock className="w-5 h-5 md:w-6 md:h-6" />
+                    <span>Modifier le mot de passe</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -4650,176 +4736,19 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
             </div>
           )}
 
-          {activeTab === 'mail' && (
-            <div className="max-w-4xl mx-auto">
-              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6 lg:p-8 border border-blue-100">
-                <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-blue-100">
-                  <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
-                    <Mail className="w-5 h-5 md:w-7 md:h-7 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                      Envoi d'emails
-                    </h2>
-                    <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">
-                      Recevez vos documents et informations par email
-                    </p>
-                  </div>
-                </div>
-
-                {emailMessage && (
-                  <div className={`mb-6 p-4 rounded-lg text-sm md:text-base ${
-                    emailMessage.includes('✅')
-                      ? 'bg-green-100 text-green-800 border border-green-300'
-                      : 'bg-red-100 text-red-800 border border-red-300'
-                  }`}>
-                    {emailMessage}
-                  </div>
-                )}
-
-                <div className="space-y-4 md:space-y-6">
-                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-4 md:p-6 border border-blue-200">
-                    <div className="flex items-start gap-3 md:gap-4 mb-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md flex-shrink-0">
-                        <User className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-base md:text-lg font-bold text-blue-900 mb-2">
-                          Identifiants : portail numérique
-                        </h3>
-                        <p className="text-xs md:text-sm text-gray-700 mb-4">
-                          Recevez vos identifiants de connexion au portail client par email
-                        </p>
-                        <button
-                          onClick={() => handleSendEmail('identifiants', false)}
-                          disabled={sendingEmail === 'identifiants'}
-                          className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
-                        >
-                          {sendingEmail === 'identifiants' ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              <span>Envoi en cours...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Send className="w-4 h-4" />
-                              <span>Envoyer mes identifiants</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 md:p-6 border border-amber-200">
-                    <div className="flex items-start gap-3 md:gap-4 mb-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg shadow-md flex-shrink-0">
-                        <AlertTriangle className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-base md:text-lg font-bold text-amber-900 mb-2">
-                          Mail de relance
-                        </h3>
-                        <p className="text-xs md:text-sm text-gray-700 mb-4">
-                          Recevez un rappel concernant votre dossier en attente
-                        </p>
-                        <button
-                          onClick={() => handleSendEmail('relance', false)}
-                          disabled={sendingEmail === 'relance'}
-                          className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg hover:from-amber-700 hover:to-orange-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
-                        >
-                          {sendingEmail === 'relance' ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              <span>Envoi en cours...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Send className="w-4 h-4" />
-                              <span>Envoyer une relance</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 md:p-6 border border-green-200">
-                    <div className="flex items-start gap-3 md:gap-4 mb-4">
-                      <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg shadow-md flex-shrink-0">
-                        <FileCheck className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-base md:text-lg font-bold text-green-900 mb-2">
-                          Procédure de prise en charge
-                        </h3>
-                        <p className="text-xs md:text-sm text-gray-700 mb-3">
-                          Recevez votre facture et l'attestation de prise en charge DUERP en pièces jointes
-                        </p>
-                        <div className="bg-white/70 rounded-lg p-3 mb-4 border border-green-200">
-                          <p className="text-xs text-gray-600 mb-2 font-semibold">
-                            📎 Pièces jointes incluses :
-                          </p>
-                          <ul className="text-xs text-gray-600 space-y-1 ml-4">
-                            <li>• Facture_{client.company_name || client.full_name}_{client.id}.pdf</li>
-                            <li>• Attestation_DUERP_{client.company_name || client.full_name}_{client.id}.pdf</li>
-                          </ul>
-                        </div>
-                        <button
-                          onClick={() => handleSendEmail('procedure_prise_en_charge', true)}
-                          disabled={sendingEmail === 'procedure_prise_en_charge'}
-                          className="flex items-center gap-2 px-4 md:px-6 py-2.5 md:py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base"
-                        >
-                          {sendingEmail === 'procedure_prise_en_charge' ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              <span>Envoi en cours...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Send className="w-4 h-4" />
-                              <span>Envoyer avec PDF</span>
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-5 h-5 mt-0.5">
-                        <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs md:text-sm text-blue-900 font-medium">
-                          <strong>Information :</strong> Les emails seront envoyés à l'adresse : <span className="font-bold">{client.email}</span>
-                        </p>
-                        <p className="text-xs text-blue-700 mt-2">
-                          Tous les envois sont enregistrés dans l'historique et peuvent être consultés par votre conseiller.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
           {activeTab === 'chat' && (
             <div className="max-w-5xl mx-auto">
-              <div className="space-y-4 md:space-y-6">
-                <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl p-4 md:p-6 lg:p-8 border border-blue-100">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 md:mb-6 pb-4 md:pb-6 border-b border-blue-100 gap-3">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      <div className="flex items-center justify-center w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
-                        <MessageSquare className="w-5 h-5 md:w-7 md:h-7 text-white" />
+              <div className="space-y-5 md:space-y-7">
+                <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border-2 border-blue-200/50 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                  <div className="relative flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200 gap-3">
+                    <div className="flex items-center gap-4 md:gap-5">
+                      <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+                        <MessageSquare className="w-7 h-7 md:w-8 md:h-8 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Chat Client - Vendeur</h2>
-                        <p className="text-xs md:text-sm text-gray-600 font-medium mt-1">
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">Chat Client - Vendeur</h2>
+                        <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">
                           {client.vendeur && client.vendeur !== 'Super Admin'
                             ? `Communiquez avec ${client.vendeur}`
                             : 'Communiquez avec votre conseiller'}
@@ -4890,6 +4819,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

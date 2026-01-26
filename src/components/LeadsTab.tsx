@@ -46,6 +46,13 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
   const [updatingStatus, setUpdatingStatus] = React.useState<string | null>(null);
   const [filterStatus, setFilterStatus] = React.useState<string>('all');
   const [refreshing, setRefreshing] = React.useState(false);
+  const [comments, setComments] = React.useState<any[]>([]);
+  const [newComment, setNewComment] = React.useState('');
+  const [loadingComments, setLoadingComments] = React.useState(false);
+  const [addingComment, setAddingComment] = React.useState(false);
+  const [deletingCommentId, setDeletingCommentId] = React.useState<string | null>(null);
+  const [editingRendezVous, setEditingRendezVous] = React.useState<{leadId: number, value: string} | null>(null);
+  const [savingRendezVous, setSavingRendezVous] = React.useState<number | null>(null);
 
   const parseDate = (dateStr: string): Date => {
     const parts = dateStr.split(/[\s,:\/]+/);
@@ -128,6 +135,39 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
       console.error('❌ EXCEPTION:', error);
       console.error('❌ STACK:', error.stack);
       alert(`❌ Erreur: ${error.message}`);
+    }
+  };
+
+  const handleSaveRendezVous = async (leadId: number, rendezVousValue: string) => {
+    if (!rendezVousValue) {
+      alert('⚠️ Veuillez sélectionner une date et une heure');
+      return;
+    }
+
+    setSavingRendezVous(leadId);
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .update({ rendez_vous: new Date(rendezVousValue).toISOString() })
+        .eq('id', leadId);
+
+      if (error) {
+        console.error('❌ Erreur lors de la mise à jour du rendez-vous:', error);
+        alert('❌ Erreur lors de la mise à jour');
+        return;
+      }
+
+      alert('✅ Rendez-vous enregistré avec succès !');
+      setEditingRendezVous(null);
+
+      if (onLeadUpdated) {
+        onLeadUpdated();
+      }
+    } catch (error) {
+      console.error('❌ Exception lors de la mise à jour du rendez-vous:', error);
+      alert('❌ Erreur lors de la mise à jour');
+    } finally {
+      setSavingRendezVous(null);
     }
   };
 
@@ -325,11 +365,91 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
     setSelectedLeadDetails(leadToEdit);
     setEditedLead({ ...leadToEdit });
     setActiveTab('information');
+
+    await loadComments(lead.id);
   };
 
   const handleFieldChange = (field: keyof Lead, value: any) => {
     if (editedLead) {
       setEditedLead({ ...editedLead, [field]: value });
+    }
+  };
+
+  const loadComments = async (leadId: number) => {
+    setLoadingComments(true);
+    try {
+      const { data, error } = await supabase
+        .from('lead_comments')
+        .select('*')
+        .eq('lead_id', leadId)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Erreur chargement commentaires:', error);
+      } else {
+        setComments(data || []);
+      }
+    } catch (err) {
+      console.error('Erreur:', err);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const addComment = async () => {
+    if (!newComment.trim() || !editedLead) return;
+
+    setAddingComment(true);
+    try {
+      const { data, error } = await supabase
+        .from('lead_comments')
+        .insert([{
+          lead_id: editedLead.id,
+          comment_text: newComment.trim(),
+          author_name: 'Admin'
+        }])
+        .select();
+
+      if (error) {
+        console.error('Erreur ajout commentaire:', error);
+        alert('Erreur lors de l\'ajout du commentaire');
+      } else {
+        setNewComment('');
+        await loadComments(editedLead.id);
+        alert('Commentaire ajouté avec succès!');
+      }
+    } catch (err) {
+      console.error('Erreur:', err);
+      alert('Erreur lors de l\'ajout du commentaire');
+    } finally {
+      setAddingComment(false);
+    }
+  };
+
+  const deleteComment = async (commentId: string) => {
+    if (!editedLead) return;
+
+    if (!confirm('Voulez-vous vraiment supprimer ce commentaire ?')) return;
+
+    setDeletingCommentId(commentId);
+    try {
+      const { error } = await supabase
+        .from('lead_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) {
+        console.error('Erreur suppression commentaire:', error);
+        alert('Erreur lors de la suppression du commentaire');
+      } else {
+        await loadComments(editedLead.id);
+        alert('Commentaire supprimé avec succès!');
+      }
+    } catch (err) {
+      console.error('Erreur:', err);
+      alert('Erreur lors de la suppression du commentaire');
+    } finally {
+      setDeletingCommentId(null);
     }
   };
 
@@ -689,28 +809,40 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                           className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                         />
                       </td>
-                      <td className="py-2 px-3 border-r border-gray-200 min-w-[140px]">
-                        <input
-                          type="datetime-local"
-                          value={lead.rendez_vous ? new Date(lead.rendez_vous).toISOString().slice(0, 16) : ''}
-                          onChange={async (e) => {
-                            if (e.target.value) {
-                              try {
-                                await supabase
-                                  .from('clients')
-                                  .update({ rendez_vous: new Date(e.target.value).toISOString() })
-                                  .eq('id', lead.id);
-                                alert('✅ Rendez-vous mis à jour !');
-                                if (onLeadUpdated) {
-                                  onLeadUpdated();
-                                }
-                              } catch (error) {
-                                alert('❌ Erreur lors de la mise à jour');
-                              }
+                      <td className="py-2 px-3 border-r border-gray-200 min-w-[200px]">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="datetime-local"
+                            value={
+                              editingRendezVous?.leadId === lead.id
+                                ? editingRendezVous.value
+                                : lead.rendez_vous
+                                ? new Date(lead.rendez_vous).toISOString().slice(0, 16)
+                                : ''
                             }
-                          }}
-                          className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        />
+                            onChange={(e) => {
+                              setEditingRendezVous({
+                                leadId: lead.id,
+                                value: e.target.value
+                              });
+                            }}
+                            className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          />
+                          {editingRendezVous?.leadId === lead.id && (
+                            <button
+                              onClick={() => handleSaveRendezVous(lead.id, editingRendezVous.value)}
+                              disabled={savingRendezVous === lead.id}
+                              className="px-2 py-1 text-xs font-medium bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex items-center"
+                              title="Enregistrer le rendez-vous"
+                            >
+                              {savingRendezVous === lead.id ? (
+                                <RefreshCw className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Check className="w-3 h-3" />
+                              )}
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="py-2 px-3 border-r border-gray-200 min-w-[180px]">
                         <select
@@ -763,34 +895,137 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                         </div>
                       </td>
                       <td className="py-2 px-3 border-r border-gray-200">
-                        <select
-                          value={lead.vendeur || ''}
-                          onChange={async (e) => {
-                            const newVendeur = e.target.value;
-                            try {
-                              await supabase
-                                .from('clients')
-                                .update({ vendeur: newVendeur || null })
-                                .eq('id', lead.id);
+                        {lead.vendeur ? (
+                          <div className="flex items-center justify-between gap-1 group">
+                            <span className="text-xs font-medium text-blue-900 bg-blue-50 px-2 py-1 rounded border border-blue-200 flex-1">
+                              {lead.vendeur}
+                            </span>
+                            <select
+                              value={lead.vendeur}
+                              onChange={async (e) => {
+                                const newVendeur = e.target.value;
+                                try {
+                                  console.log('🔄 [ATTRIBUTION] Attribution du lead', lead.id, 'au vendeur:', newVendeur);
+                                  const selectedSeller = sellers.find(s => s.full_name === newVendeur);
+                                  console.log('🔍 [ATTRIBUTION] Vendeur trouvé:', selectedSeller);
 
-                              if (onLeadUpdated) {
-                                onLeadUpdated();
+                                  const { data: clientData, error: clientError } = await supabase
+                                    .from('clients')
+                                    .update({
+                                      vendeur: newVendeur || null,
+                                      date_affectation: newVendeur ? new Date().toISOString() : null
+                                    })
+                                    .eq('id', lead.id)
+                                    .select();
+
+                                  if (clientError) {
+                                    console.error('❌ [ATTRIBUTION] Erreur clients:', clientError);
+                                    alert('❌ Erreur lors de la mise à jour');
+                                    return;
+                                  }
+
+                                  console.log('✅ [ATTRIBUTION] Client mis à jour:', clientData);
+
+                                  const { data: leadsData, error: leadsError } = await supabase
+                                    .from('leads')
+                                    .update({
+                                      assigned_to: selectedSeller?.id || null,
+                                      conseiller: newVendeur || null
+                                    })
+                                    .eq('id', lead.id)
+                                    .select();
+
+                                  if (leadsError) {
+                                    console.error('❌ [ATTRIBUTION] Erreur leads:', leadsError);
+                                  } else {
+                                    console.log('✅ [ATTRIBUTION] Lead mis à jour:', leadsData);
+                                  }
+
+                                  console.log('✅ [ATTRIBUTION] Attribution terminée avec succès');
+
+                                  if (onLeadUpdated) {
+                                    await onLeadUpdated();
+                                  }
+                                } catch (error) {
+                                  console.error('❌ [ATTRIBUTION] Erreur lors de la mise à jour du vendeur:', error);
+                                  alert('❌ Erreur lors de la mise à jour');
+                                }
+                              }}
+                              className="opacity-0 group-hover:opacity-100 px-1 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer transition-opacity"
+                              title="Cliquez pour changer de vendeur"
+                            >
+                              <option value="">-- Désassigner --</option>
+                              <option value="Super Admin">Super Admin</option>
+                              {sellers.map((seller) => (
+                                <option key={seller.id} value={seller.full_name}>
+                                  {seller.full_name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        ) : (
+                          <select
+                            value=""
+                            onChange={async (e) => {
+                              const newVendeur = e.target.value;
+                              try {
+                                console.log('🔄 [ATTRIBUTION] Attribution du lead', lead.id, 'au vendeur:', newVendeur);
+                                const selectedSeller = sellers.find(s => s.full_name === newVendeur);
+                                console.log('🔍 [ATTRIBUTION] Vendeur trouvé:', selectedSeller);
+
+                                const { data: clientData, error: clientError } = await supabase
+                                  .from('clients')
+                                  .update({
+                                    vendeur: newVendeur || null,
+                                    date_affectation: newVendeur ? new Date().toISOString() : null
+                                  })
+                                  .eq('id', lead.id)
+                                  .select();
+
+                                if (clientError) {
+                                  console.error('❌ [ATTRIBUTION] Erreur clients:', clientError);
+                                  alert('❌ Erreur lors de la mise à jour');
+                                  return;
+                                }
+
+                                console.log('✅ [ATTRIBUTION] Client mis à jour:', clientData);
+
+                                const { data: leadsData, error: leadsError } = await supabase
+                                  .from('leads')
+                                  .update({
+                                    assigned_to: selectedSeller?.id || null,
+                                    conseiller: newVendeur || null
+                                  })
+                                  .eq('id', lead.id)
+                                  .select();
+
+                                if (leadsError) {
+                                  console.error('❌ [ATTRIBUTION] Erreur leads:', leadsError);
+                                } else {
+                                  console.log('✅ [ATTRIBUTION] Lead mis à jour:', leadsData);
+                                }
+
+                                console.log('✅ [ATTRIBUTION] Attribution terminée avec succès');
+
+                                if (onLeadUpdated) {
+                                  await onLeadUpdated();
+                                }
+                              } catch (error) {
+                                console.error('❌ [ATTRIBUTION] Erreur lors de la mise à jour du vendeur:', error);
+                                alert('❌ Erreur lors de la mise à jour');
                               }
-                            } catch (error) {
-                              console.error('Erreur lors de la mise à jour du vendeur:', error);
-                              alert('❌ Erreur lors de la mise à jour');
-                            }
-                          }}
-                          className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                        >
-                          <option value="">-- Sélectionner --</option>
-                          <option value="Super Admin">Super Admin</option>
-                          {sellers.map((seller) => (
-                            <option key={seller.id} value={seller.full_name}>
-                              {seller.full_name}
-                            </option>
-                          ))}
-                        </select>
+                            }}
+                            className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                          >
+                            <option value="">-- Sélectionner --</option>
+                            <option value="Super Admin">Super Admin</option>
+                            {sellers.map((seller) => (
+                              <option key={seller.id} value={seller.full_name}>
+                                {seller.full_name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                       </td>
                       <td className="py-2 px-3 border-r border-gray-200">
                         <div className="text-xs text-gray-700">{lead.dateCreation}</div>
@@ -1181,55 +1416,79 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 <div className="bg-white p-4 sm:p-6 rounded border border-gray-300">
                   <h3 className="text-base sm:text-lg font-bold text-gray-800 mb-4">Liste des commentaires</h3>
 
+                  {/* Formulaire d'ajout de commentaire */}
+                  <div className="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Ajouter un commentaire
+                    </label>
+                    <textarea
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      placeholder="Écrivez votre commentaire ici..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                      rows={3}
+                    />
+                    <div className="flex justify-end mt-2">
+                      <button
+                        onClick={addComment}
+                        disabled={!newComment.trim() || addingComment}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        {addingComment ? 'Ajout...' : 'Ajouter le commentaire'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Liste des commentaires */}
                   <div className="space-y-4">
-                    <div className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-blue-600" />
-                        </div>
+                    {loadingComments ? (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="text-sm text-gray-500 mt-2">Chargement des commentaires...</p>
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-semibold text-gray-800">Lead créé</p>
-                          <span className="text-xs text-gray-500">{editedLead?.dateCreation}</span>
-                        </div>
-                        <p className="text-sm text-gray-600">Le lead a été créé dans le système</p>
+                    ) : comments.length === 0 ? (
+                      <div className="text-center py-8">
+                        <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">Aucun commentaire pour le moment</p>
+                        <p className="text-xs text-gray-400 mt-1">Ajoutez le premier commentaire ci-dessus</p>
                       </div>
-                    </div>
-
-                    <div className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                          <Calendar className="w-5 h-5 text-green-600" />
+                    ) : (
+                      comments.map((comment) => (
+                        <div key={comment.id} className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200 last:border-b-0 group hover:bg-gray-50 transition-colors rounded-lg p-2">
+                          <div className="flex-shrink-0">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                              <MessageSquare className="w-5 h-5 text-blue-600" />
+                            </div>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-sm font-semibold text-gray-800">{comment.author_name}</p>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-500">
+                                  {new Date(comment.created_at).toLocaleDateString('fr-FR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
+                                <button
+                                  onClick={() => deleteComment(comment.id)}
+                                  disabled={deletingCommentId === comment.id}
+                                  className="p-1 hover:bg-red-100 rounded-full transition-colors group-hover:opacity-100 opacity-0 disabled:opacity-50"
+                                  title="Supprimer le commentaire"
+                                >
+                                  <X className="w-4 h-4 text-red-600" />
+                                </button>
+                              </div>
+                            </div>
+                            <p className="text-sm text-gray-600 whitespace-pre-wrap">{comment.comment_text}</p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-semibold text-gray-800">Statut modifié</p>
-                          <span className="text-xs text-gray-500">Il y a 2 heures</span>
-                        </div>
-                        <p className="text-sm text-gray-600">Le statut a été changé en "{editedLead?.status?.name || 'N/A'}"</p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200">
-                      <div className="flex-shrink-0">
-                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                          <Mail className="w-5 h-5 text-purple-600" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-semibold text-gray-800">Email envoyé</p>
-                          <span className="text-xs text-gray-500">Il y a 1 jour</span>
-                        </div>
-                        <p className="text-sm text-gray-600">Email de bienvenue envoyé à {editedLead?.email}</p>
-                      </div>
-                    </div>
-
-                    <div className="text-center py-4 text-sm text-gray-500">
-                      Plus d'activités à venir...
-                    </div>
+                      ))
+                    )}
                   </div>
                 </div>
               )}

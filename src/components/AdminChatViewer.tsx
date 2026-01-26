@@ -315,6 +315,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
 
   const clientsWithDiscussions = clients
     .filter(client => clientsWithMessages.has(client.id))
+    .filter(client => !client.vendeur || client.vendeur.trim() === '')
     .filter(client => {
       if (!searchQuery.trim()) return true;
       const query = searchQuery.toLowerCase();
@@ -323,7 +324,9 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
       return fullName.includes(query) ||
              nameParts.some(part => part.startsWith(query));
     });
-  const clientsWithoutDiscussions = clients.filter(client => !clientsWithMessages.has(client.id));
+  const clientsWithoutDiscussions = clients
+    .filter(client => !clientsWithMessages.has(client.id))
+    .filter(client => !client.vendeur || client.vendeur.trim() === '');
 
   const ClientCard = ({ client }: { client: Client }) => {
     const highlightText = (text: string, query: string) => {
