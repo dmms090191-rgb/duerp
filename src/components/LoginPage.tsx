@@ -98,28 +98,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
     }, 16);
   };
 
-  const handleDigitClick = (digit: number, e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  const handleDigitClick = (digit: number) => {
+    if (password.length < 6) {
+      setPassword(prev => prev + digit.toString());
+      setError('');
 
-    if (isLoading || password.length >= 6) {
-      return;
-    }
-
-    setPassword(prev => prev + digit.toString());
-    setError('');
-
-    if (voiceEnabled) {
-      try {
+      if (voiceEnabled) {
         const synth = window.speechSynthesis;
         const utterance = new SpeechSynthesisUtterance(digit.toString());
         utterance.lang = 'fr-FR';
         utterance.rate = 1;
         synth.speak(utterance);
-      } catch (error) {
-        console.error('Speech synthesis error:', error);
       }
     }
   };
@@ -411,16 +400,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                       </label>
                       <button
                         type="button"
-                        onPointerDown={(e) => {
-                          e.preventDefault();
-                          setShowPassword(!showPassword);
-                        }}
-                        className="text-gray-600 hover:text-gray-800 active:text-gray-900 transition-colors p-1 touch-manipulation select-none"
-                        style={{
-                          WebkitTapHighlightColor: 'transparent',
-                          WebkitUserSelect: 'none',
-                          userSelect: 'none'
-                        }}
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-gray-600 hover:text-gray-800 transition-colors p-1"
                       >
                         {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
                       </button>
@@ -439,19 +420,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                       ))}
                       <button
                         type="button"
-                        onPointerDown={(e) => {
-                          e.preventDefault();
-                          if (!isLoading && password.length > 0) {
-                            handleClearPassword();
-                          }
-                        }}
+                        onClick={handleClearPassword}
                         disabled={isLoading || password.length === 0}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 active:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ml-1 touch-manipulation select-none"
-                        style={{
-                          WebkitTapHighlightColor: 'transparent',
-                          WebkitUserSelect: 'none',
-                          userSelect: 'none'
-                        }}
+                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ml-1"
                       >
                         <X className="w-6 h-6" />
                       </button>
@@ -462,19 +433,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                         <button
                           key={digit}
                           type="button"
-                          onPointerDown={(e) => {
-                            e.preventDefault();
-                            if (!isLoading && password.length < 6) {
-                              handleDigitClick(digit, e);
-                            }
-                          }}
+                          onClick={() => handleDigitClick(digit)}
                           disabled={isLoading || password.length >= 6}
-                          className="aspect-square bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-xl text-2xl font-semibold text-gray-700 transition-all duration-150 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300 touch-manipulation select-none"
-                          style={{
-                            WebkitTapHighlightColor: 'transparent',
-                            WebkitUserSelect: 'none',
-                            userSelect: 'none'
-                          }}
+                          className="aspect-square bg-gray-100 hover:bg-gray-200 rounded-xl text-2xl font-semibold text-gray-700 transition-all duration-150 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300"
                         >
                           {digit}
                         </button>
@@ -508,8 +469,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                   <button
                     type="submit"
                     disabled={isLoading || (!email && !siret) || password.length !== 6}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-full text-lg font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
-                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-full text-lg font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     {isLoading ? (
                       <>

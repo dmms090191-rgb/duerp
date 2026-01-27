@@ -32,28 +32,21 @@ export const sellerService = {
   },
 
   async deleteSeller(id: string) {
-    const response = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-seller`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ seller_id: id })
-      }
-    );
+    const { error } = await supabase
+      .from('sellers')
+      .delete()
+      .eq('id', id);
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to delete seller');
-    }
+    if (error) throw error;
   },
 
   async deleteMultipleSellers(ids: string[]) {
-    // Delete each seller using the edge function to ensure auth users are also deleted
-    const deletePromises = ids.map(id => this.deleteSeller(id));
-    await Promise.all(deletePromises);
+    const { error } = await supabase
+      .from('sellers')
+      .delete()
+      .in('id', ids);
+
+    if (error) throw error;
   },
 
   async getSellerByEmail(email: string) {

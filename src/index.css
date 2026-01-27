@@ -24,27 +24,14 @@
     @apply scroll-smooth;
   }
 
-  /* Optimisations tactiles iOS */
-  button, a, input, textarea, select {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
-
-  /* Empêcher le zoom double-tap sur iOS */
-  input, textarea, select, button {
-    touch-action: manipulation;
-  }
-
   html {
     width: 100%;
     max-width: 100vw;
-    -webkit-text-size-adjust: 100%;
   }
 
   body {
     width: 100%;
     max-width: 100vw;
-    -webkit-touch-callout: none;
   }
 
   /* Empêcher le scroll horizontal sur desktop uniquement */

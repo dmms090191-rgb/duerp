@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+import ClientLogin from './components/ClientLogin';
 import ClientDashboard from './components/ClientDashboard';
+import SellerLogin from './components/SellerLogin';
 import SellerDashboard from './components/SellerDashboard';
+import AdminLogin from './components/AdminLogin';
 import SecteurTertiaire from './pages/SecteurTertiaire';
 import SecteurResidentiel from './pages/SecteurResidentiel';
 import SecteurIndustriel from './pages/SecteurIndustriel';
@@ -160,7 +163,7 @@ function App() {
           prenom: seller.full_name?.split(' ')[0] || '',
           full_name: seller.full_name,
           email: seller.email,
-          motDePasse: seller.password || '',
+          motDePasse: '',
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined
@@ -273,7 +276,6 @@ function App() {
       setSellers(updatedSellers);
       setSellerData(updatedSeller);
       sessionStorage.setItem('sellerData', JSON.stringify(updatedSeller));
-      sessionStorage.setItem('sellerEmail', email);
       return true;
     }
 
@@ -311,7 +313,6 @@ function App() {
           setUser(adminUser);
           sessionStorage.setItem('isAdminLoggedIn', 'true');
           sessionStorage.setItem('adminUser', JSON.stringify(adminUser));
-          sessionStorage.setItem('adminEmail', email);
           return true;
         }
       } catch (error) {
@@ -331,7 +332,6 @@ function App() {
       setUser(adminUser);
       sessionStorage.setItem('isAdminLoggedIn', 'true');
       sessionStorage.setItem('adminUser', JSON.stringify(adminUser));
-      sessionStorage.setItem('adminEmail', email);
       return true;
     }
 
@@ -494,8 +494,6 @@ function App() {
           }
         }
       }
-
-      await supabase.auth.signOut();
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
@@ -1090,7 +1088,13 @@ function App() {
 
           <Route
             path="/client-login"
-            element={<Navigate to="/" replace />}
+            element={
+              clientData ? (
+                <Navigate to="/client/dashboard" replace />
+              ) : (
+                <ClientLogin onLoginSuccess={handleClientLogin} />
+              )
+            }
           />
 
           <Route
@@ -1118,7 +1122,13 @@ function App() {
 
           <Route
             path="/seller-login"
-            element={<Navigate to="/" replace />}
+            element={
+              sellerData ? (
+                <Navigate to="/seller/dashboard" replace />
+              ) : (
+                <SellerLogin sellers={sellers} onLoginSuccess={handleSellerLogin} />
+              )
+            }
           />
 
           <Route
@@ -1149,7 +1159,13 @@ function App() {
 
           <Route
             path="/admin-login"
-            element={<Navigate to="/" replace />}
+            element={
+              isLoggedIn && user?.type === 'admin' ? (
+                <Navigate to="/" replace />
+              ) : (
+                <AdminLogin admins={admins} onLoginSuccess={handleLogin} />
+              )
+            }
           />
 
           <Route

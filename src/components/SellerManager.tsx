@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare, RefreshCw } from 'lucide-react';
+import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { sellerService } from '../services/sellerService';
 
@@ -19,7 +19,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const [showPassword, setShowPassword] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [editedPassword, setEditedPassword] = useState('');
-  const [syncingPasswordId, setSyncingPasswordId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -42,39 +41,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Vérifier si l'email existe déjà dans la liste des vendeurs
-    const emailExists = sellers.some(seller =>
-      seller.email.toLowerCase() === formData.email.toLowerCase()
-    );
-
-    if (emailExists) {
-      alert(`❌ Un compte avec l'email "${formData.email}" existe déjà.\n\nVeuillez utiliser un autre email ou vérifier la liste des vendeurs existants.`);
-      return;
-    }
-
     try {
-      // Nettoyer tout utilisateur auth orphelin avec cet email
-      console.log('Nettoyage des utilisateurs auth orphelins...');
-      const cleanupResponse = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cleanup-auth-user`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: formData.email })
-        }
-      );
-
-      if (cleanupResponse.ok) {
-        const cleanupData = await cleanupResponse.json();
-        console.log('✅ Nettoyage terminé:', cleanupData);
-      } else {
-        console.warn('⚠️ Nettoyage non effectué:', await cleanupResponse.text());
-      }
-
-      // Créer le vendeur
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-seller`,
         {
@@ -103,7 +70,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           nom: seller.full_name?.split(' ').pop() || '',
           prenom: seller.full_name?.split(' ')[0] || '',
           email: seller.email,
-          motDePasse: seller.password || '',
+          motDePasse: '',
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined
@@ -129,17 +96,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
       } else {
         const errorData = await response.json();
         console.error('❌ Erreur création vendeur:', errorData);
-
-        // Traduire les erreurs courantes en français
-        let errorMessage = errorData.error || 'Erreur inconnue';
-
-        if (errorMessage.includes('already been registered') || errorMessage.includes('User already registered')) {
-          errorMessage = `Un problème a été détecté avec l'email "${formData.email}".\n\nUn compte d'authentification existe mais n'a pas pu être nettoyé automatiquement.\n\nVeuillez réessayer dans quelques secondes ou utiliser un autre email.`;
-        } else if (errorMessage.includes('Invalid email')) {
-          errorMessage = 'L\'adresse email saisie n\'est pas valide.';
-        }
-
-        alert(`❌ Erreur lors de la création du vendeur:\n\n${errorMessage}`);
+        alert(`❌ Erreur lors de la création du vendeur:\n\n${errorData.error || 'Erreur inconnue'}`);
       }
     } catch (error: any) {
       console.error('❌ Erreur réseau:', error);
@@ -177,7 +134,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
 
   const handleEditPassword = () => {
     if (selectedSellerDetails) {
-      setEditedPassword(selectedSellerDetails.motDePasse || '');
+      setEditedPassword(selectedSellerDetails.motDePasse);
       setIsEditingPassword(true);
     }
   };
@@ -220,49 +177,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const handleCancelEdit = () => {
     setIsEditingPassword(false);
     setEditedPassword('');
-  };
-
-  const handleSyncPassword = async (seller: Seller) => {
-    if (!seller.motDePasse) {
-      alert('❌ Aucun mot de passe enregistré pour ce vendeur');
-      return;
-    }
-
-    if (!confirm(`Voulez-vous synchroniser le mot de passe pour ${seller.prenom} ${seller.nom}?\n\nCela mettra à jour le mot de passe d'authentification avec le mot de passe enregistré: ${seller.motDePasse}`)) {
-      return;
-    }
-
-    setSyncingPasswordId(seller.id);
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-seller-password`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sellerId: seller.id,
-            newPassword: seller.motDePasse
-          })
-        }
-      );
-
-      if (response.ok) {
-        alert(`✅ Mot de passe synchronisé avec succès pour ${seller.prenom} ${seller.nom}\n\nLe vendeur peut maintenant se connecter avec le mot de passe: ${seller.motDePasse}`);
-      } else {
-        const errorData = await response.json();
-        console.error('Erreur lors de la synchronisation:', errorData);
-        alert('❌ Erreur lors de la synchronisation du mot de passe');
-      }
-    } catch (error: any) {
-      console.error('Erreur lors de la synchronisation:', error);
-      alert('❌ Erreur lors de la synchronisation du mot de passe');
-    } finally {
-      setSyncingPasswordId(null);
-    }
   };
 
   return (
@@ -547,7 +461,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                             {seller.dateCreation}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-2">
                               <button
                                 onClick={() => setSelectedSellerDetails(seller)}
                                 className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
@@ -555,15 +469,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                               >
                                 <Eye className="w-4 h-4" />
                                 Détails
-                              </button>
-                              <button
-                                onClick={() => handleSyncPassword(seller)}
-                                disabled={syncingPasswordId === seller.id}
-                                className="flex items-center gap-2 bg-orange-600 text-white px-3 py-1.5 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Synchroniser le mot de passe"
-                              >
-                                <RefreshCw className={`w-4 h-4 ${syncingPasswordId === seller.id ? 'animate-spin' : ''}`} />
-                                Sync MDP
                               </button>
                               {onOpenChat && (
                                 <button
@@ -690,13 +595,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   ) : (
                     <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 border-3 border-blue-300 px-6 py-5 rounded-2xl shadow-lg flex items-center justify-between overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-200/0 via-blue-200/50 to-blue-200/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                      {selectedSellerDetails.motDePasse ? (
-                        <p className="relative text-base font-mono font-bold text-gray-900">{selectedSellerDetails.motDePasse}</p>
-                      ) : (
-                        <p className="relative text-sm italic text-gray-500">
-                          Mot de passe non enregistré - Cliquez sur Modifier pour définir un nouveau mot de passe
-                        </p>
-                      )}
+                      <p className="relative text-base font-mono font-bold text-gray-900">{selectedSellerDetails.motDePasse}</p>
                       <button
                         onClick={handleEditPassword}
                         className="relative flex items-center gap-2 bg-white text-blue-600 px-5 py-3 rounded-xl hover:bg-blue-50 transition-all duration-300 border-2 border-blue-300 shadow-md hover:shadow-lg font-bold transform hover:scale-105"
