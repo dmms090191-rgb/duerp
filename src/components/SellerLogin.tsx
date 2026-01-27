@@ -17,23 +17,54 @@ const SellerLogin: React.FC<SellerLoginProps> = ({ sellers, onLoginSuccess }) =>
     e.preventDefault();
     setError('');
 
-    const seller = sellers.find(
-      s => s.email === email && s.motDePasse === password
-    );
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    if (seller) {
-      // Mise à jour du statut en ligne
+      if (authError) {
+        console.error('Erreur authentification:', authError);
+        setError('Email ou mot de passe incorrect');
+        return;
+      }
+
+      const { data: sellerData, error: sellerError } = await supabase
+        .from('sellers')
+        .select('*')
+        .eq('id', authData.user.id)
+        .maybeSingle();
+
+      if (sellerError || !sellerData) {
+        console.error('Erreur récupération vendeur:', sellerError);
+        await supabase.auth.signOut();
+        setError('Ce compte n\'est pas un compte vendeur');
+        return;
+      }
+
       await supabase
         .from('sellers')
         .update({
           is_online: true,
           last_connection: new Date().toISOString()
         })
-        .eq('id', seller.id);
+        .eq('id', sellerData.id);
 
-      onLoginSuccess({ ...seller, isOnline: true, lastConnection: new Date().toISOString() });
-    } else {
-      setError('Email ou mot de passe incorrect');
+      const formattedSeller: Seller = {
+        id: sellerData.id,
+        nom: sellerData.full_name?.split(' ').pop() || '',
+        prenom: sellerData.full_name?.split(' ')[0] || '',
+        email: sellerData.email,
+        motDePasse: sellerData.password || '',
+        dateCreation: new Date(sellerData.created_at).toLocaleString('fr-FR'),
+        isOnline: true,
+        lastConnection: new Date().toISOString()
+      };
+
+      onLoginSuccess(formattedSeller);
+    } catch (error: any) {
+      console.error('Erreur connexion:', error);
+      setError('Une erreur est survenue lors de la connexion');
     }
   };
 

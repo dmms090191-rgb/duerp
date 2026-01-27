@@ -41,7 +41,39 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Vérifier si l'email existe déjà dans la liste des vendeurs
+    const emailExists = sellers.some(seller =>
+      seller.email.toLowerCase() === formData.email.toLowerCase()
+    );
+
+    if (emailExists) {
+      alert(`❌ Un compte avec l'email "${formData.email}" existe déjà.\n\nVeuillez utiliser un autre email ou vérifier la liste des vendeurs existants.`);
+      return;
+    }
+
     try {
+      // Nettoyer tout utilisateur auth orphelin avec cet email
+      console.log('Nettoyage des utilisateurs auth orphelins...');
+      const cleanupResponse = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/cleanup-auth-user`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: formData.email })
+        }
+      );
+
+      if (cleanupResponse.ok) {
+        const cleanupData = await cleanupResponse.json();
+        console.log('✅ Nettoyage terminé:', cleanupData);
+      } else {
+        console.warn('⚠️ Nettoyage non effectué:', await cleanupResponse.text());
+      }
+
+      // Créer le vendeur
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-seller`,
         {
@@ -70,7 +102,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           nom: seller.full_name?.split(' ').pop() || '',
           prenom: seller.full_name?.split(' ')[0] || '',
           email: seller.email,
-          motDePasse: '',
+          motDePasse: seller.password || '',
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined
@@ -96,7 +128,17 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
       } else {
         const errorData = await response.json();
         console.error('❌ Erreur création vendeur:', errorData);
-        alert(`❌ Erreur lors de la création du vendeur:\n\n${errorData.error || 'Erreur inconnue'}`);
+
+        // Traduire les erreurs courantes en français
+        let errorMessage = errorData.error || 'Erreur inconnue';
+
+        if (errorMessage.includes('already been registered') || errorMessage.includes('User already registered')) {
+          errorMessage = `Un problème a été détecté avec l'email "${formData.email}".\n\nUn compte d'authentification existe mais n'a pas pu être nettoyé automatiquement.\n\nVeuillez réessayer dans quelques secondes ou utiliser un autre email.`;
+        } else if (errorMessage.includes('Invalid email')) {
+          errorMessage = 'L\'adresse email saisie n\'est pas valide.';
+        }
+
+        alert(`❌ Erreur lors de la création du vendeur:\n\n${errorMessage}`);
       }
     } catch (error: any) {
       console.error('❌ Erreur réseau:', error);
@@ -134,7 +176,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
 
   const handleEditPassword = () => {
     if (selectedSellerDetails) {
-      setEditedPassword(selectedSellerDetails.motDePasse);
+      setEditedPassword(selectedSellerDetails.motDePasse || '');
       setIsEditingPassword(true);
     }
   };
@@ -595,7 +637,13 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   ) : (
                     <div className="relative bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 border-3 border-blue-300 px-6 py-5 rounded-2xl shadow-lg flex items-center justify-between overflow-hidden group">
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-200/0 via-blue-200/50 to-blue-200/0 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                      <p className="relative text-base font-mono font-bold text-gray-900">{selectedSellerDetails.motDePasse}</p>
+                      {selectedSellerDetails.motDePasse ? (
+                        <p className="relative text-base font-mono font-bold text-gray-900">{selectedSellerDetails.motDePasse}</p>
+                      ) : (
+                        <p className="relative text-sm italic text-gray-500">
+                          Mot de passe non enregistré - Cliquez sur Modifier pour définir un nouveau mot de passe
+                        </p>
+                      )}
                       <button
                         onClick={handleEditPassword}
                         className="relative flex items-center gap-2 bg-white text-blue-600 px-5 py-3 rounded-xl hover:bg-blue-50 transition-all duration-300 border-2 border-blue-300 shadow-md hover:shadow-lg font-bold transform hover:scale-105"

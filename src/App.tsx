@@ -163,7 +163,7 @@ function App() {
           prenom: seller.full_name?.split(' ')[0] || '',
           full_name: seller.full_name,
           email: seller.email,
-          motDePasse: '',
+          motDePasse: seller.password || '',
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined
@@ -494,6 +494,8 @@ function App() {
           }
         }
       }
+
+      await supabase.auth.signOut();
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
