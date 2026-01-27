@@ -4,7 +4,7 @@ import { Seller } from '../types/Seller';
 import SellerChatList from './SellerChatList';
 import SellerWorkChat from './SellerWorkChat';
 import SellerNotificationSystem from './SellerNotificationSystem';
-import Argumentaire from './Argumentaire';
+import ArgumentaireViewer from './ArgumentaireViewer';
 import { supabase } from '../lib/supabase';
 import { statusService } from '../services/statusService';
 import { clientService } from '../services/clientService';
@@ -891,15 +891,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
             {activeTab === 'argumentaire' && (
               <div>
-                <div className="mb-6 sm:mb-8">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
-                    Argumentaire
-                  </h1>
-                  <p className="text-sm sm:text-base text-gray-600 font-medium">
-                    Consultez tous vos arguments de vente
-                  </p>
-                </div>
-                <Argumentaire />
+                <ArgumentaireViewer />
               </div>
             )}
           </div>
