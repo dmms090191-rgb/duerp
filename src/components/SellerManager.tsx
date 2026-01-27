@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare } from 'lucide-react';
+import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare, RefreshCw } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { sellerService } from '../services/sellerService';
 
@@ -19,6 +19,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const [showPassword, setShowPassword] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [editedPassword, setEditedPassword] = useState('');
+  const [syncingPasswordId, setSyncingPasswordId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -219,6 +220,49 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const handleCancelEdit = () => {
     setIsEditingPassword(false);
     setEditedPassword('');
+  };
+
+  const handleSyncPassword = async (seller: Seller) => {
+    if (!seller.motDePasse) {
+      alert('❌ Aucun mot de passe enregistré pour ce vendeur');
+      return;
+    }
+
+    if (!confirm(`Voulez-vous synchroniser le mot de passe pour ${seller.prenom} ${seller.nom}?\n\nCela mettra à jour le mot de passe d'authentification avec le mot de passe enregistré: ${seller.motDePasse}`)) {
+      return;
+    }
+
+    setSyncingPasswordId(seller.id);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-seller-password`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sellerId: seller.id,
+            newPassword: seller.motDePasse
+          })
+        }
+      );
+
+      if (response.ok) {
+        alert(`✅ Mot de passe synchronisé avec succès pour ${seller.prenom} ${seller.nom}\n\nLe vendeur peut maintenant se connecter avec le mot de passe: ${seller.motDePasse}`);
+      } else {
+        const errorData = await response.json();
+        console.error('Erreur lors de la synchronisation:', errorData);
+        alert('❌ Erreur lors de la synchronisation du mot de passe');
+      }
+    } catch (error: any) {
+      console.error('Erreur lors de la synchronisation:', error);
+      alert('❌ Erreur lors de la synchronisation du mot de passe');
+    } finally {
+      setSyncingPasswordId(null);
+    }
   };
 
   return (
@@ -503,7 +547,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                             {seller.dateCreation}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <button
                                 onClick={() => setSelectedSellerDetails(seller)}
                                 className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
@@ -511,6 +555,15 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                               >
                                 <Eye className="w-4 h-4" />
                                 Détails
+                              </button>
+                              <button
+                                onClick={() => handleSyncPassword(seller)}
+                                disabled={syncingPasswordId === seller.id}
+                                className="flex items-center gap-2 bg-orange-600 text-white px-3 py-1.5 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Synchroniser le mot de passe"
+                              >
+                                <RefreshCw className={`w-4 h-4 ${syncingPasswordId === seller.id ? 'animate-spin' : ''}`} />
+                                Sync MDP
                               </button>
                               {onOpenChat && (
                                 <button
