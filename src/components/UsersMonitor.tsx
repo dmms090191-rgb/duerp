@@ -56,22 +56,24 @@ const UsersMonitor: React.FC<UsersMonitorProps> = ({ sellers, clients }) => {
               <p className="text-gray-500 text-sm text-center py-8">Aucun client en ligne</p>
             ) : (
               onlineClients.map(client => (
-                <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <div key={client.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-400 rounded-lg hover:shadow-md transition-all duration-200">
                   <div className="flex items-center gap-3">
                     <div className="relative">
-                      <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                         {client.prenom?.[0] || 'C'}{client.nom?.[0] || 'L'}
                       </div>
-                      <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white bg-green-500" />
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white bg-green-500 animate-pulse shadow-lg">
+                        <Circle className="w-3 h-3 fill-white text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                      </div>
                     </div>
                     <div>
-                      <div className="font-medium text-gray-900">{client.prenom} {client.nom}</div>
-                      <div className="text-sm text-gray-500">{client.email}</div>
+                      <div className="font-bold text-green-800 text-lg">{client.prenom} {client.nom}</div>
+                      <div className="text-sm text-green-600 font-medium">{client.email}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
-                      <Circle className="w-2 h-2 fill-current" />
+                    <div className="flex items-center gap-2 bg-green-500 text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-md">
+                      <Circle className="w-2.5 h-2.5 fill-current animate-pulse" />
                       En ligne
                     </div>
                   </div>

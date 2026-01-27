@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send } from 'lucide-react';
 import ChatWindow from './ChatWindow';
+import ClientNotificationSystem from './ClientNotificationSystem';
 import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../services/pdfService';
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
 import { supabase } from '../lib/supabase';
@@ -73,6 +74,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   const [showPassword, setShowPassword] = useState(false);
   const [savingInfo, setSavingInfo] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+  const [currentVendeur, setCurrentVendeur] = useState(client.vendeur || '');
 
   const [covidInfo, setCovidInfo] = useState('');
   const [affichageSpecifique, setAffichageSpecifique] = useState('');
@@ -137,6 +139,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
         setEditableEmail(freshData.email || '');
         setEditablePhone(freshData.phone || '');
         setEditablePortable(freshData.portable || '');
+        setCurrentVendeur(freshData.vendeur || '');
 
         Object.assign(client, freshData);
       } catch (err) {
@@ -144,7 +147,52 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
       }
     };
 
+    const updateOnlineStatus = async () => {
+      try {
+        const clientId = parseInt(client.id);
+        await supabase
+          .from('clients')
+          .update({
+            is_online: true,
+            last_connection: new Date().toISOString()
+          })
+          .eq('id', clientId);
+        console.log('✅ [ClientDashboard] Statut en ligne mis à jour');
+      } catch (err) {
+        console.error('❌ [ClientDashboard] Erreur mise à jour statut:', err);
+      }
+    };
+
     loadClientData();
+    updateOnlineStatus();
+
+    // Rafraîchir les données du client toutes les 10 secondes pour détecter les changements d'attribution
+    const refreshInterval = setInterval(() => {
+      loadClientData();
+      updateOnlineStatus();
+    }, 10000);
+
+    const statusInterval = setInterval(updateOnlineStatus, 30000);
+
+    return () => {
+      clearInterval(refreshInterval);
+      clearInterval(statusInterval);
+      const setOfflineStatus = async () => {
+        try {
+          const clientId = parseInt(client.id);
+          await supabase
+            .from('clients')
+            .update({
+              is_online: false,
+              last_connection: new Date().toISOString()
+            })
+            .eq('id', clientId);
+        } catch (err) {
+          console.error('❌ [ClientDashboard] Erreur déconnexion:', err);
+        }
+      };
+      setOfflineStatus();
+    };
   }, [client.id]);
 
   const loadAdminNotes = async () => {
@@ -440,7 +488,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
         <div className="absolute inset-0 backdrop-blur-3xl"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4 md:py-5">
+          <div className="flex items-center justify-between py-6 md:py-8 lg:py-10">
             <div className="flex items-center gap-3 md:gap-4 flex-1">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -485,25 +533,30 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               )}
             </div>
 
-            <div className="absolute top-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl p-1 md:p-1.5 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
+            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+              <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl p-2 md:p-3 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
                 <img
                   src="/kk copy.png"
                   alt="Cabinet FPE"
-                  className="h-6 md:h-8 lg:h-10 w-auto"
+                  className="h-12 md:h-16 lg:h-20 w-auto"
                 />
               </div>
             </div>
 
-            <div className="flex-1"></div>
+            <div className="flex-1 flex items-center justify-end gap-3">
+              <ClientNotificationSystem
+                clientId={client.id}
+                onNotificationClick={() => setActiveTab('messagerie')}
+              />
+            </div>
           </div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-600 shadow-lg"></div>
       </header>
 
-      <div className="pt-28 md:pt-32 lg:pt-36 pb-8 md:pb-16 flex">
-        <aside className={`fixed left-0 top-28 md:top-32 lg:top-36 bottom-0 w-64 md:w-72 flex flex-col transition-transform duration-300 z-30 ${
+      <div className="pt-32 md:pt-40 lg:pt-48 pb-8 md:pb-16 flex">
+        <aside className={`fixed left-0 top-32 md:top-40 lg:top-48 bottom-0 w-64 md:w-72 flex flex-col transition-transform duration-300 z-30 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-indigo-800/95 backdrop-blur-2xl"></div>
@@ -592,7 +645,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     <div>
                       <p className="text-xs md:text-sm font-bold text-white/80 uppercase tracking-widest mb-2">Profil Client</p>
                       <h1 className="text-3xl md:text-5xl font-black text-white drop-shadow-2xl">
-                        {client.full_name}
+                        {client.prenom && client.nom ? `${client.prenom} ${client.nom}` : client.full_name}
                       </h1>
                     </div>
                   </div>
@@ -4810,7 +4863,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     currentUserId={client.id}
                     currentUserType="client"
                     senderName={client.full_name}
-                    recipientName={client.vendeur && client.vendeur !== 'Super Admin' ? client.vendeur : 'Cabinet FPE'}
+                    recipientName={currentVendeur && currentVendeur !== 'Super Admin' ? currentVendeur : 'Cabinet FPE'}
                     supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
                     supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
                   />

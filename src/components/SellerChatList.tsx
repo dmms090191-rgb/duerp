@@ -28,6 +28,13 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
 
   useEffect(() => {
     loadClients();
+
+    // Rafraîchir la liste toutes les 5 secondes pour détecter les changements d'attribution
+    const interval = setInterval(() => {
+      loadClients();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadClients = async () => {
@@ -46,6 +53,12 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
       if (response.ok) {
         const data = await response.json();
         setClients(data);
+
+        // Si le client sélectionné n'est plus assigné à ce vendeur, le désélectionner
+        if (selectedClient && !data.some((c: Client) => c.id === selectedClient.id)) {
+          console.log(`🔄 Client ${selectedClient.full_name} n'est plus assigné à ${sellerFullName}`);
+          setSelectedClient(null);
+        }
       }
     } catch (error) {
       console.error('Error loading clients:', error);

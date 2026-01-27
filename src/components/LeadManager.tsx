@@ -4,6 +4,7 @@ import { Lead } from '../types/Lead';
 import { leadService } from '../services/leadService';
 import { statusService } from '../services/statusService';
 import { sellerService } from '../services/sellerService';
+import { adminService } from '../services/adminService';
 import { Status } from '../types/Status';
 import ClientEmailSender from './ClientEmailSender';
 
@@ -29,6 +30,10 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
   const [showModal, setShowModal] = useState(false);
   const [statuses, setStatuses] = useState<Status[]>([]);
   const [sellers, setSellers] = useState<Seller[]>([]);
+  const [showAssignSellerModal, setShowAssignSellerModal] = useState(false);
+  const [selectedSellerForAssignment, setSelectedSellerForAssignment] = useState('');
+  const [assigning, setAssigning] = useState(false);
+  const [superAdmin, setSuperAdmin] = useState<any>(null);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -46,6 +51,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
   useEffect(() => {
     loadStatuses();
     loadSellers();
+    loadSuperAdmin();
   }, []);
 
   const loadStatuses = async () => {
@@ -68,6 +74,16 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
       setSellers(formattedSellers);
     } catch (error) {
       console.error('Erreur lors du chargement des sellers:', error);
+    }
+  };
+
+  const loadSuperAdmin = async () => {
+    try {
+      const admin = await adminService.getSuperAdmin();
+      setSuperAdmin(admin);
+      console.log('✅ Super admin chargé (LeadManager):', admin);
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement du super admin:', error);
     }
   };
 
@@ -271,6 +287,79 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
     } catch (error: any) {
       console.error('❌ ERREUR TRANSFERT:', error);
       alert(`❌ Erreur lors du transfert: ${error.message}`);
+    }
+  };
+
+  const handleOpenAssignSellerModal = () => {
+    if (selectedLeads.length === 0) {
+      alert('⚠️ Veuillez sélectionner au moins un lead.');
+      return;
+    }
+    setSelectedSellerForAssignment('');
+    setShowAssignSellerModal(true);
+  };
+
+  const handleAssignSeller = async () => {
+    if (!selectedSellerForAssignment) {
+      alert('⚠️ Veuillez sélectionner un vendeur.');
+      return;
+    }
+
+    if (selectedLeads.length === 0) {
+      return;
+    }
+
+    setAssigning(true);
+    try {
+      // Vérifier si c'est le super admin ou un seller
+      const isSuperAdmin = superAdmin && selectedSellerForAssignment === superAdmin.id;
+      const selectedSeller = isSuperAdmin ? null : sellers.find(s => s.id === selectedSellerForAssignment);
+
+      if (!isSuperAdmin && !selectedSeller) {
+        alert('⚠️ Vendeur introuvable.');
+        return;
+      }
+
+      const assigneeName = isSuperAdmin ? superAdmin.full_name : selectedSeller!.full_name;
+      console.log(`🔄 Attribution de ${selectedLeads.length} lead(s) à ${assigneeName}`);
+
+      // Préparer les données à mettre à jour
+      const updateData: any = {};
+
+      // Assigner le conseiller (seller ou super admin)
+      if (isSuperAdmin) {
+        updateData.conseiller = superAdmin.full_name;
+        updateData.assigned_agent = superAdmin.id;
+        console.log('✅ Attribution au super admin:', superAdmin.full_name);
+      } else if (selectedSeller) {
+        updateData.conseiller = selectedSeller.full_name;
+        // Si le super admin existe, l'assigner aussi automatiquement
+        if (superAdmin) {
+          updateData.assigned_agent = superAdmin.id;
+          console.log('✅ Conseiller:', selectedSeller.full_name, '+ Super admin:', superAdmin.full_name);
+        }
+      }
+
+      // Mettre à jour tous les leads sélectionnés avec le nouveau conseiller et le super admin
+      for (const leadId of selectedLeads) {
+        await leadService.updateLead(leadId, updateData);
+      }
+
+      console.log('✅ Attribution OK');
+      setShowAssignSellerModal(false);
+      setSelectedSellerForAssignment('');
+      setSelectedLeads([]);
+      alert(`✅ ${selectedLeads.length} lead(s) attribué(s) à ${assigneeName} avec succès !`);
+
+      // Rafraîchir les données depuis la base de données
+      if (onRefreshLeads) {
+        await onRefreshLeads();
+      }
+    } catch (error: any) {
+      console.error('❌ ERREUR ATTRIBUTION:', error);
+      alert(`❌ Erreur lors de l'attribution: ${error.message}`);
+    } finally {
+      setAssigning(false);
     }
   };
 
@@ -678,6 +767,13 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                       <span className="text-sm text-gray-600">
                         {selectedLeads.length} sélectionné{selectedLeads.length > 1 ? 's' : ''}
                       </span>
+                      <button
+                        onClick={handleOpenAssignSellerModal}
+                        className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <UserCheck className="w-4 h-4" />
+                        Attribuer à un vendeur
+                      </button>
                       {onLeadsTransferred && (
                         <button
                           onClick={handleTransferSelected}
@@ -830,7 +926,9 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                                       rendez_vous: new Date(e.target.value).toISOString()
                                     });
                                     alert('✅ Rendez-vous mis à jour !');
-                                    window.location.reload();
+                                    if (onRefreshLeads) {
+                                      await onRefreshLeads();
+                                    }
                                   } catch (error) {
                                     alert('❌ Erreur lors de la mise à jour');
                                   }
@@ -1009,6 +1107,84 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                     Se connecter en tant que ce client
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal d'attribution à un vendeur */}
+      {showAssignSellerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Attribuer à un vendeur
+                </h3>
+                <button
+                  onClick={() => setShowAssignSellerModal(false)}
+                  disabled={assigning}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-sm text-gray-600 mb-4">
+                  Vous allez attribuer <span className="font-semibold text-gray-900">{selectedLeads.length} lead(s)</span> à un vendeur.
+                </p>
+
+                <label htmlFor="seller-select" className="block text-sm font-medium text-gray-700 mb-2">
+                  Sélectionnez un vendeur
+                </label>
+                <select
+                  id="seller-select"
+                  value={selectedSellerForAssignment}
+                  onChange={(e) => setSelectedSellerForAssignment(e.target.value)}
+                  disabled={assigning}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">-- Sélectionner un vendeur --</option>
+                  {superAdmin && (
+                    <option key={superAdmin.id} value={superAdmin.id}>
+                      {superAdmin.full_name} ({superAdmin.email}) - Super Admin
+                    </option>
+                  )}
+                  {sellers.map((seller) => (
+                    <option key={seller.id} value={seller.id}>
+                      {seller.full_name} ({seller.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setShowAssignSellerModal(false)}
+                  disabled={assigning}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleAssignSeller}
+                  disabled={!selectedSellerForAssignment || assigning}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {assigning ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Attribution...
+                    </>
+                  ) : (
+                    <>
+                      <UserCheck className="w-4 h-4" />
+                      Attribuer
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { ShoppingBag, LogOut, User, Bell, Settings, MessageSquare, ArrowLeft, Us
 import { Seller } from '../types/Seller';
 import SellerChatList from './SellerChatList';
 import SellerWorkChat from './SellerWorkChat';
+import SellerNotificationSystem from './SellerNotificationSystem';
 import Argumentaire from './Argumentaire';
 import { supabase } from '../lib/supabase';
 import { statusService } from '../services/statusService';
@@ -368,6 +369,19 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
               </p>
             </div>
 
+            <div className="flex items-center gap-2 sm:gap-3">
+              <SellerNotificationSystem
+                sellerUuid={sellerData.id}
+                sellerFullName={sellerData.full_name}
+                onNotificationClick={(type) => {
+                  if (type === 'client') {
+                    setActiveTab('chat');
+                  } else {
+                    setActiveTab('chat-travail');
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       </header>

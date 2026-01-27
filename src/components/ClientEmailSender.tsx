@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Send, Clock, FileText, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Mail, Send, Clock, FileText, Loader2, CheckCircle, AlertCircle, CreditCard } from 'lucide-react';
 
 interface ClientEmailSenderProps {
   clientId: number;
@@ -69,7 +69,7 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
     }
   };
 
-  const sendEmail = async (emailType: 'identifiants' | 'relance' | 'procedure_prise_en_charge') => {
+  const sendEmail = async (emailType: 'identifiants' | 'relance' | 'procedure_prise_en_charge' | 'autre_moyen_paiement') => {
     setDebugLogs([]); // Reset logs
     addDebugLog('🚀 DÉBUT ENVOI EMAIL');
     addDebugLog(`Type: ${emailType}`);
@@ -178,6 +178,8 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
         return 'Relance';
       case 'procedure_prise_en_charge':
         return 'Procédure de prise en charge';
+      case 'autre_moyen_paiement':
+        return 'Autre moyen de paiement';
       default:
         return type;
     }
@@ -191,6 +193,8 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
         return <Clock className="w-5 h-5" />;
       case 'procedure_prise_en_charge':
         return <FileText className="w-5 h-5" />;
+      case 'autre_moyen_paiement':
+        return <CreditCard className="w-5 h-5" />;
       default:
         return <Send className="w-5 h-5" />;
     }
@@ -204,6 +208,8 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
         return 'from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700';
       case 'procedure_prise_en_charge':
         return 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700';
+      case 'autre_moyen_paiement':
+        return 'from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700';
       default:
         return 'from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700';
     }
@@ -223,10 +229,11 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
     return date.toLocaleDateString('fr-FR');
   };
 
-  const emailTypes: Array<'identifiants' | 'relance' | 'procedure_prise_en_charge'> = [
+  const emailTypes: Array<'identifiants' | 'relance' | 'procedure_prise_en_charge' | 'autre_moyen_paiement'> = [
     'identifiants',
     'relance',
-    'procedure_prise_en_charge'
+    'procedure_prise_en_charge',
+    'autre_moyen_paiement'
   ];
 
   return (
@@ -327,6 +334,7 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
           <li><strong>Identifiants:</strong> Envoie les identifiants de connexion au client</li>
           <li><strong>Relance:</strong> Envoie un email de relance au client</li>
           <li><strong>Procédure de prise en charge:</strong> Envoie la procédure avec facture et attestation PDF</li>
+          <li><strong>Autre moyen de paiement:</strong> Envoie les informations sur les moyens de paiement disponibles</li>
         </ul>
       </div>
 

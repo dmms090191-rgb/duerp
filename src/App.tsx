@@ -115,6 +115,7 @@ function App() {
             activite: lead.activite || '',
             societe: lead.company_name || '',
             siret: lead.siret || '',
+            vendeur: lead.vendeur || '',
             commentaires: lead.commentaires || '',
             address: lead.address || '',
             ville: lead.ville || '',
@@ -135,7 +136,9 @@ function App() {
             status: lead.status,
             creePar: lead.notes?.includes('par') ? lead.notes.split('par ')[1] : 'Admin',
             client_password: lead.client_password || '',
-            client_account_created: lead.client_account_created || false
+            client_account_created: lead.client_account_created || false,
+            isOnline: lead.is_online || false,
+            lastConnection: lead.last_connection || undefined
           };
           console.log('📋 [App] Lead formaté - ID:', formattedLead.id, 'SIRET:', formattedLead.siret, 'Société:', formattedLead.societe);
           return formattedLead;
@@ -181,6 +184,7 @@ function App() {
           activite: client.activite || '',
           societe: client.company_name || '',
           siret: client.siret || '',
+          vendeur: client.vendeur || '',
           commentaires: client.vendeur || '',
           agentAssigne: client.vendeur,
           status_id: client.status_id,
@@ -541,7 +545,9 @@ function App() {
         status: lead.status,
         creePar: lead.notes?.includes('par') ? lead.notes.split('par ')[1] : 'Admin',
         client_password: lead.client_password || '',
-        client_account_created: lead.client_account_created || false
+        client_account_created: lead.client_account_created || false,
+        isOnline: lead.is_online || false,
+        lastConnection: lead.last_connection || undefined
       }));
       console.log('✅ [App] Leads rechargés depuis Supabase:', formattedLeads.length);
       setLeads(formattedLeads);
@@ -593,7 +599,9 @@ function App() {
         status: lead.status,
         creePar: lead.notes?.includes('par') ? lead.notes.split('par ')[1] : 'Admin',
         client_password: lead.client_password || '',
-        client_account_created: lead.client_account_created || false
+        client_account_created: lead.client_account_created || false,
+        isOnline: lead.is_online || false,
+        lastConnection: lead.last_connection || undefined
       }));
       console.log('✅ [App] Leads rechargés depuis Supabase:', formattedLeads.length);
       setLeads(formattedLeads);
@@ -611,92 +619,127 @@ function App() {
     const leadsToTransfer = bulkLeads.filter(lead => leadIds.includes(lead.id));
     console.log('🔄 [BULK TRANSFER] Leads à transférer:', leadsToTransfer);
 
-    const createdClients = [];
-    for (const lead of leadsToTransfer) {
-      try {
-        console.log('🔄 [BULK TRANSFER] Création du client:', lead.email);
-        const client = await clientService.createClient({
-          email: lead.email,
-          full_name: `${lead.prenom} ${lead.nom}`,
-          phone: lead.telephone || '',
-          prenom: lead.prenom,
-          nom: lead.nom,
-          portable: lead.portable,
-          rendez_vous: lead.rendez_vous || undefined,
-          activite: lead.activite,
-          company_name: lead.societe,
-          siret: lead.siret,
-          vendeur: lead.commentaires,
-          address: lead.address,
-          ville: lead.ville,
-          code_postal: lead.code_postal,
-          pays: lead.pays,
-          anniversaire: lead.anniversaire || undefined,
-          autre_courriel: lead.autre_courriel,
-          date_affectation: lead.date_affectation || undefined,
-          representant: lead.representant,
-          prevente: lead.prevente,
-          retention: lead.retention,
-          sous_affilie: lead.sous_affilie,
-          langue: lead.langue,
-          conseiller: lead.conseiller,
-          source: lead.source,
-          qualifiee: lead.qualifiee,
-          status_id: lead.status_id,
-          client_password: lead.client_password,
-          client_account_created: lead.client_account_created,
-        });
-        createdClients.push(client);
-        console.log('✅ [BULK TRANSFER] Client créé:', client);
-      } catch (error) {
-        console.error('❌ [BULK TRANSFER] Erreur création client:', error);
-        throw error;
-      }
+    if (leadsToTransfer.length === 0) {
+      console.error('❌ [BULK TRANSFER] Aucun lead trouvé à transférer');
+      alert('❌ Aucun lead trouvé à transférer');
+      return;
     }
 
-    console.log('🔄 [BULK TRANSFER] Rechargement des clients...');
-    const [clientsData] = await Promise.all([clientService.getAllClients()]);
-    const formattedClients = clientsData.map((client: any) => ({
-      id: client.id,
-      nom: client.nom || client.full_name?.split(' ').pop() || '',
-      prenom: client.prenom || client.full_name?.split(' ')[0] || '',
-      email: client.email,
-      motDePasse: client.client_password || '',
-      telephone: client.phone || '',
-      portable: client.portable || '',
-      dateCreation: new Date(client.created_at).toLocaleString('fr-FR'),
-      dateInscription: new Date(client.created_at).toLocaleString('fr-FR'),
-      rendez_vous: client.rendez_vous || '',
-      activite: client.activite || '',
-      societe: client.company_name || '',
-      siret: client.siret || '',
-      commentaires: client.vendeur || '',
-      agentAssigne: client.assigned_agent_name,
-      status_id: client.status_id,
-      status: client.status,
-      client_password: client.client_password || '',
-      client_account_created: client.client_account_created || false,
-      address: client.address || '',
-      ville: client.ville || '',
-      code_postal: client.code_postal || '',
-      pays: client.pays || 'France',
-      anniversaire: client.anniversaire || '',
-      autre_courriel: client.autre_courriel || '',
-      date_affectation: client.date_affectation || '',
-      representant: client.representant || '',
-      prevente: client.prevente || '',
-      retention: client.retention || '',
-      sous_affilie: client.sous_affilie || '',
-      langue: client.langue || 'Français',
-      conseiller: client.conseiller || '',
-      source: client.source || '',
-      qualifiee: client.qualifiee || false,
-      isOnline: client.is_online || false,
-      lastConnection: client.last_connection || undefined
-    }));
-    setTransferredLeads(formattedClients);
-    setBulkLeads(prev => prev.filter(lead => !leadIds.includes(lead.id)));
-    console.log('✅ [BULK TRANSFER] Transfert terminé avec succès');
+    // Créer tous les clients en parallèle pour une performance maximale
+    const clientPromises = leadsToTransfer.map(lead => {
+      console.log('🔄 [BULK TRANSFER] Création client:', lead.email, lead.prenom, lead.nom);
+      return clientService.createClient({
+        email: lead.email,
+        full_name: `${lead.prenom} ${lead.nom}`,
+        phone: lead.telephone || '',
+        prenom: lead.prenom,
+        nom: lead.nom,
+        portable: lead.portable || '',
+        rendez_vous: lead.rendez_vous || undefined,
+        activite: lead.activite || '',
+        company_name: lead.societe || '',
+        siret: lead.siret || '',
+        vendeur: lead.conseiller || '',
+        address: lead.address || '',
+        ville: lead.ville || '',
+        code_postal: lead.code_postal || '',
+        pays: lead.pays || 'France',
+        anniversaire: lead.anniversaire || undefined,
+        autre_courriel: lead.autre_courriel || '',
+        date_affectation: lead.date_affectation || undefined,
+        representant: lead.representant || '',
+        prevente: lead.prevente || '',
+        retention: lead.retention || '',
+        sous_affilie: lead.sous_affilie || '',
+        langue: lead.langue || 'Français',
+        conseiller: lead.conseiller || '',
+        source: lead.source || '',
+        qualifiee: lead.qualifiee || false,
+        status_id: lead.status_id,
+        client_password: lead.motDePasse || '',
+        client_account_created: lead.client_account_created || false,
+      }).then(client => {
+        console.log('✅ [BULK TRANSFER] Client créé avec succès:', client?.email, 'ID:', client?.id);
+        return client;
+      }).catch(error => {
+        console.error('❌ [BULK TRANSFER] Erreur création client:', lead.email, error);
+        console.error('❌ [BULK TRANSFER] Détails erreur:', error.message);
+        return null;
+      });
+    });
+
+    const createdClients = await Promise.all(clientPromises);
+    const successfulClients = createdClients.filter(client => client !== null);
+    console.log(`✅ [BULK TRANSFER] ${successfulClients.length}/${leadsToTransfer.length} clients créés`);
+
+    if (successfulClients.length === 0) {
+      console.error('❌ [BULK TRANSFER] Aucun client créé avec succès');
+      alert('❌ Erreur: Aucun client n\'a pu être créé. Vérifiez la console pour plus de détails.');
+      return;
+    }
+
+    // Supprimer les leads de la base de données après création des clients
+    console.log('🔄 [BULK TRANSFER] Suppression des leads de la base de données...');
+    try {
+      await leadService.deleteMultipleLeads(leadIds);
+      console.log('✅ [BULK TRANSFER] Leads supprimés de la base de données');
+    } catch (error) {
+      console.error('❌ [BULK TRANSFER] Erreur lors de la suppression des leads:', error);
+    }
+
+    console.log('🔄 [BULK TRANSFER] Rechargement des clients depuis Supabase...');
+    try {
+      const clientsData = await clientService.getAllClients();
+      console.log(`✅ [BULK TRANSFER] ${clientsData.length} clients récupérés depuis Supabase`);
+
+      const formattedClients = clientsData.map((client: any) => ({
+        id: client.id,
+        nom: client.nom || client.full_name?.split(' ').pop() || '',
+        prenom: client.prenom || client.full_name?.split(' ')[0] || '',
+        email: client.email,
+        motDePasse: client.client_password || '',
+        telephone: client.phone || '',
+        portable: client.portable || '',
+        dateCreation: new Date(client.created_at).toLocaleString('fr-FR'),
+        dateInscription: new Date(client.created_at).toLocaleString('fr-FR'),
+        rendez_vous: client.rendez_vous || '',
+        activite: client.activite || '',
+        societe: client.company_name || '',
+        siret: client.siret || '',
+        vendeur: client.vendeur || '',
+        commentaires: client.vendeur || '',
+        agentAssigne: client.assigned_agent_name,
+        status_id: client.status_id,
+        status: client.status,
+        client_password: client.client_password || '',
+        client_account_created: client.client_account_created || false,
+        address: client.address || '',
+        ville: client.ville || '',
+        code_postal: client.code_postal || '',
+        pays: client.pays || 'France',
+        anniversaire: client.anniversaire || '',
+        autre_courriel: client.autre_courriel || '',
+        date_affectation: client.date_affectation || '',
+        representant: client.representant || '',
+        prevente: client.prevente || '',
+        retention: client.retention || '',
+        sous_affilie: client.sous_affilie || '',
+        langue: client.langue || 'Français',
+        conseiller: client.conseiller || '',
+        source: client.source || '',
+        qualifiee: client.qualifiee || false,
+        isOnline: client.is_online || false,
+        lastConnection: client.last_connection || undefined
+      }));
+
+      console.log(`✅ [BULK TRANSFER] ${formattedClients.length} clients formatés`);
+      setTransferredLeads(formattedClients);
+      setBulkLeads(prev => prev.filter(lead => !leadIds.includes(lead.id)));
+      console.log('✅ [BULK TRANSFER] Transfert terminé avec succès - State mis à jour');
+    } catch (error) {
+      console.error('❌ [BULK TRANSFER] Erreur rechargement:', error);
+      alert('❌ Erreur lors du rechargement des clients');
+    }
   };
 
   const handleLeadsTransferred = async (leadIds: number[]) => {
@@ -704,57 +747,54 @@ function App() {
     const leadsToTransfer = leads.filter(lead => leadIds.includes(lead.id));
     console.log('🔄 [LEADS TRANSFER] Leads à transférer:', leadsToTransfer);
 
-    const createdClients = [];
-    for (const lead of leadsToTransfer) {
-      try {
-        console.log('🔄 [LEADS TRANSFER] Création du client:', lead.email);
-        const client = await clientService.createClient({
-          email: lead.email,
-          full_name: `${lead.prenom} ${lead.nom}`,
-          phone: lead.telephone || '',
-          prenom: lead.prenom,
-          nom: lead.nom,
-          portable: lead.portable,
-          rendez_vous: lead.rendez_vous || undefined,
-          activite: lead.activite,
-          company_name: lead.societe,
-          siret: lead.siret,
-          vendeur: lead.commentaires,
-          address: lead.address,
-          ville: lead.ville,
-          code_postal: lead.code_postal,
-          pays: lead.pays,
-          anniversaire: lead.anniversaire || undefined,
-          autre_courriel: lead.autre_courriel,
-          date_affectation: lead.date_affectation || undefined,
-          representant: lead.representant,
-          prevente: lead.prevente,
-          retention: lead.retention,
-          sous_affilie: lead.sous_affilie,
-          langue: lead.langue,
-          conseiller: lead.conseiller,
-          source: lead.source,
-          qualifiee: lead.qualifiee,
-          status_id: lead.status_id,
-          client_password: lead.client_password,
-          client_account_created: lead.client_account_created,
-        });
-        createdClients.push(client);
-        console.log('✅ [LEADS TRANSFER] Client créé:', client);
-      } catch (error) {
-        console.error('❌ [LEADS TRANSFER] Erreur création client:', error);
-        throw error;
-      }
-    }
+    // Créer tous les clients en parallèle pour une performance maximale
+    const clientPromises = leadsToTransfer.map(lead =>
+      clientService.createClient({
+        email: lead.email,
+        full_name: `${lead.prenom} ${lead.nom}`,
+        phone: lead.telephone || '',
+        prenom: lead.prenom,
+        nom: lead.nom,
+        portable: lead.portable,
+        rendez_vous: lead.rendez_vous || undefined,
+        activite: lead.activite,
+        company_name: lead.societe,
+        siret: lead.siret,
+        vendeur: lead.conseiller || '',
+        address: lead.address,
+        ville: lead.ville,
+        code_postal: lead.code_postal,
+        pays: lead.pays,
+        anniversaire: lead.anniversaire || undefined,
+        autre_courriel: lead.autre_courriel,
+        date_affectation: lead.date_affectation || undefined,
+        representant: lead.representant,
+        prevente: lead.prevente,
+        retention: lead.retention,
+        sous_affilie: lead.sous_affilie,
+        langue: lead.langue,
+        conseiller: lead.conseiller,
+        source: lead.source,
+        qualifiee: lead.qualifiee,
+        status_id: lead.status_id,
+        client_password: lead.client_password,
+        client_account_created: lead.client_account_created,
+      }).catch(error => {
+        console.error('❌ [LEADS TRANSFER] Erreur création client:', lead.email, error);
+        return null;
+      })
+    );
+
+    const createdClients = await Promise.all(clientPromises);
+    const successfulClients = createdClients.filter(client => client !== null);
+    console.log(`✅ [LEADS TRANSFER] ${successfulClients.length}/${leadsToTransfer.length} clients créés`);
 
     console.log('🔄 [LEADS TRANSFER] Suppression des leads de la table leads...');
-    for (const leadId of leadIds) {
-      try {
-        await leadService.deleteLead(leadId);
-        console.log('✅ [LEADS TRANSFER] Lead supprimé:', leadId);
-      } catch (error) {
-        console.error('❌ [LEADS TRANSFER] Erreur suppression lead:', error);
-      }
+    try {
+      await leadService.deleteMultipleLeads(leadIds);
+      console.log('✅ [LEADS TRANSFER] Leads supprimés');
+    } catch (error) {
+      console.error('❌ [LEADS TRANSFER] Erreur suppression leads:', error);
     }
 
     console.log('🔄 [LEADS TRANSFER] Rechargement des clients...');
@@ -822,6 +862,7 @@ function App() {
         activite: client.activite || '',
         societe: client.company_name || '',
         siret: client.siret || '',
+        vendeur: client.vendeur || '',
         commentaires: client.vendeur || '',
         agentAssigne: client.assigned_agent_name,
         status_id: client.status_id,
@@ -912,6 +953,25 @@ function App() {
 
   const handleAdminsDeleted = (adminIds: string[]) => {
     setAdmins(prev => prev.filter(admin => !adminIds.includes(admin.id)));
+  };
+
+  const handleRefreshAdmins = async () => {
+    try {
+      const adminsData = await adminService.getAllAdmins();
+      const formattedAdmins = adminsData.map((admin: any) => ({
+        id: admin.id,
+        nom: admin.full_name?.split(' ').slice(1).join(' ') || admin.full_name || '',
+        prenom: admin.full_name?.split(' ')[0] || '',
+        email: admin.email,
+        motDePasse: 'hidden',
+        dateCreation: new Date(admin.created_at).toLocaleDateString('fr-FR'),
+        isOnline: admin.is_online || false,
+        lastConnection: admin.last_connection || undefined
+      }));
+      setAdmins(formattedAdmins);
+    } catch (error) {
+      console.error('Erreur lors du rechargement des admins:', error);
+    }
   };
 
   const handleAdminCredentialsUpdated = (oldEmail: string, newEmail: string, newPassword: string) => {
@@ -1144,6 +1204,7 @@ function App() {
                       admins={admins}
                       onAdminCreated={handleAdminCreated}
                       onAdminsDeleted={handleAdminsDeleted}
+                      onRefreshAdmins={handleRefreshAdmins}
                       onClientLogin={handleAdminLoginAsClient}
                       onSellerLogin={handleAdminLoginAsSeller}
                       onStatusChanged={handleStatusChanged}

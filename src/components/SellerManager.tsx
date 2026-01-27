@@ -13,7 +13,7 @@ interface SellerManagerProps {
 }
 
 const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated, onSellerUpdated, onSellersDeleted, onSellerLogin, onOpenChat }) => {
-  const [activeTab, setActiveTab] = useState<'add' | 'list'>('add');
+  const [activeTab, setActiveTab] = useState<'add' | 'list'>('list');
   const [selectedSellers, setSelectedSellers] = useState<string[]>([]);
   const [selectedSellerDetails, setSelectedSellerDetails] = useState<Seller | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -184,18 +184,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
       <div className="w-full md:w-64 bg-white border-r border-gray-200 p-4 md:p-6">
         <div className="space-y-2">
           <button
-            onClick={() => setActiveTab('add')}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
-              activeTab === 'add'
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <Plus className="w-4 h-4" />
-            Ajouter un vendeur
-          </button>
-
-          <button
             onClick={() => setActiveTab('list')}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
               activeTab === 'list'
@@ -205,6 +193,18 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           >
             <List className="w-4 h-4" />
             Liste Vendeurs
+          </button>
+
+          <button
+            onClick={() => setActiveTab('add')}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
+              activeTab === 'add'
+                ? 'bg-blue-50 text-blue-700 font-medium'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <Plus className="w-4 h-4" />
+            Ajouter un vendeur
           </button>
         </div>
 

@@ -24,29 +24,21 @@ export interface LeadData {
 
 export const leadService = {
   async createLead(leadData: LeadData) {
-    console.log('🚀 [leadService v2.0] Tentative de création de lead:', leadData);
-    console.log('🚀 [leadService v2.0] Timestamp:', new Date().toISOString());
+    console.log('🚀 [leadService v3.0] Tentative de création de lead:', leadData);
+    console.log('🚀 [leadService v3.0] Timestamp:', new Date().toISOString());
 
     try {
-      const { data: maxIdData } = await supabase
-        .from('leads')
-        .select('id')
-        .order('id', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const newId = maxIdData ? maxIdData.id + 1 : 10000;
-
+      // Ne pas calculer l'ID manuellement - laisser la séquence le faire
       const { data, error } = await supabase
         .from('leads')
-        .insert([{ ...leadData, id: newId }])
+        .insert([leadData])
         .select()
         .maybeSingle();
 
-      console.log('📊 [leadService v2.0] Réponse brute Supabase:', { data, error });
+      console.log('📊 [leadService v3.0] Réponse brute Supabase:', { data, error });
 
       if (error) {
-        console.error('❌ [leadService v2.0] ERREUR DÉTECTÉE');
+        console.error('❌ [leadService v3.0] ERREUR DÉTECTÉE');
         console.error('❌ Code:', error.code);
         console.error('❌ Message:', error.message);
         console.error('❌ Détails:', error.details);
@@ -55,16 +47,16 @@ export const leadService = {
       }
 
       if (!data) {
-        console.error('❌ [leadService v2.0] Aucune donnée retournée');
+        console.error('❌ [leadService v3.0] Aucune donnée retournée');
         throw new Error('Aucune donnée retournée par Supabase');
       }
 
-      console.log('✅ [leadService v2.0] SUCCESS! Lead créé:', data);
+      console.log('✅ [leadService v3.0] SUCCESS! Lead créé avec ID:', data.id);
       return data;
     } catch (err: any) {
-      console.error('❌ [leadService v2.0] Exception capturée:', err);
-      console.error('❌ [leadService v2.0] Type:', typeof err);
-      console.error('❌ [leadService v2.0] Message:', err.message);
+      console.error('❌ [leadService v3.0] Exception capturée:', err);
+      console.error('❌ [leadService v3.0] Type:', typeof err);
+      console.error('❌ [leadService v3.0] Message:', err.message);
       throw err;
     }
   },

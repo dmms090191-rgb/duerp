@@ -75,8 +75,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   const markMessagesAsRead = async (msgs: Message[]) => {
+    if (currentUserType !== 'admin') {
+      return;
+    }
+
     const unreadMessages = msgs.filter(
-      (msg) => !msg.read && msg.sender_id !== currentUserId
+      (msg) => !msg.read && msg.sender_type === 'client'
     );
 
     for (const msg of unreadMessages) {

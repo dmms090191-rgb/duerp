@@ -76,42 +76,47 @@ const StatusManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl p-6 text-white">
+      <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 rounded-2xl p-8 text-white shadow-2xl">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Liste des Statuts</h2>
-            <p className="text-purple-100">Gérez les statuts pour vos leads et clients</p>
+            <div className="flex items-center gap-4 mb-3">
+              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center ring-4 ring-white/30">
+                <Tag className="w-7 h-7 text-white" />
+              </div>
+              <h2 className="text-3xl font-extrabold">Liste des Statuts</h2>
+            </div>
+            <p className="text-blue-100 font-semibold ml-[72px]">Gérez les statuts pour vos leads et clients</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
-            <div className="text-3xl font-bold">{statuses.length}</div>
-            <div className="text-sm text-purple-100">Statuts</div>
+          <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border-2 border-white/30 shadow-xl">
+            <div className="text-4xl font-extrabold">{statuses.length}</div>
+            <div className="text-sm text-blue-100 font-semibold">Statuts</div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="border-b border-gray-200">
+      <div className="bg-gradient-to-br from-white via-blue-50/30 to-cyan-50/20 rounded-2xl shadow-2xl border-2 border-blue-200 backdrop-blur-xl">
+        <div className="border-b-2 border-blue-200">
           <div className="flex">
             <button
               onClick={() => setActiveTab('create')}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors text-sm ${
+              className={`flex items-center gap-2 px-6 py-4 font-bold transition-all text-sm ${
                 activeTab === 'create'
-                  ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-blue-700 border-b-4 border-blue-600 bg-gradient-to-b from-blue-50 to-blue-100/50'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
               }`}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-5 h-5" />
               Créer un statut
             </button>
             <button
               onClick={() => setActiveTab('list')}
-              className={`flex items-center gap-2 px-6 py-3 font-medium transition-colors text-sm ${
+              className={`flex items-center gap-2 px-6 py-4 font-bold transition-all text-sm ${
                 activeTab === 'list'
-                  ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'text-blue-700 border-b-4 border-blue-600 bg-gradient-to-b from-blue-50 to-blue-100/50'
+                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
               }`}
             >
-              <List className="w-4 h-4" />
+              <List className="w-5 h-5" />
               Liste des statuts
             </button>
           </div>
@@ -130,7 +135,7 @@ const StatusManager: React.FC = () => {
                     value={newStatusName}
                     onChange={(e) => setNewStatusName(e.target.value)}
                     placeholder="Ex: En cours, Terminé, En attente..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all font-semibold shadow-sm hover:border-blue-300"
                     required
                   />
                 </div>
@@ -143,7 +148,7 @@ const StatusManager: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleResetColors}
-                      className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 text-sm bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg hover:from-red-700 hover:to-rose-700 transition-all shadow-md hover:shadow-lg font-bold transform hover:scale-105"
                     >
                       <RotateCcw className="w-4 h-4" />
                       Réinitialiser
@@ -157,12 +162,12 @@ const StatusManager: React.FC = () => {
                         type="button"
                         onClick={() => color && setNewStatusColor(color)}
                         disabled={!color}
-                        className={`w-full h-16 rounded-lg transition-all ${
+                        className={`w-full h-16 rounded-xl transition-all shadow-md ${
                           color
                             ? newStatusColor === color
-                              ? 'ring-4 ring-purple-500 scale-110 cursor-pointer'
-                              : 'hover:scale-105 ring-2 ring-gray-300 cursor-pointer'
-                            : 'bg-gray-100 border-2 border-dashed border-gray-300 cursor-not-allowed'
+                              ? 'ring-4 ring-blue-500 scale-110 cursor-pointer shadow-xl'
+                              : 'hover:scale-105 ring-2 ring-blue-300 cursor-pointer hover:shadow-lg'
+                            : 'bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-dashed border-gray-300 cursor-not-allowed'
                         }`}
                         style={color ? { backgroundColor: color } : {}}
                         title={color || 'Case vide'}
@@ -175,8 +180,8 @@ const StatusManager: React.FC = () => {
                   </div>
 
                   {allSlotsFilled && (
-                    <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                      <p className="text-sm text-orange-800 font-medium">
+                    <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 rounded-xl shadow-md">
+                      <p className="text-sm text-orange-900 font-bold">
                         ⚠️ Toutes les cases sont remplies. Réinitialisez pour enregistrer de nouvelles couleurs.
                       </p>
                     </div>
@@ -188,15 +193,15 @@ const StatusManager: React.FC = () => {
                         type="color"
                         value={newStatusColor}
                         onChange={(e) => setNewStatusColor(e.target.value)}
-                        className="w-20 h-20 rounded-lg cursor-pointer border-2 border-gray-300"
+                        className="w-20 h-20 rounded-xl cursor-pointer border-2 border-blue-300 shadow-lg hover:shadow-xl transition-all"
                       />
                       <Palette className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 text-white pointer-events-none" />
                     </div>
                     <div className="flex-1">
-                      <div className="bg-gray-100 rounded-lg p-4 border-2 border-gray-300">
-                        <p className="text-sm text-gray-600 mb-2">Aperçu:</p>
+                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border-2 border-blue-300 shadow-md">
+                        <p className="text-sm text-gray-700 mb-2 font-bold">Aperçu:</p>
                         <span
-                          className="text-2xl font-bold"
+                          className="text-2xl font-extrabold"
                           style={{ color: newStatusColor }}
                         >
                           {newStatusName || 'Nom du statut'}
@@ -212,7 +217,7 @@ const StatusManager: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading || !newStatusName.trim()}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 text-white rounded-xl font-extrabold hover:from-blue-700 hover:via-blue-600 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {loading ? (
                     <>
@@ -234,56 +239,58 @@ const StatusManager: React.FC = () => {
             <div>
               {statuses.length === 0 ? (
                 <div className="text-center py-12">
-                  <Tag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 text-lg font-medium mb-2">Aucun statut créé</p>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <Tag className="w-10 h-10 text-blue-600" />
+                  </div>
+                  <p className="text-gray-700 text-xl font-extrabold mb-2">Aucun statut créé</p>
+                  <p className="text-gray-500 text-sm mb-6 font-semibold">
                     Créez votre premier statut pour commencer
                   </p>
                   <button
                     onClick={() => setActiveTab('create')}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:via-blue-600 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 font-extrabold"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-5 h-5" />
                     Créer un statut
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {statuses.map((status) => (
                     <div
                       key={status.id}
-                      className="bg-gradient-to-br from-gray-50 to-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all"
+                      className="bg-gradient-to-br from-white via-blue-50/20 to-cyan-50/10 border-2 border-blue-200 rounded-2xl p-6 hover:shadow-2xl transition-all shadow-lg hover:scale-105 hover:border-blue-300"
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div
-                            className="w-12 h-12 rounded-lg flex items-center justify-center"
+                            className="w-14 h-14 rounded-xl flex items-center justify-center shadow-md"
                             style={{ backgroundColor: status.color + '20' }}
                           >
-                            <Tag className="w-6 h-6" style={{ color: status.color }} />
+                            <Tag className="w-7 h-7" style={{ color: status.color }} />
                           </div>
                           <div>
                             <h3
-                              className="text-xl font-bold"
+                              className="text-xl font-extrabold"
                               style={{ color: status.color }}
                             >
                               {status.name}
                             </h3>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 mt-1 font-mono font-semibold">
                               {status.color}
                             </p>
                           </div>
                         </div>
                         <button
                           onClick={() => handleDeleteStatus(status.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2.5 text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:scale-110"
                           title="Supprimer"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
-                      <div className="pt-4 border-t border-gray-200">
-                        <p className="text-xs text-gray-500">
+                      <div className="pt-4 border-t-2 border-blue-200">
+                        <p className="text-xs text-gray-600 font-semibold">
                           Créé le {new Date(status.created_at).toLocaleDateString('fr-FR')}
                         </p>
                       </div>

@@ -50,14 +50,14 @@ interface DashboardProps {
   onLogout: () => void;
   leads: Lead[];
   onLeadCreated: (lead: Lead) => void;
-  onLeadsDeleted: (leadIds: string[]) => void;
-  onLeadsTransferred: (leadIds: string[]) => void;
+  onLeadsDeleted: (leadIds: number[]) => void;
+  onLeadsTransferred: (leadIds: number[]) => void;
   transferredLeads: Lead[];
   onTransferredLeadsDeleted?: (clientIds: string[]) => void;
   bulkLeads: Lead[];
   onBulkLeadCreated: (lead: Lead) => void;
-  onBulkLeadsDeleted: (leadIds: string[]) => void;
-  onBulkLeadsTransferred: (leadIds: string[]) => void;
+  onBulkLeadsDeleted: (leadIds: number[]) => void;
+  onBulkLeadsTransferred: (leadIds: number[]) => void;
   homepageImage: string | null;
   onHomepageImageUpdate: (imageUrl: string | null) => void;
   registrations: Registration[];
@@ -72,6 +72,7 @@ interface DashboardProps {
   admins: Admin[];
   onAdminCreated: (admin: Admin) => void;
   onAdminsDeleted: (adminIds: string[]) => void;
+  onRefreshAdmins?: () => Promise<void>;
   onClientLogin?: (lead: Lead) => void;
   onSellerLogin?: (seller: Seller) => void;
   onStatusChanged?: (leadId: string, statusId: string | null) => void;
@@ -86,7 +87,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   bulkLeads, onBulkLeadCreated, onBulkLeadsDeleted, onBulkLeadsTransferred,
   homepageImage, onHomepageImageUpdate,
   registrations, onApproveRegistration, onRejectRegistration, onRestoreLeads, onRestoreRegistrations,
-  sellers, onSellerCreated, onSellerUpdated, onSellersDeleted, admins, onAdminCreated, onAdminsDeleted, onClientLogin, onSellerLogin, onStatusChanged, onLeadUpdated, onAdminCredentialsUpdated, superAdminPassword, superAdminEmail
+  sellers, onSellerCreated, onSellerUpdated, onSellersDeleted, admins, onAdminCreated, onAdminsDeleted, onRefreshAdmins, onClientLogin, onSellerLogin, onStatusChanged, onLeadUpdated, onAdminCredentialsUpdated, superAdminPassword, superAdminEmail
 }) => {
   const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire' | 'email-config' | 'signature'>('bulk-import');
   const [selectedClientForChat, setSelectedClientForChat] = React.useState<string | number | null>(null);
@@ -165,10 +166,11 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <button
                 onClick={onLogout}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:text-red-600 transition-colors"
+                className="group relative flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
               >
-                <LogOut className="w-4 h-4" />
-                Déconnexion
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <LogOut className="w-5 h-5 relative z-10 transition-transform group-hover:rotate-12" />
+                <span className="relative z-10">Déconnexion</span>
               </button>
             </div>
           </div>
@@ -437,6 +439,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 onAdminsDeleted={onAdminsDeleted}
                 currentAdminEmail={user?.email}
                 onCredentialsUpdated={onAdminCredentialsUpdated}
+                onRefreshAdmins={onRefreshAdmins}
                 superAdminPassword={superAdminPassword}
                 superAdminEmail={superAdminEmail}
               />

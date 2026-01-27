@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bell, X, MessageSquare, User } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
@@ -11,6 +11,7 @@ interface Notification {
   read: boolean;
   chatType: 'client' | 'seller';
   entityId: number | string;
+  messageId?: string;
 }
 
 interface NotificationSystemProps {
@@ -22,13 +23,55 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showPanel, setShowPanel] = useState(false);
   const [lastCheckTime, setLastCheckTime] = useState<Date>(new Date());
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [audioEnabled] = useState(true);
+  const notifiedMessageIds = useRef<Set<string>>(new Set());
+  const isCheckingRef = useRef(false);
 
   useEffect(() => {
     checkForNewMessages();
     const interval = setInterval(checkForNewMessages, 5000);
-    return () => clearInterval(interval);
-  }, [lastCheckTime]);
+
+    const clientSubscription = supabase
+      .channel('client-messages-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'chat_messages',
+          filter: 'sender_type=eq.client'
+        },
+        (payload) => {
+          console.log('🔔 Nouveau message client détecté en temps réel, ID:', payload.new.id);
+          checkForNewMessages();
+        }
+      )
+      .subscribe();
+
+    const sellerSubscription = supabase
+      .channel('seller-messages-notifications')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'admin_seller_messages',
+          filter: 'sender_type=eq.seller'
+        },
+        (payload) => {
+          console.log('🔔 Nouveau message vendeur détecté en temps réel, ID:', payload.new.id);
+          checkForNewMessages();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      clientSubscription.unsubscribe();
+      sellerSubscription.unsubscribe();
+    };
+  }, []);
 
   const playNotificationSound = () => {
     if (audioEnabled) {
@@ -39,90 +82,211 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
   };
 
   const checkForNewMessages = async () => {
+    if (isCheckingRef.current) {
+      console.log('⏭️ Vérification déjà en cours, passage...');
+      return;
+    }
+
     try {
+      isCheckingRef.current = true;
       const currentTime = new Date();
 
-      const { data: clientMessages, error: clientError } = await supabase
+      console.log('🔔 Vérification des nouveaux messages (Premier chargement:', isFirstLoad, ')');
+
+      let clientMessagesQuery = supabase
         .from('chat_messages')
-        .select('*, clients!inner(id, full_name, siret)')
+        .select('id, message, created_at, sender_type, client_id, read')
         .eq('sender_type', 'client')
         .eq('read', false)
-        .gte('created_at', lastCheckTime.toISOString())
         .order('created_at', { ascending: false });
 
-      if (clientError) {
-        console.error('Erreur lors de la vérification des messages clients:', clientError);
+      if (isFirstLoad) {
+        console.log('🔍 Recherche de tous les messages clients non lus...');
+      } else {
+        clientMessagesQuery = clientMessagesQuery.gte('created_at', lastCheckTime.toISOString());
+        console.log('🔍 Recherche des nouveaux messages depuis:', lastCheckTime.toISOString());
       }
 
-      const { data: sellerMessages, error: sellerError } = await supabase
+      const { data: clientMessages, error: clientError } = await clientMessagesQuery;
+
+      if (clientError) {
+        console.error('❌ Erreur lors de la vérification des messages clients:', clientError);
+      } else {
+        console.log('📨 Messages clients trouvés:', clientMessages?.length || 0);
+      }
+
+      let sellerMessagesQuery = supabase
         .from('admin_seller_messages')
-        .select('*, sellers!inner(id, full_name, email, siret)')
+        .select('id, message, created_at, sender_type, sender_id, read')
         .eq('sender_type', 'seller')
         .eq('read', false)
-        .gte('created_at', lastCheckTime.toISOString())
         .order('created_at', { ascending: false });
 
+      if (isFirstLoad) {
+        console.log('🔍 Recherche de tous les messages vendeurs non lus...');
+      } else {
+        sellerMessagesQuery = sellerMessagesQuery.gte('created_at', lastCheckTime.toISOString());
+      }
+
+      const { data: sellerMessages, error: sellerError } = await sellerMessagesQuery;
+
       if (sellerError) {
-        console.error('Erreur lors de la vérification des messages vendeurs:', sellerError);
+        console.error('❌ Erreur lors de la vérification des messages vendeurs:', sellerError);
+      } else {
+        console.log('📨 Messages vendeurs trouvés:', sellerMessages?.length || 0);
       }
 
       const newNotifications: Notification[] = [];
 
       if (clientMessages && clientMessages.length > 0) {
-        clientMessages.forEach((msg: any) => {
-          const client = msg.clients;
-          const notificationText = `Le client ${client.full_name}${client.siret ? ` (SIRET: ${client.siret})` : ''} vous a envoyé un nouveau message`;
+        // Grouper les messages par client_id pour ne compter qu'une fois chaque client
+        const messagesByClient = new Map<number, typeof clientMessages[0]>();
 
-          newNotifications.push({
-            id: `client-${msg.id}`,
-            message: notificationText,
-            clientName: client.full_name,
-            clientSiret: client.siret,
-            timestamp: msg.created_at,
-            read: false,
-            chatType: 'client',
-            entityId: client.id
-          });
+        clientMessages.forEach(msg => {
+          if (!messagesByClient.has(msg.client_id)) {
+            messagesByClient.set(msg.client_id, msg);
+          }
         });
+
+        // Créer une notification par client unique
+        for (const [clientId, msg] of messagesByClient) {
+          const clientNotifId = `client-${clientId}`;
+
+          if (notifiedMessageIds.current.has(clientNotifId)) {
+            console.log('⏭️ Client déjà notifié:', clientNotifId);
+            continue;
+          }
+
+          const { data: clientData, error: clientDataError } = await supabase
+            .from('clients')
+            .select('id, full_name, siret')
+            .eq('id', clientId)
+            .maybeSingle();
+
+          if (clientDataError) {
+            console.error('❌ Erreur lors de la récupération du client:', clientDataError);
+            continue;
+          }
+
+          if (clientData) {
+            const notificationText = `${clientData.full_name}${clientData.siret ? ` (SIRET: ${clientData.siret})` : ''} vous a envoyé un message`;
+
+            console.log('✅ Nouvelle notification client:', notificationText);
+
+            newNotifications.push({
+              id: clientNotifId,
+              message: notificationText,
+              clientName: clientData.full_name,
+              clientSiret: clientData.siret,
+              timestamp: msg.created_at,
+              read: false,
+              chatType: 'client',
+              entityId: clientData.id,
+              messageId: msg.id
+            });
+
+            notifiedMessageIds.current.add(clientNotifId);
+            console.log('✅ Message ajouté au cache:', clientNotifId);
+          }
+        }
       }
 
       if (sellerMessages && sellerMessages.length > 0) {
-        sellerMessages.forEach((msg: any) => {
-          const seller = msg.sellers;
-          const sellerName = seller.full_name;
-          const notificationText = `Le vendeur ${sellerName}${seller.siret ? ` (SIRET: ${seller.siret})` : ''} vous a envoyé un nouveau message`;
+        // Grouper les messages par vendeur pour ne compter qu'une fois chaque vendeur
+        const messagesBySeller = new Map<string, typeof sellerMessages[0]>();
 
-          newNotifications.push({
-            id: `seller-${msg.id}`,
-            message: notificationText,
-            clientName: sellerName,
-            clientSiret: seller.siret,
-            timestamp: msg.created_at,
-            read: false,
-            chatType: 'seller',
-            entityId: seller.id
-          });
+        sellerMessages.forEach(msg => {
+          const sellerId = msg.sender_id.replace('seller-', '');
+          if (!messagesBySeller.has(sellerId)) {
+            messagesBySeller.set(sellerId, msg);
+          }
         });
+
+        // Créer une notification par vendeur unique
+        for (const [sellerId, msg] of messagesBySeller) {
+          const sellerNotifId = `seller-${sellerId}`;
+
+          if (notifiedMessageIds.current.has(sellerNotifId)) {
+            console.log('⏭️ Vendeur déjà notifié:', sellerNotifId);
+            continue;
+          }
+
+          const { data: sellerData, error: sellerDataError } = await supabase
+            .from('sellers')
+            .select('id, full_name, siret')
+            .eq('id', sellerId)
+            .maybeSingle();
+
+          if (sellerDataError) {
+            console.error('❌ Erreur lors de la récupération du vendeur:', sellerDataError);
+            continue;
+          }
+
+          if (sellerData) {
+            const notificationText = `${sellerData.full_name}${sellerData.siret ? ` (SIRET: ${sellerData.siret})` : ''} vous a envoyé un message`;
+
+            console.log('✅ Nouvelle notification vendeur:', notificationText);
+
+            newNotifications.push({
+              id: sellerNotifId,
+              message: notificationText,
+              clientName: sellerData.full_name,
+              clientSiret: sellerData.siret,
+              timestamp: msg.created_at,
+              read: false,
+              chatType: 'seller',
+              entityId: sellerData.id,
+              messageId: msg.id
+            });
+
+            notifiedMessageIds.current.add(sellerNotifId);
+            console.log('✅ Message ajouté au cache:', sellerNotifId);
+          }
+        }
       }
 
       if (newNotifications.length > 0) {
-        playNotificationSound();
+        console.log('🔔 Création de', newNotifications.length, 'nouvelles notifications');
+        console.log('📝 Cache actuel contient', notifiedMessageIds.current.size, 'messages');
+
         setNotifications(prev => [...newNotifications, ...prev]);
 
-        if ('Notification' in window && Notification.permission === 'granted') {
-          newNotifications.forEach(notif => {
-            new Notification('Nouveau message', {
-              body: notif.message,
-              icon: '/kk copy.png',
-              badge: '/kk copy.png'
-            });
-          });
+        if (notifiedMessageIds.current.size > 100) {
+          const idsArray = Array.from(notifiedMessageIds.current);
+          notifiedMessageIds.current = new Set(idsArray.slice(-100));
+          console.log('🧹 Cache nettoyé, conserve les 100 derniers messages');
         }
+
+        if (!isFirstLoad) {
+          console.log('🔊 Lecture du son de notification');
+          playNotificationSound();
+
+          if ('Notification' in window && Notification.permission === 'granted') {
+            console.log('🔔 Envoi de', newNotifications.length, 'notifications de bureau');
+            newNotifications.forEach(notif => {
+              new Notification('Nouveau message', {
+                body: notif.message,
+                icon: '/kk copy.png',
+                badge: '/kk copy.png',
+                tag: notif.id
+              });
+            });
+          }
+        } else {
+          console.log('⏭️ Premier chargement, pas de son ni de notification de bureau');
+        }
+      }
+
+      if (isFirstLoad) {
+        setIsFirstLoad(false);
+        console.log('✅ Premier chargement terminé');
       }
 
       setLastCheckTime(currentTime);
     } catch (error) {
-      console.error('Erreur lors de la vérification des messages:', error);
+      console.error('❌ Erreur lors de la vérification des messages:', error);
+    } finally {
+      isCheckingRef.current = false;
     }
   };
 
@@ -143,19 +307,153 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
   };
 
   const clearNotification = (notificationId: string) => {
+    const notification = notifications.find(n => n.id === notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
+
+    if (notification) {
+      (async () => {
+        try {
+          if (notification.chatType === 'client') {
+            // Marquer TOUS les messages de ce client comme lus
+            const clientId = parseInt(notification.id.replace('client-', ''));
+            await supabase
+              .from('chat_messages')
+              .update({ read: true })
+              .eq('client_id', clientId)
+              .eq('sender_type', 'client')
+              .eq('read', false);
+            console.log('✅ Tous les messages du client', clientId, 'marqués comme lus');
+          } else if (notification.chatType === 'seller') {
+            // Marquer TOUS les messages de ce vendeur comme lus
+            const sellerId = notification.id.replace('seller-', '');
+            await supabase
+              .from('admin_seller_messages')
+              .update({ read: true })
+              .eq('sender_id', `seller-${sellerId}`)
+              .eq('sender_type', 'seller')
+              .eq('read', false);
+            console.log('✅ Tous les messages du vendeur', sellerId, 'marqués comme lus');
+          }
+        } catch (error) {
+          console.error('❌ Erreur lors du marquage du message comme lu:', error);
+        }
+      })();
+    }
   };
 
   const clearAllNotifications = () => {
     setNotifications([]);
+
+    (async () => {
+      try {
+        const { error: clientError } = await supabase
+          .from('chat_messages')
+          .update({ read: true })
+          .eq('sender_type', 'client')
+          .eq('read', false);
+
+        if (clientError) {
+          console.error('❌ Erreur lors du marquage des messages clients:', clientError);
+        }
+
+        const { error: sellerError } = await supabase
+          .from('admin_seller_messages')
+          .update({ read: true })
+          .eq('sender_type', 'seller')
+          .eq('read', false);
+
+        if (sellerError) {
+          console.error('❌ Erreur lors du marquage des messages vendeurs:', sellerError);
+        }
+
+        console.log('✅ Tous les messages marqués comme lus');
+      } catch (error) {
+        console.error('❌ Erreur lors de l\'effacement des notifications:', error);
+      }
+    })();
   };
 
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
+
+    (async () => {
+      try {
+        if (notification.chatType === 'client') {
+          // Marquer TOUS les messages de ce client comme lus
+          const clientId = parseInt(notification.id.replace('client-', ''));
+          await supabase
+            .from('chat_messages')
+            .update({ read: true })
+            .eq('client_id', clientId)
+            .eq('sender_type', 'client')
+            .eq('read', false);
+          console.log('✅ Tous les messages du client', clientId, 'marqués comme lus');
+        } else if (notification.chatType === 'seller') {
+          // Marquer TOUS les messages de ce vendeur comme lus
+          const sellerId = notification.id.replace('seller-', '');
+          await supabase
+            .from('admin_seller_messages')
+            .update({ read: true })
+            .eq('sender_id', `seller-${sellerId}`)
+            .eq('sender_type', 'seller')
+            .eq('read', false);
+          console.log('✅ Tous les messages du vendeur', sellerId, 'marqués comme lus');
+        }
+      } catch (error) {
+        console.error('❌ Erreur lors du marquage du message comme lu:', error);
+      }
+    })();
+
     if (onNotificationClick) {
       onNotificationClick(notification.chatType, notification.entityId);
     }
     setShowPanel(false);
+  };
+
+  const handleBellClick = () => {
+    if (!showPanel) {
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      console.log('🔔 Toutes les notifications marquées comme lues');
+
+      // Marquer tous les messages dans la base de données comme lus
+      (async () => {
+        try {
+          const clientIds = notifications
+            .filter(n => n.chatType === 'client')
+            .map(n => parseInt(n.id.replace('client-', '')));
+
+          const sellerIds = notifications
+            .filter(n => n.chatType === 'seller')
+            .map(n => n.id.replace('seller-', ''));
+
+          if (clientIds.length > 0) {
+            // Marquer TOUS les messages de TOUS les clients concernés
+            await supabase
+              .from('chat_messages')
+              .update({ read: true })
+              .in('client_id', clientIds)
+              .eq('sender_type', 'client')
+              .eq('read', false);
+            console.log('✅ Messages de', clientIds.length, 'clients marqués comme lus dans la DB');
+          }
+
+          if (sellerIds.length > 0) {
+            // Marquer TOUS les messages de TOUS les vendeurs concernés
+            const sellerSenderIds = sellerIds.map(id => `seller-${id}`);
+            await supabase
+              .from('admin_seller_messages')
+              .update({ read: true })
+              .in('sender_id', sellerSenderIds)
+              .eq('sender_type', 'seller')
+              .eq('read', false);
+            console.log('✅ Messages de', sellerIds.length, 'vendeurs marqués comme lus dans la DB');
+          }
+        } catch (error) {
+          console.error('❌ Erreur lors du marquage des messages dans la DB:', error);
+        }
+      })();
+    }
+    setShowPanel(!showPanel);
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
@@ -163,7 +461,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
   return (
     <div className="relative">
       <button
-        onClick={() => setShowPanel(!showPanel)}
+        onClick={handleBellClick}
         className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
         title="Notifications"
       >
@@ -194,10 +492,11 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
               </div>
               <button
                 onClick={clearAllNotifications}
-                className="text-white hover:bg-white/20 p-1 rounded-lg transition-colors"
-                title="Tout effacer"
+                className="text-white hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-sm font-medium"
+                title="Tout effacer et réinitialiser"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
+                <span>Effacer tout</span>
               </button>
             </div>
 

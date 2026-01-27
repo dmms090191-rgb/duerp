@@ -311,7 +311,7 @@ export default function EmailTemplateConfigurator() {
 
         <div className="grid grid-cols-12 gap-6">
           <div className="col-span-3 space-y-2">
-            <h3 className="font-semibold text-gray-700 mb-3">Templates Email</h3>
+            <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wide">Templates Email</h3>
             {templates.map(template => (
               <button
                 key={template.id}
@@ -320,14 +320,14 @@ export default function EmailTemplateConfigurator() {
                   setEditMode(false);
                   setShowPreview(true);
                 }}
-                className={`w-full text-left px-4 py-3 rounded-lg border transition-all ${
+                className={`w-full text-left px-3 py-2.5 rounded-lg border-2 transition-all shadow-sm ${
                   selectedTemplate?.id === template.id
-                    ? 'bg-blue-50 border-blue-500 text-blue-900'
-                    : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300'
+                    ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-500 text-blue-900 shadow-md'
+                    : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300 hover:shadow'
                 }`}
               >
-                <div className="font-medium">{template.name}</div>
-                <div className="text-xs text-gray-500 mt-1">{template.key}</div>
+                <div className="font-semibold text-sm">{template.name}</div>
+                <div className="text-xs text-gray-500 mt-0.5 font-medium">{template.key}</div>
               </button>
             ))}
           </div>
@@ -345,16 +345,16 @@ export default function EmailTemplateConfigurator() {
                         <>
                           <button
                             onClick={() => setEditMode(true)}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
                           >
-                            <Edit2 className="w-4 h-4" />
+                            <Edit2 className="w-3.5 h-3.5" />
                             Modifier
                           </button>
                           <button
                             onClick={() => setShowPreview(!showPreview)}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Eye className="w-3.5 h-3.5" />
                             {showPreview ? 'Masquer' : 'Aperçu'}
                           </button>
                         </>
@@ -363,9 +363,9 @@ export default function EmailTemplateConfigurator() {
                           <button
                             onClick={saveTemplate}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg disabled:opacity-50"
                           >
-                            <Check className="w-4 h-4" />
+                            <Check className="w-3.5 h-3.5" />
                             {saving ? 'Enregistrement...' : 'Enregistrer'}
                           </button>
                           <button
@@ -373,9 +373,9 @@ export default function EmailTemplateConfigurator() {
                               setEditMode(false);
                               setEditedSubject(selectedTemplate.subject);
                             }}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-3.5 h-3.5" />
                             Annuler
                           </button>
                         </>
@@ -495,46 +495,46 @@ export default function EmailTemplateConfigurator() {
                             <div className="w-px bg-gray-300 mx-1" />
 
                             <div className="flex items-center gap-1">
-                              <span className="text-xs font-medium text-gray-600 px-2">Variables:</span>
+                              <span className="text-xs font-semibold text-gray-600 px-2">Variables:</span>
                               <button
                                 onClick={() => insertVariable('{{prenom}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 Prénom
                               </button>
                               <button
                                 onClick={() => insertVariable('{{nom}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 Nom
                               </button>
                               <button
                                 onClick={() => insertVariable('{{societe}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 Société
                               </button>
                               <button
                                 onClick={() => insertVariable('{{siret}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 SIRET
                               </button>
                               <button
                                 onClick={() => insertVariable('{{adresse}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 Adresse
                               </button>
                               <button
                                 onClick={() => insertVariable('{{email}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 Email
                               </button>
                               <button
-                                onClick={() => insertVariable('{{password}}')}
-                                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                                onClick={() => insertVariable('{{client_password}}')}
+                                className="px-2 py-0.5 text-xs bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-md hover:from-blue-200 hover:to-blue-300 transition-all font-semibold shadow-sm hover:shadow"
                               >
                                 Mot de passe
                               </button>
@@ -613,6 +613,7 @@ export default function EmailTemplateConfigurator() {
                                   .replace(/{{nom}}/g, '<strong>Dupont</strong>')
                                   .replace(/{{email}}/g, '<strong>jean.dupont@exemple.fr</strong>')
                                   .replace(/{{password}}/g, '<strong>hzc1elEt</strong>')
+                                  .replace(/{{client_password}}/g, '<strong>hzc1elEt</strong>')
                                   .replace(/{{societe}}/g, '<strong>Entreprise Dupont SARL</strong>')
                                   .replace(/{{siret}}/g, '<strong>84870559600015</strong>')
                                   .replace(/{{adresse}}/g, '<strong>123 Rue de la République, 75001 Paris</strong>')
@@ -654,9 +655,9 @@ export default function EmailTemplateConfigurator() {
                           </div>
                           <button
                             onClick={() => removePDFFromTemplate(link.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 rounded-lg transition-all shadow-md hover:shadow-lg transform hover:scale-105"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       ))}
@@ -675,14 +676,16 @@ export default function EmailTemplateConfigurator() {
                           <button
                             key={pdf.id}
                             onClick={() => addPDFToTemplate(pdf.id)}
-                            className="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left"
+                            className="flex items-center gap-2 p-2.5 border-2 border-blue-200 rounded-lg hover:border-blue-500 hover:bg-gradient-to-r hover:from-blue-50 hover:to-cyan-50 transition-all text-left shadow-sm hover:shadow-md transform hover:scale-[1.02]"
                           >
-                            <Plus className="w-4 h-4 text-blue-600" />
+                            <div className="p-1 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-md shadow-md">
+                              <Plus className="w-3 h-3 text-white" />
+                            </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-semibold text-gray-900">
                                 {pdf.name}
                               </div>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-gray-600 font-medium">
                                 {pdf.pdf_type === 'dynamic'
                                   ? `Dynamique (${pdf.dynamic_type})`
                                   : 'Statique'}
@@ -706,12 +709,12 @@ export default function EmailTemplateConfigurator() {
                       value={testEmail}
                       onChange={(e) => setTestEmail(e.target.value)}
                       placeholder="votre-email@exemple.com"
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="flex-1 px-4 py-2 border-2 border-green-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all shadow-sm"
                     />
                     <button
                       onClick={sendTestEmail}
                       disabled={sendingTest || !testEmail}
-                      className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:transform-none"
                     >
                       {sendingTest ? 'Envoi...' : 'Envoyer Test'}
                     </button>

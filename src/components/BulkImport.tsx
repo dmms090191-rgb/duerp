@@ -6,13 +6,13 @@ import { leadService } from '../services/leadService';
 interface BulkImportProps {
   leads: Lead[];
   onLeadCreated: (lead: Lead) => void;
-  onLeadsDeleted: (leadIds: string[]) => void;
-  onLeadsTransferred?: (leadIds: string[]) => void;
+  onLeadsDeleted: (leadIds: number[]) => void;
+  onLeadsTransferred?: (leadIds: number[]) => void;
 }
 
 const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDeleted, onLeadsTransferred }) => {
   const [activeTab, setActiveTab] = useState<'import' | 'list'>('import');
-  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
+  const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
   const [csvFormat, setCsvFormat] = useState('nom,prenom,email,motDePasse,telephone');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [csvPreview, setCsvPreview] = useState<string[][]>([]);
@@ -21,8 +21,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
   const [encoding, setEncoding] = useState<'UTF-8' | 'ISO-8859-1'>('UTF-8');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const generateId = (): string => {
-    return Math.floor(10000 + Math.random() * 90000).toString();
+  const generateId = (): number => {
+    return Math.floor(10000 + Math.random() * 90000);
   };
 
   const handleFileSelect = (file: File, selectedEncoding?: 'UTF-8' | 'ISO-8859-1') => {
@@ -91,7 +91,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
     }
   };
 
-  const handleImportCsv = () => {
+  const handleImportCsv = async () => {
     if (!csvFile || csvPreview.length === 0) {
       console.log('No file or preview data');
       return;
@@ -102,8 +102,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
     // Use the already parsed data from csvPreview
     const dataRows = csvPreview.slice(1); // Skip header row
     let importedCount = 0;
-    
-    dataRows.forEach(row => {
+
+    for (const row of dataRows) {
       if (row.length >= formatColumns.length) {
         const leadData: any = {};
         
@@ -198,37 +198,60 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
           if (!leadData.motDePasse) {
             leadData.motDePasse = `${leadData.prenom.toLowerCase()}123`;
           }
-          
-          const newLead: Lead = {
-            id: generateId(),
-            nom: leadData.nom,
-            prenom: leadData.prenom,
-            email: leadData.email,
-            motDePasse: leadData.motDePasse,
-            telephone: leadData.telephone,
-            portable: leadData.portable || '',
-            societe: leadData.societe || '',
-            siret: leadData.siret || '',
-            activite: leadData.activite || '',
-            conseiller: leadData.conseiller || '',
-            source: leadData.source || '',
-            dateCreation: new Date().toLocaleString('fr-FR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit'
-            })
-          };
-          
-          onLeadCreated(newLead);
-          importedCount++;
+
+          try {
+            // Sauvegarder dans Supabase
+            const createdLead = await leadService.createLead({
+              email: leadData.email,
+              full_name: `${leadData.prenom} ${leadData.nom}`,
+              nom: leadData.nom,
+              prenom: leadData.prenom,
+              phone: leadData.telephone,
+              portable: leadData.portable || '',
+              company_name: leadData.societe || '',
+              siret: leadData.siret || '',
+              activite: leadData.activite || '',
+              conseiller: leadData.conseiller || '',
+              source: leadData.source || '',
+              client_password: leadData.motDePasse,
+            });
+
+            console.log('✅ Lead créé dans Supabase:', createdLead.email);
+
+            // Créer l'objet Lead pour l'interface
+            const newLead: Lead = {
+              id: createdLead.id,
+              nom: leadData.nom,
+              prenom: leadData.prenom,
+              email: leadData.email,
+              motDePasse: leadData.motDePasse,
+              telephone: leadData.telephone,
+              portable: leadData.portable || '',
+              societe: leadData.societe || '',
+              siret: leadData.siret || '',
+              activite: leadData.activite || '',
+              conseiller: leadData.conseiller || '',
+              source: leadData.source || '',
+              dateCreation: new Date().toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })
+            };
+
+            onLeadCreated(newLead);
+            importedCount++;
+          } catch (error) {
+            console.error('❌ Erreur création lead:', leadData.email, error);
+          }
         } else {
           // Debug: log missing fields for first few failed rows
           if (importedCount < 3) {
             console.log('Missing fields for row:', {
               nom: leadData.nom ? '✓' : '✗',
-              prenom: leadData.prenom ? '✓' : '✗', 
+              prenom: leadData.prenom ? '✓' : '✗',
               email: leadData.email ? '✓' : '✗',
               motDePasse: leadData.motDePasse ? '✓' : '✗',
               telephone: leadData.telephone ? '✓' : '✗'
@@ -236,14 +259,11 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
           }
         }
       }
-    });
+    }
     
     if (importedCount > 0) {
-      // Don't use alert - it can cause disconnection issues
       console.log(`${importedCount} leads imported successfully`);
-      // Switch to list tab to show imported leads
-      setActiveTab('list');
-      
+
       // Reset
       setCsvFile(null);
       setCsvPreview([]);
@@ -267,9 +287,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
     }
   };
 
-  const handleSelectLead = (leadId: string) => {
-    setSelectedLeads(prev => 
-      prev.includes(leadId) 
+  const handleSelectLead = (leadId: number) => {
+    setSelectedLeads(prev =>
+      prev.includes(leadId)
         ? prev.filter(id => id !== leadId)
         : [...prev, leadId]
     );

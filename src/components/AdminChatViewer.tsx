@@ -41,12 +41,39 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [adminFullName, setAdminFullName] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    loadAdminInfo();
     loadClientsWithDiscussions();
     loadClients();
+
+    // Rafraîchir la liste toutes les 5 secondes pour détecter les changements d'attribution
+    const interval = setInterval(() => {
+      loadClientsWithDiscussions();
+      loadClients();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  const loadAdminInfo = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('admins')
+        .select('full_name')
+        .eq('email', adminEmail)
+        .maybeSingle();
+
+      if (data && !error) {
+        setAdminFullName(data.full_name || '');
+        console.log('👤 Nom complet de l\'admin:', data.full_name);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des infos admin:', error);
+    }
+  };
 
   useEffect(() => {
     if (selectedClient) {
@@ -74,7 +101,16 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   }, [messages]);
 
   useEffect(() => {
-    const allClients = clients.filter(client => clientsWithMessages.has(client.id));
+    // Ne montrer que les clients qui ont des messages ET qui n'ont pas de vendeur ou sont assignés à cet admin
+    const allClients = clients.filter(client =>
+      clientsWithMessages.has(client.id) &&
+      (!client.vendeur || client.vendeur === '' || client.vendeur === 'Super Admin' || client.vendeur === adminFullName)
+    );
+
+    console.log('🔍 Filtrage des clients - Nom admin:', adminFullName);
+    console.log('🔍 Clients avec messages:', Array.from(clientsWithMessages));
+    console.log('🔍 Clients filtrés pour admin:', allClients.map(c => ({ id: c.id, nom: c.full_name, vendeur: c.vendeur })));
+
     const filtered = allClients.filter(client => {
       if (!searchQuery.trim()) return true;
       const query = searchQuery.toLowerCase();
@@ -84,10 +120,22 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
              nameParts.some(part => part.startsWith(query));
     });
 
+    // Si le client sélectionné a maintenant un vendeur assigné (n'est plus pour l'admin), le désélectionner
+    if (selectedClient) {
+      const currentClient = clients.find(c => c.id === selectedClient.id);
+      if (currentClient && currentClient.vendeur &&
+          currentClient.vendeur !== 'Super Admin' &&
+          currentClient.vendeur !== adminFullName &&
+          currentClient.vendeur !== '') {
+        console.log(`🔄 Client ${currentClient.full_name} a été assigné au vendeur ${currentClient.vendeur}`);
+        setSelectedClient(null);
+      }
+    }
+
     if (searchQuery.trim() && filtered.length === 1) {
       setSelectedClient(filtered[0]);
     }
-  }, [searchQuery, clients, clientsWithMessages]);
+  }, [searchQuery, clients, clientsWithMessages, adminFullName]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -315,7 +363,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
 
   const clientsWithDiscussions = clients
     .filter(client => clientsWithMessages.has(client.id))
-    .filter(client => !client.vendeur || client.vendeur.trim() === '')
+    .filter(client => !client.vendeur || client.vendeur.trim() === '' || client.vendeur === 'Super Admin' || client.vendeur === adminFullName)
     .filter(client => {
       if (!searchQuery.trim()) return true;
       const query = searchQuery.toLowerCase();
@@ -326,7 +374,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
     });
   const clientsWithoutDiscussions = clients
     .filter(client => !clientsWithMessages.has(client.id))
-    .filter(client => !client.vendeur || client.vendeur.trim() === '');
+    .filter(client => !client.vendeur || client.vendeur.trim() === '' || client.vendeur === 'Super Admin' || client.vendeur === adminFullName);
 
   const ClientCard = ({ client }: { client: Client }) => {
     const highlightText = (text: string, query: string) => {

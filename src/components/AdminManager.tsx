@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Shield, User, Mail, Lock, Calendar, Eye, EyeOff } from 'lucide-react';
 import { Admin } from '../types/Admin';
 import { adminService } from '../services/adminService';
@@ -9,34 +9,110 @@ interface AdminManagerProps {
   onAdminsDeleted: (adminIds: string[]) => void;
   currentAdminEmail?: string;
   onCredentialsUpdated?: (oldEmail: string, newEmail: string, newPassword: string) => void;
+  onRefreshAdmins?: () => Promise<void>;
   superAdminPassword?: string;
   superAdminEmail?: string;
 }
 
-const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, onCredentialsUpdated, superAdminPassword, superAdminEmail }) => {
+const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, onCredentialsUpdated, onRefreshAdmins, superAdminPassword, superAdminEmail }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedEmail, setEditedEmail] = useState('');
   const [editedPassword, setEditedPassword] = useState('');
+  const [editedPrenom, setEditedPrenom] = useState('');
+  const [editedNom, setEditedNom] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loadedSuperAdmin, setLoadedSuperAdmin] = useState<Admin | null>(null);
+
+  // Charger le super admin depuis la base de données au montage du composant
+  useEffect(() => {
+    const loadSuperAdmin = async () => {
+      const isSuperAdmin = currentAdminEmail === superAdminEmail;
+      if (isSuperAdmin) {
+        try {
+          const superAdminData = await adminService.getSuperAdmin();
+          if (superAdminData) {
+            const adminObj: Admin = {
+              id: superAdminData.id,
+              nom: superAdminData.full_name?.split(' ').slice(1).join(' ') || 'Admin',
+              prenom: superAdminData.full_name?.split(' ')[0] || 'Super',
+              email: superAdminData.email,
+              motDePasse: 'hidden',
+              dateCreation: new Date(superAdminData.created_at).toLocaleDateString('fr-FR')
+            };
+            setLoadedSuperAdmin(adminObj);
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement du super admin:', error);
+        }
+      }
+    };
+
+    loadSuperAdmin();
+  }, [currentAdminEmail, superAdminEmail]);
 
   const handleUpdateCredentials = async () => {
-    if (!currentAdminEmail || !editedEmail || !editedPassword) {
+    if (!currentAdminEmail || !editedEmail || !editedPassword || !editedPrenom || !editedNom) {
       setUpdateError('Veuillez remplir tous les champs');
       return;
     }
 
     try {
-      const currentAdmin = admins.find(admin => admin.email === currentAdminEmail);
-      const isSuperAdmin = currentAdminEmail === 'dmms090191@gmail.com';
+      const isSuperAdmin = currentAdminEmail === superAdminEmail;
 
-      if (currentAdmin && !isSuperAdmin) {
+      // Trouver l'admin dans la liste locale
+      let currentAdmin = admins.find(admin => admin.email === currentAdminEmail);
+
+      // Si c'est le super admin et qu'il n'est pas dans la liste locale, le chercher dans la base de données
+      if (isSuperAdmin && !currentAdmin) {
+        const superAdminData = await adminService.getSuperAdmin();
+        if (superAdminData) {
+          currentAdmin = {
+            id: superAdminData.id,
+            nom: superAdminData.full_name?.split(' ').slice(1).join(' ') || '',
+            prenom: superAdminData.full_name?.split(' ')[0] || '',
+            email: superAdminData.email,
+            motDePasse: 'hidden',
+            dateCreation: new Date(superAdminData.created_at).toLocaleDateString('fr-FR')
+          };
+        }
+      }
+
+      if (currentAdmin) {
+        // Mettre à jour l'email et le mot de passe
         await adminService.updateAdminCredentials(currentAdmin.id, editedEmail, editedPassword);
+
+        // Mettre à jour le nom complet
+        const fullName = `${editedPrenom} ${editedNom}`;
+        await adminService.updateAdmin(currentAdmin.id, { full_name: fullName });
+
+        console.log('✅ Mise à jour réussie:', { id: currentAdmin.id, fullName });
       }
 
       if (onCredentialsUpdated) {
         onCredentialsUpdated(currentAdminEmail, editedEmail, editedPassword);
+      }
+
+      // Recharger les admins depuis la base de données pour obtenir les nouvelles données
+      if (onRefreshAdmins) {
+        await onRefreshAdmins();
+      }
+
+      // Recharger le super admin si c'est lui qui a été modifié
+      if (isSuperAdmin) {
+        const superAdminData = await adminService.getSuperAdmin();
+        if (superAdminData) {
+          const adminObj: Admin = {
+            id: superAdminData.id,
+            nom: superAdminData.full_name?.split(' ').slice(1).join(' ') || 'Admin',
+            prenom: superAdminData.full_name?.split(' ')[0] || 'Super',
+            email: superAdminData.email,
+            motDePasse: 'hidden',
+            dateCreation: new Date(superAdminData.created_at).toLocaleDateString('fr-FR')
+          };
+          setLoadedSuperAdmin(adminObj);
+        }
       }
 
       setUpdateSuccess(true);
@@ -53,12 +129,41 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
     }
   };
 
-  const handleStartEdit = () => {
-    const currentAdmin = admins.find(admin => admin.email === currentAdminEmail);
+  const handleStartEdit = async () => {
     const isSuperAdmin = currentAdminEmail === superAdminEmail;
+    let currentAdmin = admins.find(admin => admin.email === currentAdminEmail);
+
+    // Si c'est le super admin et qu'il n'est pas dans la liste locale, le chercher dans la base de données
+    if (isSuperAdmin && !currentAdmin) {
+      try {
+        const superAdminData = await adminService.getSuperAdmin();
+        if (superAdminData) {
+          currentAdmin = {
+            id: superAdminData.id,
+            nom: superAdminData.full_name?.split(' ').slice(1).join(' ') || 'Admin',
+            prenom: superAdminData.full_name?.split(' ')[0] || 'Super',
+            email: superAdminData.email,
+            motDePasse: 'hidden',
+            dateCreation: new Date(superAdminData.created_at).toLocaleDateString('fr-FR')
+          };
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement du super admin:', error);
+      }
+    }
 
     setEditedEmail(currentAdminEmail || '');
     setEditedPassword(isSuperAdmin ? (superAdminPassword || '000000') : (currentAdmin?.motDePasse || ''));
+
+    // Initialiser le prénom et nom
+    if (currentAdmin) {
+      setEditedPrenom(currentAdmin.prenom || '');
+      setEditedNom(currentAdmin.nom || '');
+    } else {
+      setEditedPrenom('');
+      setEditedNom('');
+    }
+
     setEditMode(true);
     setUpdateSuccess(false);
     setUpdateError('');
@@ -69,14 +174,16 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
     setEditMode(false);
     setEditedEmail('');
     setEditedPassword('');
+    setEditedPrenom('');
+    setEditedNom('');
     setUpdateError('');
     setShowPassword(false);
   };
 
-  const currentAdmin = admins.find(admin => admin.email === currentAdminEmail);
   const isSuperAdmin = currentAdminEmail === superAdminEmail;
+  const currentAdmin = isSuperAdmin ? loadedSuperAdmin : admins.find(admin => admin.email === currentAdminEmail);
   const displayPassword = isSuperAdmin ? (superAdminPassword || '000000') : (currentAdmin?.motDePasse || 'Non disponible');
-  const displayName = isSuperAdmin ? 'Super Admin' : (currentAdmin ? `${currentAdmin.prenom} ${currentAdmin.nom}` : currentAdminEmail?.split('@')[0]);
+  const displayName = currentAdmin ? `${currentAdmin.prenom} ${currentAdmin.nom}` : currentAdminEmail?.split('@')[0];
 
   return (
     <div className="flex justify-center items-start min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 p-6">
@@ -117,7 +224,7 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
             {updateSuccess && (
               <div className="p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-2xl shadow-lg">
                 <p className="text-sm text-green-900 font-bold">
-                  Identifiants mis à jour avec succès ! Utilisez vos nouveaux identifiants lors de votre prochaine connexion.
+                  Informations mises à jour avec succès ! Vos modifications ont été enregistrées.
                 </p>
               </div>
             )}
@@ -125,6 +232,46 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
             {updateError && (
               <div className="p-5 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-300 rounded-2xl shadow-lg">
                 <p className="text-sm text-red-900 font-bold">{updateError}</p>
+              </div>
+            )}
+
+            {editMode && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+                    Prénom
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={editedPrenom}
+                      onChange={(e) => setEditedPrenom(e.target.value)}
+                      placeholder="Prénom"
+                      className="block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm bg-white text-gray-900 border-blue-200 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 font-bold"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+                    Nom
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <User className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={editedNom}
+                      onChange={(e) => setEditedNom(e.target.value)}
+                      placeholder="Nom"
+                      className="block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm bg-white text-gray-900 border-blue-200 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 font-bold"
+                    />
+                  </div>
+                </div>
               </div>
             )}
 

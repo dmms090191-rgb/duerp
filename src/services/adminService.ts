@@ -96,5 +96,30 @@ export const adminService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async getSuperAdmin() {
+    const { data, error } = await supabase
+      .from('admins')
+      .select('*')
+      .eq('role', 'super_admin')
+      .maybeSingle();
+
+    if (error) throw error;
+
+    // Si aucun super admin n'est trouvé, prendre le premier admin
+    if (!data) {
+      const { data: firstAdmin, error: firstError } = await supabase
+        .from('admins')
+        .select('*')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (firstError) throw firstError;
+      return firstAdmin;
+    }
+
+    return data;
   }
 };

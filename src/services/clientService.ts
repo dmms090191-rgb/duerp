@@ -72,27 +72,41 @@ export const clientService = {
   },
 
   async createClient(clientData: ClientData) {
-    const { data: maxIdData } = await supabase
-      .from('clients')
-      .select('id')
-      .order('id', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+    console.log('🔵 [clientService] Début createClient avec:', clientData);
 
-    const newId = maxIdData ? maxIdData.id + 1 : 10000;
+    try {
+      // Ne pas inclure l'ID - laisser la séquence le générer automatiquement
+      const cleanedData = Object.fromEntries(
+        Object.entries(clientData).filter(([_, value]) => value !== undefined)
+      );
 
-    const cleanedData = Object.fromEntries(
-      Object.entries({ ...clientData, id: newId }).filter(([_, value]) => value !== undefined)
-    );
+      console.log('🔵 [clientService] Données nettoyées à insérer:', cleanedData);
 
-    const { data, error } = await supabase
-      .from('clients')
-      .insert([cleanedData])
-      .select()
-      .maybeSingle();
+      const { data, error } = await supabase
+        .from('clients')
+        .insert([cleanedData])
+        .select()
+        .maybeSingle();
 
-    if (error) throw error;
-    return data;
+      if (error) {
+        console.error('❌ [clientService] ERREUR INSERT:', error);
+        console.error('❌ Code:', error.code);
+        console.error('❌ Message:', error.message);
+        console.error('❌ Details:', error.details);
+        throw error;
+      }
+
+      if (!data) {
+        console.error('❌ [clientService] Aucune donnée retournée après insert');
+        throw new Error('Aucune donnée retournée');
+      }
+
+      console.log('✅ [clientService] Client créé avec succès, ID:', data.id);
+      return data;
+    } catch (err) {
+      console.error('❌ [clientService] Exception:', err);
+      throw err;
+    }
   },
 
   async updateClient(id: string, updates: Partial<ClientData>) {

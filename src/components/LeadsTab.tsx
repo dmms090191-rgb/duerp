@@ -4,6 +4,7 @@ import { Lead } from '../types/Lead';
 import { sellerService } from '../services/sellerService';
 import { statusService } from '../services/statusService';
 import { clientService } from '../services/clientService';
+import { adminService } from '../services/adminService';
 import { Status } from '../types/Status';
 import { supabase } from '../lib/supabase';
 import ClientEmailSender from './ClientEmailSender';
@@ -41,6 +42,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
   const [sellers, setSellers] = React.useState<Seller[]>([]);
   const [selectedSellerId, setSelectedSellerId] = React.useState('');
   const [transferring, setTransferring] = React.useState(false);
+  const [superAdmin, setSuperAdmin] = React.useState<any>(null);
   const [sortOrder, setSortOrder] = React.useState<'newest' | 'oldest'>('newest');
   const [statuses, setStatuses] = React.useState<Status[]>([]);
   const [updatingStatus, setUpdatingStatus] = React.useState<string | null>(null);
@@ -174,6 +176,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
   React.useEffect(() => {
     loadSellers();
     loadStatuses();
+    loadSuperAdmin();
     generateMissingPasswords();
   }, []);
 
@@ -214,6 +217,17 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
       console.log('✅ Sellers chargés dans le state:', formattedSellers.length);
     } catch (error) {
       console.error('❌ Erreur lors du chargement des sellers:', error);
+    }
+  };
+
+  const loadSuperAdmin = async () => {
+    try {
+      console.log('🔄 Chargement du super admin...');
+      const admin = await adminService.getSuperAdmin();
+      setSuperAdmin(admin);
+      console.log('✅ Super admin chargé:', admin);
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement du super admin:', error);
     }
   };
 
@@ -261,10 +275,30 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
     setTransferring(true);
     try {
-      const selectedSeller = sellers.find(s => s.id === selectedSellerId);
-      if (!selectedSeller) return;
+      // Vérifier si c'est le super admin ou un seller
+      const isSuperAdmin = superAdmin && selectedSellerId === superAdmin.id;
+      const selectedSeller = isSuperAdmin ? null : sellers.find(s => s.id === selectedSellerId);
+
+      if (!isSuperAdmin && !selectedSeller) return;
 
       const leadsToTransfer = leadToTransfer ? [leadToTransfer.id] : selectedLeads;
+
+      // Préparer les données à mettre à jour
+      const updateData: any = {};
+
+      // Assigner le vendeur (seller ou super admin)
+      if (isSuperAdmin) {
+        updateData.vendeur = superAdmin.full_name;
+        updateData.assigned_agent = superAdmin.id;
+        console.log('✅ Attribution au super admin:', superAdmin.full_name);
+      } else if (selectedSeller) {
+        updateData.vendeur = selectedSeller.full_name;
+        // Si le super admin existe, l'assigner aussi automatiquement
+        if (superAdmin) {
+          updateData.assigned_agent = superAdmin.id;
+          console.log('✅ Vendeur:', selectedSeller.full_name, '+ Super admin:', superAdmin.full_name);
+        }
+      }
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/clients?id=in.(${leadsToTransfer.join(',')})`,
@@ -275,9 +309,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
             'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            vendeur: selectedSeller.full_name,
-          }),
+          body: JSON.stringify(updateData),
         }
       );
 
@@ -285,7 +317,9 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
         setShowTransferModal(false);
         setLeadToTransfer(null);
         setSelectedLeads([]);
-        window.location.reload();
+        if (onLeadUpdated) {
+          await onLeadUpdated();
+        }
       }
     } catch (error) {
       console.error('Error transferring lead:', error);
@@ -646,9 +680,14 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
           <h2 className="text-lg font-bold text-gray-800">Clients</h2>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => window.location.reload()}
+              onClick={async () => {
+                if (onLeadUpdated) {
+                  await onLeadUpdated();
+                }
+              }}
               className="px-4 py-2 text-sm bg-blue-50 text-blue-700 border border-blue-300 rounded hover:bg-blue-100 transition-colors"
             >
+              <RefreshCw className="w-4 h-4 inline mr-1" />
               Actualiser
             </button>
             <button
@@ -1062,15 +1101,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
         <div className="mt-4 flex items-center justify-between text-xs text-gray-600">
           <div className="flex items-center gap-2">
-            <span>Page: 1</span>
-            <span>|</span>
-            <span>[1-{filteredLeads.length}] Total: {filteredLeads.length}</span>
-            <span>Rangées:</span>
-            <select className="px-2 py-1 border border-gray-300 rounded text-xs">
-              <option>100</option>
-              <option>200</option>
-              <option>500</option>
-            </select>
+            <span className="font-medium">Total: {filteredLeads.length} clients</span>
           </div>
         </div>
       </div>
@@ -1753,6 +1784,11 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                   className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all duration-200 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="">-- Choisir un seller --</option>
+                  {superAdmin && (
+                    <option key={superAdmin.id} value={superAdmin.id}>
+                      {superAdmin.full_name} ({superAdmin.email}) - Super Admin
+                    </option>
+                  )}
                   {sellers.map((seller) => (
                     <option key={seller.id} value={seller.id}>
                       {seller.full_name} ({seller.email})

@@ -117,7 +117,7 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
     doc.text(`Date : ${invoiceData.invoiceDate}`, 160, yPosition + 21, { align: 'center' });
 
     doc.setFillColor(bgLight[0], bgLight[1], bgLight[2]);
-    doc.roundedRect(25, yPosition, 95, 50, 2, 2, 'F');
+    doc.roundedRect(25, yPosition, 100, 50, 2, 2, 'F');
 
     doc.setFontSize(11);
     doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
@@ -135,13 +135,16 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
     if (invoiceData.clientCompany) {
       doc.setTextColor(lightGray[0], lightGray[1], lightGray[2]);
       doc.setFontSize(8.5);
-      doc.text(invoiceData.clientCompany, 30, yClient);
+      const companyText = doc.splitTextToSize(invoiceData.clientCompany, 92);
+      doc.text(companyText, 30, yClient);
       yClient += 5;
     }
 
+    doc.setFontSize(8);
     doc.text(`SIRET: ${invoiceData.clientSiret}`, 30, yClient);
     yClient += 5;
-    doc.text(`${invoiceData.clientAddress}`, 30, yClient);
+    const addressText = doc.splitTextToSize(invoiceData.clientAddress, 92);
+    doc.text(addressText, 30, yClient);
     yClient += 5;
     doc.text(`${invoiceData.clientPostalCode} ${invoiceData.clientCity}`, 30, yClient);
 
