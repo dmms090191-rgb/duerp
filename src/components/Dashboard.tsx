@@ -148,15 +148,15 @@ const Dashboard: React.FC<DashboardProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <NotificationSystem
                 adminEmail={user?.email || ''}
                 onNotificationClick={handleNotificationClick}
               />
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors hidden sm:block">
                 <Settings className="w-5 h-5" />
               </button>
-              <div className="flex items-center gap-2">
+              <div className="hidden sm:flex items-center gap-2">
                 <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
                   <UserIcon className="w-4 h-4 text-white" />
                 </div>
@@ -166,11 +166,11 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <button
                 onClick={onLogout}
-                className="group relative flex items-center gap-2.5 px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
+                className="group relative flex items-center justify-center gap-2.5 px-2.5 sm:px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <LogOut className="w-5 h-5 relative z-10 transition-transform group-hover:rotate-12" />
-                <span className="relative z-10">Déconnexion</span>
+                <span className="relative z-10 hidden sm:inline">Déconnexion</span>
               </button>
             </div>
           </div>

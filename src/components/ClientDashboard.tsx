@@ -615,10 +615,10 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
             )}
             <button
               onClick={onLogout}
-              className="w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm border border-red-400/50"
+              className="w-full flex items-center justify-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm border border-red-400/50"
             >
               <LogOut className="w-5 h-5" />
-              <span>Déconnexion</span>
+              <span className="hidden sm:inline">Déconnexion</span>
             </button>
           </div>
         </aside>

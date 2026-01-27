@@ -483,7 +483,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
               className="w-full flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
             >
               <LogOut className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span className="text-base sm:text-lg">Déconnexion</span>
+              <span className="text-base sm:text-lg hidden sm:inline">Déconnexion</span>
             </button>
           </div>
         </aside>
