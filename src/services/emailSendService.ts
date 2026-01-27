@@ -6,6 +6,7 @@ export interface SendEmailParams {
   clientId: number;
   emailType: EmailType;
   generatePDFs?: boolean;
+  senderEmail?: string;
 }
 
 export interface EmailSendResult {
@@ -18,7 +19,7 @@ export const sendEmail = async (params: SendEmailParams): Promise<EmailSendResul
   try {
     console.log('📧 Envoi d\'email avec les paramètres:', params);
 
-    const { data, error } = await supabase.functions.invoke('send-email', {
+    const { data, error } = await supabase.functions.invoke('envoyer-un-email', {
       body: params
     });
 

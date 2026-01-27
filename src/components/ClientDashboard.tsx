@@ -447,10 +447,20 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     setEmailMessage('');
 
     try {
+      let senderEmail: string | undefined = undefined;
+
+      if (isAdminViewing || isSellerViewing) {
+        const storedAdminEmail = sessionStorage.getItem('adminEmail');
+        const storedSellerEmail = sessionStorage.getItem('sellerEmail');
+        senderEmail = storedAdminEmail || storedSellerEmail || undefined;
+        console.log('📧 Email de l\'expéditeur (admin/seller):', senderEmail);
+      }
+
       const result = await sendEmail({
         clientId: parseInt(client.id),
         emailType,
-        generatePDFs
+        generatePDFs,
+        senderEmail
       });
 
       if (result.success) {

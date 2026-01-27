@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Search, Send, Mail, FileText, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+interface QuickSendEmailProps {
+  userEmail?: string;
+  userType?: 'admin' | 'seller';
+}
+
 interface Client {
   id: number;
   full_name: string;
@@ -24,7 +29,7 @@ interface PDFInfo {
   type: string;
 }
 
-const QuickSendEmail: React.FC = () => {
+const QuickSendEmail: React.FC<QuickSendEmailProps> = ({ userEmail, userType }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [clients, setClients] = useState<Client[]>([]);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -136,7 +141,8 @@ const QuickSendEmail: React.FC = () => {
         body: JSON.stringify({
           clientId: selectedClient.id,
           templateKey: selectedTemplate.key,
-          emailOverride: emailOverride || undefined
+          emailOverride: emailOverride || undefined,
+          senderEmail: userEmail
         })
       });
 

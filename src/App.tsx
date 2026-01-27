@@ -273,6 +273,7 @@ function App() {
       setSellers(updatedSellers);
       setSellerData(updatedSeller);
       sessionStorage.setItem('sellerData', JSON.stringify(updatedSeller));
+      sessionStorage.setItem('sellerEmail', email);
       return true;
     }
 
@@ -310,6 +311,7 @@ function App() {
           setUser(adminUser);
           sessionStorage.setItem('isAdminLoggedIn', 'true');
           sessionStorage.setItem('adminUser', JSON.stringify(adminUser));
+          sessionStorage.setItem('adminEmail', email);
           return true;
         }
       } catch (error) {
@@ -329,6 +331,7 @@ function App() {
       setUser(adminUser);
       sessionStorage.setItem('isAdminLoggedIn', 'true');
       sessionStorage.setItem('adminUser', JSON.stringify(adminUser));
+      sessionStorage.setItem('adminEmail', email);
       return true;
     }
 
