@@ -6,6 +6,7 @@ import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../service
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
 import { supabase } from '../lib/supabase';
 import { sendEmail, EmailType } from '../services/emailSendService';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface ClientDashboardProps {
   clientData: {
@@ -40,13 +41,46 @@ interface ClientDashboardProps {
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout, isAdminViewing, onReturnToAdmin, isSellerViewing, onReturnToSeller }) => {
   const { client } = clientData;
+
+  useOnlineStatus(client.id, 'client');
+
   const [activeTab, setActiveTab] = useState('info-juridiques');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [secteurActivite, setSecteurActivite] = useState('');
+  const [sellerOnlineStatus, setSellerOnlineStatus] = useState<{isOnline: boolean, lastConnection: string | null}>({ isOnline: false, lastConnection: null });
 
   const [nomConseiller, setNomConseiller] = useState('');
   const [nomSociete, setNomSociete] = useState('');
   const [siretSiren, setSiretSiren] = useState('');
+
+  useEffect(() => {
+    const fetchSellerStatus = async () => {
+      if (!client.vendeur || client.vendeur === 'Super Admin') return;
+
+      try {
+        const { data: seller } = await supabase
+          .from('sellers')
+          .select('is_online, last_connection')
+          .ilike('full_name', client.vendeur)
+          .maybeSingle();
+
+        if (seller) {
+          setSellerOnlineStatus({
+            isOnline: seller.is_online || false,
+            lastConnection: seller.last_connection
+          });
+        }
+      } catch (error) {
+        console.error('Erreur récupération statut vendeur:', error);
+      }
+    };
+
+    fetchSellerStatus();
+
+    const interval = setInterval(fetchSellerStatus, 30000);
+
+    return () => clearInterval(interval);
+  }, [client.vendeur]);
   const [adresse, setAdresse] = useState('');
   const [ville, setVille] = useState('');
   const [codePostal, setCodePostal] = useState('');
@@ -447,10 +481,20 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     setEmailMessage('');
 
     try {
+      let senderEmail: string | undefined = undefined;
+
+      if (isAdminViewing || isSellerViewing) {
+        const storedAdminEmail = sessionStorage.getItem('adminEmail');
+        const storedSellerEmail = sessionStorage.getItem('sellerEmail');
+        senderEmail = storedAdminEmail || storedSellerEmail || undefined;
+        console.log('📧 Email de l\'expéditeur (admin/seller):', senderEmail);
+      }
+
       const result = await sendEmail({
         clientId: parseInt(client.id),
         emailType,
-        generatePDFs
+        generatePDFs,
+        senderEmail
       });
 
       if (result.success) {
@@ -4808,10 +4852,23 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </p>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-green-200 flex items-center gap-2 self-start md:self-auto">
-                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-xs md:text-sm font-semibold text-green-700">En ligne</span>
-                    </div>
+                    {(() => {
+                      const isReallyOnline = sellerOnlineStatus.isOnline &&
+                        sellerOnlineStatus.lastConnection &&
+                        (Date.now() - new Date(sellerOnlineStatus.lastConnection).getTime()) < 2 * 60 * 1000;
+
+                      return isReallyOnline ? (
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-green-200 flex items-center gap-2 self-start md:self-auto">
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs md:text-sm font-semibold text-green-700">En ligne</span>
+                        </div>
+                      ) : (
+                        <div className="bg-gradient-to-br from-gray-50 to-slate-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-gray-200 flex items-center gap-2 self-start md:self-auto">
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
+                          <span className="text-xs md:text-sm font-semibold text-gray-600">Hors ligne</span>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 border border-blue-200">

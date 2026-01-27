@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Users, Circle, UserCircle } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { Lead } from '../types/Lead';
+import { supabase } from '../lib/supabase';
 
 interface UsersMonitorProps {
   sellers: Seller[];
@@ -9,15 +10,67 @@ interface UsersMonitorProps {
 }
 
 const UsersMonitor: React.FC<UsersMonitorProps> = ({ sellers, clients }) => {
+  const [, setRefreshTrigger] = useState(0);
 
-  const onlineClients = clients.filter(c => c.isOnline).sort((a, b) => {
+  const isReallyOnline = (isOnline: boolean, lastConnection: string | null | undefined): boolean => {
+    if (!isOnline || !lastConnection) {
+      return false;
+    }
+
+    const lastConnectionTime = new Date(lastConnection).getTime();
+    const now = new Date().getTime();
+    const twoMinutes = 2 * 60 * 1000;
+
+    return (now - lastConnectionTime) < twoMinutes;
+  };
+
+  useEffect(() => {
+    const cleanupStaleConnections = async () => {
+      try {
+        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+
+        await Promise.all([
+          supabase
+            .from('clients')
+            .update({ is_online: false })
+            .eq('is_online', true)
+            .lt('last_connection', twoMinutesAgo),
+
+          supabase
+            .from('sellers')
+            .update({ is_online: false })
+            .eq('is_online', true)
+            .lt('last_connection', twoMinutesAgo),
+
+          supabase
+            .from('admins')
+            .update({ is_online: false })
+            .eq('is_online', true)
+            .lt('last_connection', twoMinutesAgo)
+        ]);
+      } catch (error) {
+        console.error('Erreur nettoyage connexions:', error);
+      }
+    };
+
+    cleanupStaleConnections();
+
+    const interval = setInterval(() => {
+      cleanupStaleConnections();
+      setRefreshTrigger(prev => prev + 1);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const onlineClients = clients.filter(c => isReallyOnline(c.isOnline, c.lastConnection)).sort((a, b) => {
     if (a.lastConnection && b.lastConnection) {
       return new Date(b.lastConnection).getTime() - new Date(a.lastConnection).getTime();
     }
     return 0;
   });
 
-  const onlineSellers = sellers.filter(s => s.isOnline).sort((a, b) => {
+  const onlineSellers = sellers.filter(s => isReallyOnline(s.isOnline, s.lastConnection)).sort((a, b) => {
     if (a.lastConnection && b.lastConnection) {
       return new Date(b.lastConnection).getTime() - new Date(a.lastConnection).getTime();
     }

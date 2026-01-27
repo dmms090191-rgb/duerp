@@ -15,6 +15,7 @@ import SimpleEmailConfigurator from './SimpleEmailConfigurator';
 import EmailSignatureEditor from './EmailSignatureEditor';
 import EmailManagerV2 from './EmailManagerV2';
 import NotificationSystem from './NotificationSystem';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { User } from '../types/User';
 import { Lead } from '../types/Lead';
 import { Registration } from '../types/Registration';
@@ -89,6 +90,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   registrations, onApproveRegistration, onRejectRegistration, onRestoreLeads, onRestoreRegistrations,
   sellers, onSellerCreated, onSellerUpdated, onSellersDeleted, admins, onAdminCreated, onAdminsDeleted, onRefreshAdmins, onClientLogin, onSellerLogin, onStatusChanged, onLeadUpdated, onAdminCredentialsUpdated, superAdminPassword, superAdminEmail
 }) => {
+  useOnlineStatus(user?.id || null, user?.type === 'admin' ? 'admin' : null);
+
   const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire' | 'email-config' | 'signature'>('bulk-import');
   const [selectedClientForChat, setSelectedClientForChat] = React.useState<string | number | null>(null);
   const [selectedSellerForChat, setSelectedSellerForChat] = React.useState<string | null>(null);

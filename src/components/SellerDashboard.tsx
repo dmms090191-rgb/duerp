@@ -10,6 +10,7 @@ import { statusService } from '../services/statusService';
 import { clientService } from '../services/clientService';
 import { Status } from '../types/Status';
 import SellerClientModal from './SellerClientModal';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface SellerDashboardProps {
   sellerData: Seller & { isAdminViewing?: boolean };
@@ -54,6 +55,8 @@ interface Client {
 }
 
 const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout, onReturnToAdmin, onClientLogin }) => {
+  useOnlineStatus(sellerData.id, 'seller');
+
   const [activeTab, setActiveTab] = React.useState<'clients' | 'chat' | 'chat-travail' | 'argumentaire'>('clients');
   const [clients, setClients] = React.useState<Client[]>([]);
   const [loadingClients, setLoadingClients] = React.useState(true);
