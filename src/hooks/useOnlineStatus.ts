@@ -49,7 +49,7 @@ export const useOnlineStatus = (
 
     heartbeatInterval.current = setInterval(() => {
       updateOnlineStatus(true);
-    }, 30000);
+    }, 5000);
 
     const handleBeforeUnload = () => {
       if (navigator.sendBeacon) {

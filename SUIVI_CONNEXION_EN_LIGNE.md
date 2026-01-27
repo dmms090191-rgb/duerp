@@ -19,16 +19,36 @@ Le système de suivi de connexion permet de détecter et d'afficher en temps ré
    - `last_connection` date de moins de 2 minutes
 
 2. **Nettoyage automatique dans UsersMonitor** :
-   - Toutes les 30 secondes, le système met automatiquement `is_online = false` pour les connexions obsolètes
+   - Toutes les 5 secondes, le système met automatiquement `is_online = false` pour les connexions obsolètes
    - Vérifie et nettoie les trois tables (clients, sellers, admins)
 
 3. **Badge dynamique dans ClientDashboard** :
    - Le badge "En ligne" / "Hors ligne" du vendeur est maintenant dynamique
-   - Se met à jour toutes les 30 secondes en temps réel
+   - Se met à jour toutes les 5 secondes en temps réel
    - Affiche "Hors ligne" (gris) si le vendeur n'est pas connecté depuis plus de 2 minutes
 
 4. **Requête de nettoyage initial** :
    - Au démarrage, une requête nettoie immédiatement tous les statuts obsolètes
+
+## ⚡ Optimisation de vitesse (27 janvier 2026 - soir)
+
+**Amélioration** : Réduction drastique du délai de mise à jour pour une expérience temps réel.
+
+**Changements appliqués** :
+
+1. **Heartbeat client ultra-rapide** :
+   - Anciennement : mise à jour toutes les 5 secondes
+   - Maintenant : mise à jour toutes les **5 secondes**
+   - Impact : Le statut en ligne est mis à jour 6x plus vite
+
+2. **Rafraîchissement interface accéléré** :
+   - UsersMonitor : mise à jour toutes les **5 secondes** (au lieu de 15)
+   - ClientDashboard badge vendeur : mise à jour toutes les **5 secondes** (au lieu de 30)
+
+3. **Résultat** :
+   - Délai maximum pour voir un utilisateur en ligne : **~5 secondes** (au lieu de 13-5 secondes)
+   - Expérience quasi temps réel
+   - Détection de déconnexion plus rapide
 
 ## Comment ça fonctionne
 
@@ -47,7 +67,7 @@ Lorsqu'un utilisateur se connecte (via web ou mobile) :
 - La colonne `last_connection` est mise à jour avec l'horodatage actuel
 
 #### Pendant la session
-- Un **heartbeat** (battement de cœur) est envoyé toutes les 30 secondes pour maintenir le statut en ligne
+- Un **heartbeat** (battement de cœur) est envoyé toutes les 5 secondes pour maintenir le statut en ligne
 - Le système détecte automatiquement si l'utilisateur change d'onglet ou met l'application en arrière-plan
 
 #### À la déconnexion
@@ -59,7 +79,7 @@ Lorsqu'un utilisateur se déconnecte :
 
 Un hook React personnalisé (`src/hooks/useOnlineStatus.ts`) gère automatiquement :
 - La mise à jour initiale du statut à la connexion
-- Le heartbeat toutes les 30 secondes
+- Le heartbeat toutes les 5 secondes
 - La détection de fermeture de fenêtre/onglet
 - La détection de changement de visibilité (background/foreground)
 - Le nettoyage automatique à la déconnexion
@@ -135,16 +155,17 @@ const subscription = supabase
 
 1. **Automatique** : Le système gère tout automatiquement, aucune action manuelle requise
 2. **Fiable** : Détecte la fermeture de fenêtre, changement d'onglet, déconnexion
-3. **Temps réel** : Mise à jour toutes les 30 secondes
+3. **Temps réel** : Mise à jour toutes les 5 secondes
 4. **Universel** : Fonctionne sur web et mobile
 5. **Simple** : Un seul hook à utiliser dans les composants dashboard
 
 ## Notes techniques
 
-- Le heartbeat de 30 secondes est un bon compromis entre précision et charge serveur
+- Le heartbeat de 5 secondes offre une expérience quasi temps réel (6x plus rapide qu'avant)
 - Le système utilise `navigator.sendBeacon` pour envoyer les dernières mises à jour même si la fenêtre se ferme
 - Les événements `beforeunload` et `visibilitychange` sont gérés pour une détection optimale
 - Compatible avec Capacitor pour l'application mobile
+- Impact serveur : ~12 requêtes/minute par utilisateur connecté (optimisé pour Supabase)
 
 ## Vérification du statut
 
@@ -158,5 +179,5 @@ Pour vérifier si le système fonctionne :
    WHERE email = 'votre-email@exemple.com';
    ```
 3. Le champ `is_online` devrait être `true`
-4. `last_connection` devrait se mettre à jour toutes les 30 secondes
+4. `last_connection` devrait se mettre à jour toutes les 5 secondes
 5. Déconnectez-vous et vérifiez que `is_online` passe à `false`

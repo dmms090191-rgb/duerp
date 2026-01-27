@@ -77,7 +77,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
 
     fetchSellerStatus();
 
-    const interval = setInterval(fetchSellerStatus, 30000);
+    const interval = setInterval(fetchSellerStatus, 5000);
 
     return () => clearInterval(interval);
   }, [client.vendeur]);
