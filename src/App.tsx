@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
-import ClientLogin from './components/ClientLogin';
 import ClientDashboard from './components/ClientDashboard';
-import SellerLogin from './components/SellerLogin';
 import SellerDashboard from './components/SellerDashboard';
-import AdminLogin from './components/AdminLogin';
 import SecteurTertiaire from './pages/SecteurTertiaire';
 import SecteurResidentiel from './pages/SecteurResidentiel';
 import SecteurIndustriel from './pages/SecteurIndustriel';
@@ -1090,13 +1087,7 @@ function App() {
 
           <Route
             path="/client-login"
-            element={
-              clientData ? (
-                <Navigate to="/client/dashboard" replace />
-              ) : (
-                <ClientLogin onLoginSuccess={handleClientLogin} />
-              )
-            }
+            element={<Navigate to="/" replace />}
           />
 
           <Route
@@ -1124,13 +1115,7 @@ function App() {
 
           <Route
             path="/seller-login"
-            element={
-              sellerData ? (
-                <Navigate to="/seller/dashboard" replace />
-              ) : (
-                <SellerLogin sellers={sellers} onLoginSuccess={handleSellerLogin} />
-              )
-            }
+            element={<Navigate to="/" replace />}
           />
 
           <Route
@@ -1161,13 +1146,7 @@ function App() {
 
           <Route
             path="/admin-login"
-            element={
-              isLoggedIn && user?.type === 'admin' ? (
-                <Navigate to="/" replace />
-              ) : (
-                <AdminLogin admins={admins} onLoginSuccess={handleLogin} />
-              )
-            }
+            element={<Navigate to="/" replace />}
           />
 
           <Route

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { ShoppingBag, Mail, Lock, LogIn, AlertCircle, Home } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 interface SellerLoginProps {
   sellers: Seller[];
@@ -9,6 +10,7 @@ interface SellerLoginProps {
 }
 
 const SellerLogin: React.FC<SellerLoginProps> = ({ sellers, onLoginSuccess }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -71,6 +73,14 @@ const SellerLogin: React.FC<SellerLoginProps> = ({ sellers, onLoginSuccess }) =>
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
+        <button
+          onClick={() => navigate('/')}
+          className="mb-4 flex items-center gap-2 text-green-700 hover:text-green-900 font-medium transition-colors group"
+        >
+          <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          <span>Retour à l'accueil</span>
+        </button>
+
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">

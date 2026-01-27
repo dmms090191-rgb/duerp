@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, Mail, AlertCircle, Delete } from 'lucide-react';
+import { LogIn, Mail, AlertCircle, Delete, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
