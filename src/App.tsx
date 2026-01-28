@@ -28,7 +28,7 @@ import { clientService } from './services/clientService';
 import { supabase } from './lib/supabase';
 
 function App() {
-  const isMobileApp = Capacitor.isNativePlatform();
+  const isMobileApp = Capacitor.isNativePlatform() || localStorage.getItem('forceMobileMode') === 'true';
 
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const stored = sessionStorage.getItem('isAdminLoggedIn');

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, User, Eye, Send, Trash2, X, Search } from 'lucide-react';
+import { MessageSquare, User, Eye, Send, Trash2, X, Search, Paperclip, FileText, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Client {
@@ -18,6 +18,9 @@ interface Message {
   message: string;
   read: boolean;
   created_at: string;
+  attachment_url?: string;
+  attachment_name?: string;
+  attachment_type?: string;
 }
 
 interface AdminChatViewerProps {
@@ -42,7 +45,10 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [adminFullName, setAdminFullName] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadAdminInfo();
@@ -241,19 +247,82 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
     }
   };
 
+  const uploadFile = async (file: File): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
+      const filePath = `admin-${selectedClient?.id}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('chat-attachments')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Erreur upload fichier:', uploadError);
+        return null;
+      }
+
+      const { data } = supabase.storage
+        .from('chat-attachments')
+        .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Erreur upload fichier:', error);
+      return null;
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Le fichier est trop volumineux (max 10 Mo)');
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedClient || sending) return;
+    if ((!newMessage.trim() && !selectedFile) || !selectedClient || sending) return;
 
     setSending(true);
+    setUploading(true);
+
     try {
+      let attachmentUrl = null;
+      let attachmentName = null;
+      let attachmentType = null;
+
+      if (selectedFile) {
+        attachmentUrl = await uploadFile(selectedFile);
+        if (!attachmentUrl) {
+          alert('Erreur lors de l\'upload du fichier');
+          return;
+        }
+        attachmentName = selectedFile.name;
+        attachmentType = selectedFile.type;
+      }
+
       const messageData = {
         client_id: selectedClient.id,
         sender_id: `admin-${adminEmail}`,
         sender_type: 'admin',
         sender_name: 'Support',
-        message: newMessage.trim(),
+        message: newMessage.trim() || '📎 Fichier joint',
         read: false,
+        attachment_url: attachmentUrl,
+        attachment_name: attachmentName,
+        attachment_type: attachmentType,
       };
 
       console.log('📤 Admin envoie un message:', messageData);
@@ -268,6 +337,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
       } else {
         console.log('✅ Message admin envoyé avec succès');
         setNewMessage('');
+        setSelectedFile(null);
         await loadMessages(selectedClient.id);
         await loadClientsWithDiscussions();
       }
@@ -276,6 +346,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
       alert('Erreur lors de l\'envoi du message');
     } finally {
       setSending(false);
+      setUploading(false);
     }
   };
 
@@ -561,6 +632,31 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
                                   : selectedClient.full_name)}
                             </p>
                             <p className="text-sm break-words">{msg.message}</p>
+
+                            {msg.attachment_url && (
+                              <div className="mt-2 pt-2 border-t border-white/20">
+                                <a
+                                  href={msg.attachment_url}
+                                  download={msg.attachment_name}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`flex items-center gap-2 p-2 rounded-lg ${
+                                    msg.sender_type === 'seller' || msg.sender_type === 'admin'
+                                      ? 'bg-white/10 hover:bg-white/20'
+                                      : 'bg-gray-200 hover:bg-gray-300'
+                                  } transition-colors`}
+                                >
+                                  <FileText className="w-5 h-5 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium truncate">
+                                      {msg.attachment_name || 'Fichier'}
+                                    </p>
+                                  </div>
+                                  <Download className="w-4 h-4 flex-shrink-0" />
+                                </a>
+                              </div>
+                            )}
+
                             <div className="flex items-center gap-1 justify-end mt-2">
                               <span
                                 className={`text-xs ${
@@ -583,7 +679,44 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             </div>
 
             <div className="p-6 border-t border-gray-200 bg-gray-50">
+              {selectedFile && (
+                <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-blue-900 truncate">
+                      {selectedFile.name}
+                    </p>
+                    <p className="text-xs text-blue-600">
+                      {(selectedFile.size / 1024).toFixed(1)} Ko
+                    </p>
+                  </div>
+                  <button
+                    onClick={removeSelectedFile}
+                    className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
+                    title="Retirer le fichier"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
               <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  accept="*/*"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={sending || uploading}
+                  className="px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="Joindre un fichier"
+                >
+                  <Paperclip className="w-5 h-5" />
+                </button>
                 <input
                   type="text"
                   value={newMessage}
@@ -594,10 +727,15 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
                 />
                 <button
                   type="submit"
-                  disabled={!newMessage.trim() || sending}
+                  disabled={(!newMessage.trim() && !selectedFile) || sending}
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  {sending ? (
+                  {uploading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Upload...
+                    </>
+                  ) : sending ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                       Envoi...
