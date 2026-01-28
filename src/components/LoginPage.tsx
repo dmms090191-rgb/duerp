@@ -330,151 +330,150 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
 
       {/* Modal de connexion */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3">
+          <div className="bg-gradient-to-br from-[#2d4578] via-[#3d5a9e] to-[#4d6bb8] rounded-3xl shadow-2xl w-full max-w-md relative">
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-3 right-3 text-white/60 hover:text-white transition-colors z-10"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
 
             {showRegistration ? (
-              <div className="p-8">
+              <div className="p-5 md:p-8">
                 <RegistrationForm onRegister={handleRegister} onBackToLogin={handleBackToLogin} />
               </div>
             ) : (
-              <div className="p-8">
-                <div className="text-center mb-8">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Connexion</h1>
-                  <p className="text-gray-600">Accédez à votre espace personnel</p>
+              <div className="p-4 md:p-8">
+                <div className="text-center mb-3 md:mb-8">
+                  <div className="w-14 h-14 md:w-20 md:h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-2 md:mb-4 shadow-xl">
+                    <img
+                      src="/kk.png"
+                      alt="Logo"
+                      className="w-10 h-10 md:w-16 md:h-16 object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<svg class="w-8 h-8 md:w-14 md:h-14 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>';
+                        }
+                      }}
+                    />
+                  </div>
+                  <h1 className="text-xl md:text-3xl font-bold text-white mb-0.5 md:mb-1.5">Connexion</h1>
+                  <p className="text-blue-100 text-xs md:text-base">Accédez à votre espace personnel</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Adresse email
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          id="email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                            if (e.target.value) setSiret('');
-                          }}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                          placeholder="votre@email.com"
-                          disabled={!!siret}
-                        />
+                <form onSubmit={handleSubmit} className="space-y-2.5 md:space-y-5">
+                  <div>
+                    <label htmlFor="email" className="block text-xs md:text-base font-semibold text-white mb-1.5 md:mb-2">
+                      Adresse email
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-blue-200/70" />
                       </div>
+                      <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (e.target.value) setSiret('');
+                        }}
+                        className="block w-full pl-9 pr-3 py-2.5 md:py-3.5 bg-[#2d4578]/40 backdrop-blur-sm border-2 border-white/20 rounded-2xl text-white placeholder-blue-200/50 focus:outline-none focus:border-white/40 focus:bg-[#2d4578]/60 transition-all disabled:opacity-50 text-xs md:text-base"
+                        placeholder="votre@email.com"
+                        disabled={!!siret}
+                      />
                     </div>
+                  </div>
 
-                    <div className="flex items-center justify-center">
-                      <span className="text-gray-500 font-medium">ou</span>
-                    </div>
+                  <div className="flex items-center justify-center">
+                    <span className="text-white/80 font-medium text-xs md:text-base">ou</span>
+                  </div>
 
-                    <div>
-                      <label htmlFor="siret" className="block text-sm font-medium text-gray-700 mb-2">
-                        Numéro SIRET
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          id="siret"
-                          type="text"
-                          value={siret}
-                          onChange={(e) => {
-                            setSiret(e.target.value);
-                            if (e.target.value) setEmail('');
-                          }}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                          placeholder="14 chiffres"
-                          maxLength={14}
-                          disabled={!!email}
-                        />
+                  <div>
+                    <label htmlFor="siret" className="block text-xs md:text-base font-semibold text-white mb-1.5 md:mb-2">
+                      Numéro SIRET
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                        <Mail className="h-4 w-4 text-blue-200/70" />
                       </div>
+                      <input
+                        id="siret"
+                        type="text"
+                        value={siret}
+                        onChange={(e) => {
+                          setSiret(e.target.value);
+                          if (e.target.value) setEmail('');
+                        }}
+                        className="block w-full pl-9 pr-3 py-2.5 md:py-3.5 bg-[#2d4578]/40 backdrop-blur-sm border-2 border-white/20 rounded-2xl text-white placeholder-blue-200/50 focus:outline-none focus:border-white/40 focus:bg-[#2d4578]/60 transition-all disabled:opacity-50 text-xs md:text-base"
+                        placeholder="14 chiffres"
+                        maxLength={14}
+                        disabled={!!email}
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-center gap-3 mb-3">
-                      <label className="block text-sm font-medium text-gray-700 text-center">
+                    <div className="flex items-center justify-between mb-2 md:mb-3">
+                      <label className="block text-xs md:text-base font-semibold text-white">
                         Mot de passe
                       </label>
                       <button
                         type="button"
-                        onPointerDown={(e) => {
-                          e.preventDefault();
-                          setShowPassword(!showPassword);
-                        }}
-                        className="text-gray-600 hover:text-gray-800 active:text-gray-900 transition-colors p-1 touch-manipulation select-none"
-                        style={{
-                          WebkitTapHighlightColor: 'transparent',
-                          WebkitUserSelect: 'none',
-                          userSelect: 'none'
-                        }}
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-white/80 hover:text-white transition-all p-0.5 rounded-lg hover:bg-white/10"
                       >
-                        {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                        {showPassword ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
                     </div>
 
-                    <div className="flex justify-center items-center gap-2 mb-4">
+                    <div className="flex justify-center items-center gap-1 md:gap-2 mb-2 md:mb-3">
                       {[0, 1, 2, 3, 4, 5].map((index) => (
                         <div key={index} className="flex flex-col items-center gap-1">
-                          {password[index] && (
-                            <div className="text-2xl font-bold text-gray-700 mb-1">
-                              {showPassword ? password[index] : '★'}
-                            </div>
-                          )}
-                          <div className="w-8 h-1 bg-gray-400 rounded-full"></div>
+                          <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                            {password[index] && (
+                              <div className="text-lg md:text-2xl font-bold text-white">
+                                {showPassword ? password[index] : '●'}
+                              </div>
+                            )}
+                          </div>
+                          <div className={`w-6 h-0.5 md:w-8 md:h-1 rounded-full transition-all ${password[index] ? 'bg-white' : 'bg-white/30'}`}></div>
                         </div>
                       ))}
                       <button
                         type="button"
-                        onPointerDown={(e) => {
-                          e.preventDefault();
-                          if (!isLoading && password.length > 0) {
-                            handleClearPassword();
-                          }
-                        }}
+                        onClick={handleClearPassword}
                         disabled={isLoading || password.length === 0}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 active:text-gray-900 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ml-1 touch-manipulation select-none"
-                        style={{
-                          WebkitTapHighlightColor: 'transparent',
-                          WebkitUserSelect: 'none',
-                          userSelect: 'none'
-                        }}
+                        className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-white/60 hover:text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed rounded-lg hover:bg-white/10"
                       >
-                        <X className="w-6 h-6" />
+                        <X className="w-4 h-4 md:w-5 md:h-5" />
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 mb-4">
-                      {shuffledDigits.map((digit) => (
+                    <div className="grid grid-cols-4 gap-1.5 md:gap-2 mb-2 md:mb-3">
+                      {shuffledDigits.slice(0, 8).map((digit) => (
                         <button
                           key={digit}
                           type="button"
-                          onPointerDown={(e) => {
-                            e.preventDefault();
-                            if (!isLoading && password.length < 6) {
-                              handleDigitClick(digit, e);
-                            }
-                          }}
+                          onClick={() => !isLoading && password.length < 6 && handleDigitClick(digit, {} as any)}
                           disabled={isLoading || password.length >= 6}
-                          className="aspect-square bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-xl text-2xl font-semibold text-gray-700 transition-all duration-150 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300 touch-manipulation select-none"
-                          style={{
-                            WebkitTapHighlightColor: 'transparent',
-                            WebkitUserSelect: 'none',
-                            userSelect: 'none'
-                          }}
+                          className="aspect-square bg-[#2d4578]/60 backdrop-blur-sm hover:bg-[#2d4578]/80 active:bg-[#2d4578] border-2 border-white/20 hover:border-white/30 rounded-xl md:rounded-2xl text-xl md:text-3xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
+                        >
+                          {digit}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1.5 md:gap-2 mb-2 md:mb-4">
+                      {shuffledDigits.slice(8, 10).map((digit) => (
+                        <button
+                          key={digit}
+                          type="button"
+                          onClick={() => !isLoading && password.length < 6 && handleDigitClick(digit, {} as any)}
+                          disabled={isLoading || password.length >= 6}
+                          className="aspect-square bg-[#2d4578]/60 backdrop-blur-sm hover:bg-[#2d4578]/80 active:bg-[#2d4578] border-2 border-white/20 hover:border-white/30 rounded-xl md:rounded-2xl text-xl md:text-3xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
                         >
                           {digit}
                         </button>
@@ -491,8 +490,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                         utterance.lang = 'fr-FR';
                         synth.speak(utterance);
                       }}
-                      className={`w-full text-center underline hover:text-gray-900 transition-colors py-1 text-sm ${
-                        voiceEnabled ? 'text-emerald-600 font-semibold' : 'text-gray-700'
+                      className={`w-full py-2 md:py-3 text-xs md:text-base rounded-xl md:rounded-2xl font-semibold transition-all ${
+                        voiceEnabled
+                          ? 'bg-[#2d4578]/60 text-white border-2 border-white/30'
+                          : 'bg-[#2d4578]/40 text-white/80 border-2 border-white/20 hover:border-white/30'
                       }`}
                     >
                       {voiceEnabled ? 'Désactiver le clavier sonore' : 'Activer le clavier sonore'}
@@ -500,24 +501,24 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                   </div>
 
                   {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
-                      {error}
+                    <div className="bg-red-500/20 backdrop-blur-sm border-2 border-red-400/40 rounded-xl p-2 flex items-start gap-1.5">
+                      <AlertCircle className="w-4 h-4 text-red-200 flex-shrink-0 mt-0.5" />
+                      <p className="text-red-100 text-xs font-semibold">{error}</p>
                     </div>
                   )}
 
                   <button
                     type="submit"
                     disabled={isLoading || (!email && !siret) || password.length !== 6}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-full text-lg font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none touch-manipulation"
-                    style={{ WebkitTapHighlightColor: 'transparent' }}
+                    className="w-full bg-gradient-to-r from-blue-400 to-blue-300 hover:from-blue-300 hover:to-blue-400 text-[#2d4578] font-bold py-3 md:py-4 rounded-2xl transition-all transform active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xl text-sm md:text-lg"
                   >
                     {isLoading ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Connexion...
+                        <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-[#2d4578]/30 border-t-[#2d4578] rounded-full animate-spin"></div>
+                        <span>Connexion...</span>
                       </>
                     ) : (
-                      'Valider'
+                      <span>Valider</span>
                     )}
                   </button>
                 </form>
