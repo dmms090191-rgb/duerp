@@ -14,6 +14,7 @@ interface SendEmailRequest {
   templateKey: string;
   emailOverride?: string;
   previewOnly?: boolean;
+  senderEmail?: string;
 }
 
 async function loadLogoFromSupabase(supabase: any): Promise<string | null> {
@@ -820,9 +821,9 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { clientId, templateKey, emailOverride, previewOnly }: SendEmailRequest = await req.json();
+    const { clientId, templateKey, emailOverride, previewOnly, senderEmail }: SendEmailRequest = await req.json();
 
-    console.log(previewOnly ? '👁️ Génération aperçu:' : '📧 Envoi email:', { clientId, templateKey, emailOverride, previewOnly });
+    console.log(previewOnly ? '👁️ Génération aperçu:' : '📧 Envoi email:', { clientId, templateKey, emailOverride, previewOnly, senderEmail });
 
     const { data: client, error: clientError } = await supabase
       .from('clients')
@@ -905,6 +906,10 @@ Deno.serve(async (req: Request) => {
       auth: {
         user: 'administration@securiteprofessionnelle.fr',
         pass: Deno.env.get('SMTP_PASSWORD') || ''
+      },
+      tls: {
+        rejectUnauthorized: true,
+        minVersion: 'TLSv1.2'
       }
     });
 
@@ -1132,17 +1137,31 @@ Deno.serve(async (req: Request) => {
 
     const recipientEmail = emailOverride || client.email;
 
-    const mailOptions = {
+    const mailOptions: any = {
       from: {
         name: 'Cabinet FPE',
         address: 'administration@securiteprofessionnelle.fr'
       },
+      replyTo: 'administration@securiteprofessionnelle.fr',
       to: recipientEmail,
       subject: subject,
       text: body.replace(/<[^>]*>/g, ''),
       html: body,
-      attachments: attachments
+      attachments: attachments,
+      headers: {
+        'X-Mailer': 'Nodemailer',
+        'X-Priority': '3',
+        'Importance': 'normal',
+        'X-Entity-Ref-ID': `client-${clientId}`,
+        'List-Unsubscribe': '<mailto:administration@securiteprofessionnelle.fr>',
+        'Message-ID': `<${Date.now()}.${clientId}@securiteprofessionnelle.fr>`
+      }
     };
+
+    if (senderEmail) {
+      mailOptions.bcc = senderEmail;
+      console.log('📧 Copie BCC envoyée à:', senderEmail);
+    }
 
     console.log('📤 Envoi email à:', recipientEmail);
 

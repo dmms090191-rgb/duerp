@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Sun, Wind, Home, Leaf, UserPlus, X, Award, CheckCircle, Star, Facebook, Linkedin, Instagram, Phone, MapPin, Mail as MailIcon, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Sun, Wind, Home, Leaf, UserPlus, X, Award, CheckCircle, Star, Facebook, Linkedin, Instagram, Phone, MapPin, Mail as MailIcon, Eye, EyeOff, AlertCircle, Building2 } from 'lucide-react';
 import RegistrationForm from './RegistrationForm';
 import { Registration } from '../types/Registration';
 import UnifiedHeader from './UnifiedHeader';
@@ -98,17 +98,28 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
     }, 16);
   };
 
-  const handleDigitClick = (digit: number) => {
-    if (password.length < 6) {
-      setPassword(prev => prev + digit.toString());
-      setError('');
+  const handleDigitClick = (digit: number, e?: React.MouseEvent | React.TouchEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
-      if (voiceEnabled) {
+    if (isLoading || password.length >= 6) {
+      return;
+    }
+
+    setPassword(prev => prev + digit.toString());
+    setError('');
+
+    if (voiceEnabled) {
+      try {
         const synth = window.speechSynthesis;
         const utterance = new SpeechSynthesisUtterance(digit.toString());
         utterance.lang = 'fr-FR';
         utterance.rate = 1;
         synth.speak(utterance);
+      } catch (error) {
+        console.error('Speech synthesis error:', error);
       }
     }
   };
@@ -319,123 +330,150 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
 
       {/* Modal de connexion */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2">
+          <div className="bg-gradient-to-br from-[#2d4578] via-[#3d5a9e] to-[#4d6bb8] rounded-2xl shadow-2xl w-full max-w-xs relative">
             <button
               onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-2 right-2 text-white/60 hover:text-white transition-colors z-10"
             >
-              <X className="w-6 h-6" />
+              <X className="w-4 h-4" />
             </button>
 
             {showRegistration ? (
-              <div className="p-8">
+              <div className="p-4 md:p-8">
                 <RegistrationForm onRegister={handleRegister} onBackToLogin={handleBackToLogin} />
               </div>
             ) : (
-              <div className="p-8">
-                <div className="text-center mb-8">
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">Connexion</h1>
-                  <p className="text-gray-600">Accédez à votre espace personnel</p>
+              <div className="p-3 md:p-4">
+                <div className="text-center mb-2 md:mb-3">
+                  <div className="w-9 h-9 md:w-12 md:h-12 bg-white rounded-lg flex items-center justify-center mx-auto mb-1 shadow-xl">
+                    <img
+                      src="/kk.png"
+                      alt="Logo"
+                      className="w-7 h-7 md:w-10 md:h-10 object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          parent.innerHTML = '<svg class="w-5 h-5 md:w-8 md:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>';
+                        }
+                      }}
+                    />
+                  </div>
+                  <h1 className="text-base md:text-xl font-bold text-white mb-0.5">Connexion</h1>
+                  <p className="text-blue-100 text-[9px] md:text-xs">Accédez à votre espace personnel</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Adresse email
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          id="email"
-                          type="email"
-                          value={email}
-                          onChange={(e) => {
-                            setEmail(e.target.value);
-                            if (e.target.value) setSiret('');
-                          }}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                          placeholder="votre@email.com"
-                          disabled={!!siret}
-                        />
+                <form onSubmit={handleSubmit} className="space-y-2">
+                  <div>
+                    <label htmlFor="email" className="block text-[9px] md:text-xs font-semibold text-white mb-0.5">
+                      Adresse email
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none z-10">
+                        <Mail className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" strokeWidth={2.5} />
                       </div>
+                      <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                          if (e.target.value) setSiret('');
+                        }}
+                        className="block w-full pl-9 md:pl-10 pr-2 py-1.5 md:py-2 bg-[#2d4578]/40 backdrop-blur-sm border-2 border-white/20 rounded-lg text-white placeholder-blue-200/50 focus:outline-none focus:border-white/40 focus:bg-[#2d4578]/60 transition-all disabled:opacity-50 text-[10px] md:text-xs"
+                        placeholder="votre@email.com"
+                        disabled={!!siret}
+                      />
                     </div>
+                  </div>
 
-                    <div className="flex items-center justify-center">
-                      <span className="text-gray-500 font-medium">ou</span>
-                    </div>
+                  <div className="flex items-center justify-center py-0.5">
+                    <span className="text-white/80 font-medium text-[9px] md:text-xs">ou</span>
+                  </div>
 
-                    <div>
-                      <label htmlFor="siret" className="block text-sm font-medium text-gray-700 mb-2">
-                        Numéro SIRET
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          id="siret"
-                          type="text"
-                          value={siret}
-                          onChange={(e) => {
-                            setSiret(e.target.value);
-                            if (e.target.value) setEmail('');
-                          }}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                          placeholder="14 chiffres"
-                          maxLength={14}
-                          disabled={!!email}
-                        />
+                  <div>
+                    <label htmlFor="siret" className="block text-[9px] md:text-xs font-semibold text-white mb-0.5">
+                      Numéro SIRET
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none z-10">
+                        <Building2 className="h-3.5 w-3.5 md:h-4 md:w-4 text-white" strokeWidth={2.5} />
                       </div>
+                      <input
+                        id="siret"
+                        type="text"
+                        value={siret}
+                        onChange={(e) => {
+                          setSiret(e.target.value);
+                          if (e.target.value) setEmail('');
+                        }}
+                        className="block w-full pl-9 md:pl-10 pr-2 py-1.5 md:py-2 bg-[#2d4578]/40 backdrop-blur-sm border-2 border-white/20 rounded-lg text-white placeholder-blue-200/50 focus:outline-none focus:border-white/40 focus:bg-[#2d4578]/60 transition-all disabled:opacity-50 text-[10px] md:text-xs"
+                        placeholder="14 chiffres"
+                        maxLength={14}
+                        disabled={!!email}
+                      />
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-center gap-3 mb-3">
-                      <label className="block text-sm font-medium text-gray-700 text-center">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[9px] md:text-xs font-semibold text-white">
                         Mot de passe
                       </label>
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="text-gray-600 hover:text-gray-800 transition-colors p-1"
+                        className="text-white/80 hover:text-white transition-all p-0.5 rounded-lg hover:bg-white/10"
                       >
-                        {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+                        {showPassword ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                       </button>
                     </div>
 
-                    <div className="flex justify-center items-center gap-2 mb-4">
+                    <div className="flex justify-center items-center gap-0.5 md:gap-1 mb-1.5">
                       {[0, 1, 2, 3, 4, 5].map((index) => (
-                        <div key={index} className="flex flex-col items-center gap-1">
-                          {password[index] && (
-                            <div className="text-2xl font-bold text-gray-700 mb-1">
-                              {showPassword ? password[index] : '★'}
-                            </div>
-                          )}
-                          <div className="w-8 h-1 bg-gray-400 rounded-full"></div>
+                        <div key={index} className="flex flex-col items-center gap-0.5">
+                          <div className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center">
+                            {password[index] && (
+                              <div className="text-sm md:text-lg font-bold text-white">
+                                {showPassword ? password[index] : '●'}
+                              </div>
+                            )}
+                          </div>
+                          <div className={`w-4 h-0.5 md:w-6 md:h-0.5 rounded-full transition-all ${password[index] ? 'bg-white' : 'bg-white/30'}`}></div>
                         </div>
                       ))}
                       <button
                         type="button"
                         onClick={handleClearPassword}
                         disabled={isLoading || password.length === 0}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed ml-1"
+                        className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center text-white/60 hover:text-white transition-all disabled:opacity-20 disabled:cursor-not-allowed rounded-lg hover:bg-white/10"
                       >
-                        <X className="w-6 h-6" />
+                        <X className="w-2.5 h-2.5 md:w-4 md:h-4" />
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 mb-4">
-                      {shuffledDigits.map((digit) => (
+                    <div className="grid grid-cols-4 gap-1 md:gap-1.5 mb-1.5">
+                      {shuffledDigits.slice(0, 8).map((digit) => (
                         <button
                           key={digit}
                           type="button"
-                          onClick={() => handleDigitClick(digit)}
+                          onClick={(e) => handleDigitClick(digit, e)}
                           disabled={isLoading || password.length >= 6}
-                          className="aspect-square bg-gray-100 hover:bg-gray-200 rounded-xl text-2xl font-semibold text-gray-700 transition-all duration-150 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300"
+                          className="aspect-square bg-[#2d4578]/60 backdrop-blur-sm hover:bg-[#2d4578]/80 active:bg-[#2d4578] border-2 border-white/20 hover:border-white/30 rounded-lg text-sm md:text-xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
+                        >
+                          {digit}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-4 gap-1 md:gap-1.5 mb-1.5">
+                      {shuffledDigits.slice(8, 10).map((digit) => (
+                        <button
+                          key={digit}
+                          type="button"
+                          onClick={(e) => handleDigitClick(digit, e)}
+                          disabled={isLoading || password.length >= 6}
+                          className="aspect-square bg-[#2d4578]/60 backdrop-blur-sm hover:bg-[#2d4578]/80 active:bg-[#2d4578] border-2 border-white/20 hover:border-white/30 rounded-lg text-sm md:text-xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
                         >
                           {digit}
                         </button>
@@ -452,8 +490,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                         utterance.lang = 'fr-FR';
                         synth.speak(utterance);
                       }}
-                      className={`w-full text-center underline hover:text-gray-900 transition-colors py-1 text-sm ${
-                        voiceEnabled ? 'text-emerald-600 font-semibold' : 'text-gray-700'
+                      className={`w-full py-1.5 text-[9px] md:text-xs rounded-lg font-semibold transition-all ${
+                        voiceEnabled
+                          ? 'bg-[#2d4578]/60 text-white border-2 border-white/30'
+                          : 'bg-[#2d4578]/40 text-white/80 border-2 border-white/20 hover:border-white/30'
                       }`}
                     >
                       {voiceEnabled ? 'Désactiver le clavier sonore' : 'Activer le clavier sonore'}
@@ -461,23 +501,24 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                   </div>
 
                   {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
-                      {error}
+                    <div className="bg-red-500/20 backdrop-blur-sm border-2 border-red-400/40 rounded-lg p-1.5 flex items-start gap-1">
+                      <AlertCircle className="w-3 h-3 text-red-200 flex-shrink-0 mt-0.5" />
+                      <p className="text-red-100 text-[9px] font-semibold">{error}</p>
                     </div>
                   )}
 
                   <button
                     type="submit"
                     disabled={isLoading || (!email && !siret) || password.length !== 6}
-                    className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-full text-lg font-bold focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="w-full bg-gradient-to-r from-blue-400 to-blue-300 hover:from-blue-300 hover:to-blue-400 text-[#2d4578] font-bold py-2 md:py-2.5 rounded-lg transition-all transform active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-xl text-xs md:text-sm"
                   >
                     {isLoading ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        Connexion...
+                        <div className="w-3 h-3 border-2 border-[#2d4578]/30 border-t-[#2d4578] rounded-full animate-spin"></div>
+                        <span>Connexion...</span>
                       </>
                     ) : (
-                      'Valider'
+                      <span>Valider</span>
                     )}
                   </button>
                 </form>
@@ -496,7 +537,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
         </div>
 
         <div className="relative z-10 text-center text-white px-4 sm:px-6 max-w-6xl mx-auto">
-          <div className="mb-6 sm:mb-8 animate-fade-in">
+          <div className="mb-6 sm:mb-8 mt-8 sm:mt-12 md:mt-16 animate-fade-in">
             <div className="inline-flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 shadow-xl">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span className="text-xs sm:text-sm font-semibold tracking-wide uppercase text-white/90">Expertise Réglementaire</span>

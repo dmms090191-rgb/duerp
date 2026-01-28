@@ -10,6 +10,7 @@ import { statusService } from '../services/statusService';
 import { clientService } from '../services/clientService';
 import { Status } from '../types/Status';
 import SellerClientModal from './SellerClientModal';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface SellerDashboardProps {
   sellerData: Seller & { isAdminViewing?: boolean };
@@ -54,6 +55,8 @@ interface Client {
 }
 
 const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout, onReturnToAdmin, onClientLogin }) => {
+  useOnlineStatus(sellerData.id, 'seller');
+
   const [activeTab, setActiveTab] = React.useState<'clients' | 'chat' | 'chat-travail' | 'argumentaire'>('clients');
   const [clients, setClients] = React.useState<Client[]>([]);
   const [loadingClients, setLoadingClients] = React.useState(true);
@@ -334,42 +337,47 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-blue-50/30">
-      <header className="bg-white shadow-lg border-b border-gray-200/50 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="flex justify-between items-center h-16 sm:h-20">
-            <div className="flex items-center gap-2 sm:gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a2847] via-[#2d4578] to-[#1a2847] relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.08)_0%,transparent_70%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]"></div>
+      <div className="relative z-0">
+      <header className="fixed top-0 left-0 right-0 z-40 overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a2847]/98 via-[#2d4578]/98 to-[#1a2847]/98"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(96,165,250,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 backdrop-blur-2xl"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+          <div className="relative flex items-center h-24 md:h-28 lg:h-32">
+            <div className="flex-1 flex items-center gap-3 md:gap-4">
               <button
                 onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                className="lg:hidden p-2 sm:p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-200"
+                className="lg:hidden p-2.5 md:p-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
               >
-                {isMobileSidebarOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+                {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
+            </div>
+
+            <div className="absolute top-4 md:top-5 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+              <div className="bg-white rounded-lg md:rounded-xl shadow-2xl p-1.5 md:p-2 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
+                <img
+                  src="/kk copy.png"
+                  alt="Cabinet FPE"
+                  className="h-10 md:h-14 lg:h-16 w-auto"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col md:flex-row items-end md:items-center justify-end gap-2 md:gap-3">
               {sellerData.isAdminViewing && onReturnToAdmin && (
                 <button
                   onClick={onReturnToAdmin}
-                  className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
+                  className="flex items-center justify-center w-9 h-9 md:w-auto md:h-auto md:gap-2 md:px-4 md:py-2.5 bg-white/20 md:bg-gradient-to-r md:from-blue-500/90 md:to-blue-600/90 backdrop-blur-xl border border-white/30 md:border-transparent text-white hover:bg-white/30 md:hover:from-blue-600 md:hover:to-blue-700 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110 md:hover:scale-105 md:font-semibold md:text-sm"
                   title="Retour au panel admin"
                 >
-                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="font-semibold hidden sm:inline">Retour Admin</span>
-                  <span className="font-semibold sm:hidden">Retour</span>
+                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+                  <span className="hidden md:inline">Retour Admin</span>
                 </button>
               )}
-            </div>
-
-            <div className="absolute left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-              <img
-                src="/kk copy.png"
-                alt="Logo Cabinet FPE"
-                className="h-10 sm:h-12 lg:h-14 w-auto object-contain"
-              />
-              <p className="text-[10px] sm:text-xs font-medium text-gray-600 mt-0.5 sm:mt-1 hidden sm:block">
-                {sellerData.isAdminViewing ? 'Mode Admin' : 'Espace Vendeur'}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 sm:gap-3">
               <SellerNotificationSystem
                 sellerUuid={sellerData.id}
                 sellerFullName={sellerData.full_name}
@@ -384,9 +392,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
             </div>
           </div>
         </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"></div>
       </header>
 
-      <div className="flex h-screen relative w-full box-border overflow-hidden lg:overflow-visible">
+      <div className="pt-32 md:pt-40 lg:pt-48 pb-8 md:pb-16 flex">
         {/* Mobile Sidebar Overlay */}
         {isMobileSidebarOpen && (
           <div
@@ -396,190 +406,193 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
         )}
 
         <aside className={`
-          w-64 sm:w-72 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 shadow-xl
-          lg:static lg:block
-          fixed top-0 left-0 h-full z-50
-          transition-transform duration-300 ease-in-out
+          fixed left-0 top-32 md:top-40 lg:top-48 bottom-0 w-64 md:w-72 flex flex-col
+          transition-transform duration-300 z-50
           ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
-          <div className="p-4 sm:p-6 h-full overflow-y-auto pb-24">
-            <div className="lg:hidden flex justify-between items-center mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-gray-200">
-              <h2 className="text-base sm:text-lg font-bold text-gray-900">Menu</h2>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/95 via-[#2d4578]/95 to-[#1e3a5f]/95 backdrop-blur-2xl shadow-2xl border-r border-white/10"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.08)_0%,transparent_50%)]"></div>
+
+          <div className="relative flex-1 overflow-y-auto px-4 md:px-5 py-6 md:py-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+            <div className="lg:hidden flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+              <h2 className="text-lg font-bold text-white">Menu</h2>
               <button
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-all"
+                className="p-2 text-white/60 hover:text-white rounded-lg hover:bg-white/10 transition-all"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="mb-6 sm:mb-8 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl border border-blue-200/50">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
-                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="mb-8 p-4 md:p-5 bg-gradient-to-br from-blue-500/20 via-blue-600/15 to-purple-500/20 rounded-2xl border border-white/20 shadow-xl backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                  <User className="w-6 h-6 md:w-7 md:h-7 text-white" />
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                  <h2 className="text-base md:text-lg font-bold text-white truncate">
                     {sellerData.prenom} {sellerData.nom}
                   </h2>
-                  <p className="text-xs text-blue-600 font-medium">
+                  <p className="text-xs md:text-sm text-blue-200 font-medium">
                     Espace vendeur
                   </p>
                 </div>
               </div>
             </div>
 
-            <nav className="space-y-1.5 sm:space-y-2">
+            <nav className="space-y-2 md:space-y-2.5">
               <button
                 onClick={() => handleTabChange('clients')}
-                className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 transform hover:scale-105 ${
+                className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'clients'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
-                <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <UserCheck className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
                 <span className="truncate">Clients</span>
               </button>
               <button
                 onClick={() => handleTabChange('chat')}
-                className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 transform hover:scale-105 ${
+                className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'chat'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
-                <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <MessageSquare className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
                 <span className="truncate">Chat Client</span>
               </button>
               <button
                 onClick={() => handleTabChange('chat-travail')}
-                className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 transform hover:scale-105 ${
+                className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'chat-travail'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
-                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <Briefcase className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
                 <span className="truncate">Chat Travail</span>
               </button>
               <button
                 onClick={() => handleTabChange('argumentaire')}
-                className={`w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 transform hover:scale-105 ${
+                className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'argumentaire'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
-                <FileText className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                <FileText className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
                 <span className="truncate">Argumentaire</span>
               </button>
             </nav>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 w-64 sm:w-72 p-4 sm:p-6 bg-white/80 backdrop-blur-sm border-t border-gray-200/50">
+          <div className="relative px-4 md:px-5 py-6 md:py-8 border-t border-white/10 bg-gradient-to-b from-transparent to-black/20">
             <button
               onClick={onLogout}
-              className="w-full flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
+              className="w-full flex items-center justify-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm border border-red-400/50"
             >
-              <LogOut className="w-5 h-5 sm:w-6 sm:h-6" />
-              <span className="text-base sm:text-lg hidden sm:inline">Déconnexion</span>
+              <LogOut className="w-5 h-5" />
+              <span>Déconnexion</span>
             </button>
           </div>
         </aside>
 
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-transparent min-w-0 w-full lg:w-auto">
-          <div className="p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 lg:ml-64 xl:ml-72 min-h-screen">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-blue-500/5 to-white/5 backdrop-blur-sm"></div>
+            <div className="relative p-6 md:p-8 lg:p-10">
             {activeTab === 'clients' && (
               <div>
-                <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="mb-8 md:mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                       Mes Clients
                     </h1>
-                    <p className="text-sm sm:text-base text-gray-600 font-medium">
+                    <p className="text-sm md:text-base text-blue-200 font-medium">
                       Gérez tous vos clients en un seul endroit
                     </p>
                   </div>
                   <button
                     onClick={fetchClients}
                     disabled={loadingClients}
-                    className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                    className="flex items-center gap-2 px-5 md:px-6 py-3 md:py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base border border-blue-400/50"
                   >
-                    <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 ${loadingClients ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`w-5 h-5 ${loadingClients ? 'animate-spin' : ''}`} />
                     <span className="hidden sm:inline">Rafraîchir</span>
                   </button>
                 </div>
 
                 {loadingClients ? (
-                  <div className="flex flex-col items-center justify-center h-64 bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl">
-                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mb-4"></div>
-                    <p className="text-gray-600 font-medium">Chargement des clients...</p>
+                  <div className="flex flex-col items-center justify-center h-64 bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20">
+                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-300/30 border-t-blue-400 mb-4"></div>
+                    <p className="text-white/80 font-medium">Chargement des clients...</p>
                   </div>
                 ) : (
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-gray-200/50 p-3 sm:p-4 lg:p-6">
-                    <div className="mb-4 sm:mb-6 px-2 sm:px-3 bg-gradient-to-r from-gray-50 to-blue-50/50 p-3 sm:p-5 rounded-xl border border-gray-200/50 shadow-inner">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-4 md:p-6 lg:p-8">
+                    <div className="mb-6 md:mb-8 px-3 md:px-4 bg-white/5 p-4 md:p-6 rounded-2xl border border-white/10 shadow-inner">
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">Prénom</label>
+                          <label className="block text-xs font-medium text-white/90 mb-2">Prénom</label>
                           <input
                             type="text"
                             placeholder="Rechercher..."
                             value={filterPrenom}
                             onChange={(e) => setFilterPrenom(e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">Nom</label>
+                          <label className="block text-xs font-medium text-white/90 mb-2">Nom</label>
                           <input
                             type="text"
                             placeholder="Rechercher..."
                             value={filterNom}
                             onChange={(e) => setFilterNom(e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">E-mail</label>
+                          <label className="block text-xs font-medium text-white/90 mb-2">E-mail</label>
                           <input
                             type="text"
                             placeholder="Rechercher..."
                             value={filterEmail}
                             onChange={(e) => setFilterEmail(e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">Téléphone</label>
+                          <label className="block text-xs font-medium text-white/90 mb-2">Téléphone</label>
                           <input
                             type="text"
                             placeholder="Rechercher..."
                             value={filterTelephone}
                             onChange={(e) => setFilterTelephone(e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">SIRET</label>
+                          <label className="block text-xs font-medium text-white/90 mb-2">SIRET</label>
                           <input
                             type="text"
                             placeholder="Rechercher..."
                             value={filterSiret}
                             onChange={(e) => setFilterSiret(e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 text-white placeholder-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-gray-700 mb-1">Statut</label>
+                          <label className="block text-xs font-medium text-white/90 mb-2">Statut</label>
                           <select
                             value={filterStatut}
                             onChange={(e) => setFilterStatut(e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                            className="w-full px-3 py-2 text-sm bg-white/10 border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 backdrop-blur-sm"
                           >
-                            <option value="">Tous les statuts</option>
+                            <option value="" className="bg-[#1a2847] text-white">Tous les statuts</option>
                             {statuses.map((status) => (
-                              <option key={status.id} value={status.id}>
+                              <option key={status.id} value={status.id} className="bg-[#1a2847] text-white">
                                 {status.name}
                               </option>
                             ))}
@@ -588,84 +601,83 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                       </div>
                     </div>
 
-                    {/* Tableau avec défilement horizontal */}
-                    <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-200">
+                    <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-white/10">
                       <table className="w-full table-auto min-w-max">
                         <thead>
-                          <tr className="border-b border-gray-200">
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                          <tr className="border-b border-white/20">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Calendar className="w-4 h-4" />
                                 Rendez-vous
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Shield className="w-4 h-4" />
                                 Statut du client
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <User className="w-4 h-4" />
                                 Prénom
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <User className="w-4 h-4" />
                                 Nom
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Phone className="w-4 h-4" />
                                 Téléphone
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Phone className="w-4 h-4" />
                                 Portable
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Mail className="w-4 h-4" />
                                 E-mail
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Briefcase className="w-4 h-4" />
                                 Activité
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Building2 className="w-4 h-4" />
                                 Société
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Hash className="w-4 h-4" />
                                 SIRET
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <FileText className="w-4 h-4" />
                                 Vendeur
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               <div className="flex items-center gap-1">
                                 <Calendar className="w-4 h-4" />
                                 Créé le
                               </div>
                             </th>
-                            <th className="text-left py-3 px-4 text-xs font-semibold text-gray-700">
+                            <th className="text-left py-3 px-4 text-xs font-semibold text-white/90">
                               Actions
                             </th>
                           </tr>
@@ -691,7 +703,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                             if (filteredClients.length === 0) {
                               return (
                                 <tr>
-                                  <td colSpan={13} className="text-center py-8 text-gray-500">
+                                  <td colSpan={13} className="text-center py-8 text-white/60">
                                     {hasActiveFilters ? 'Aucun client ne correspond à vos critères de recherche' : 'Aucun client trouvé'}
                                   </td>
                                 </tr>
@@ -699,8 +711,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                             }
 
                             return filteredClients.map((client) => (
-                              <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                <td className="py-3 px-4 text-sm text-gray-900 whitespace-nowrap min-w-[200px]">
+                              <tr key={client.id} className="border-b border-white/10 hover:bg-white/5 transition-colors">
+                                <td className="py-3 px-4 text-sm text-white/90 whitespace-nowrap min-w-[200px]">
                                   <div className="flex items-center gap-2">
                                     <input
                                       type="datetime-local"
@@ -753,34 +765,34 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                                     ))}
                                   </select>
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.prenom || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.nom || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.phone || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.portable || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.email}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.activite || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.company_name || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900">
+                                <td className="py-3 px-4 text-sm text-white/90">
                                   {client.siret || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900 max-w-xs truncate" title={client.vendeur}>
+                                <td className="py-3 px-4 text-sm text-white/90 max-w-xs truncate" title={client.vendeur}>
                                   {client.vendeur || '-'}
                                 </td>
-                                <td className="py-3 px-4 text-sm text-gray-900 whitespace-nowrap">
+                                <td className="py-3 px-4 text-sm text-white/90 whitespace-nowrap">
                                   {new Date(client.created_at).toLocaleDateString('fr-FR')}
                                 </td>
                                 <td className="py-3 px-4">
@@ -809,8 +821,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                     <div className="mt-4 sm:mt-6 px-3 sm:px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200/50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <UserCheck className="w-5 h-5 text-blue-600" />
-                          <span className="text-sm font-bold text-gray-900">
+                          <UserCheck className="w-5 h-5 text-blue-400" />
+                          <span className="text-sm font-bold text-white">
                             {(() => {
                               const filteredCount = clients.filter(client => {
                                 const matchPrenom = !filterPrenom || (client.prenom && client.prenom.toLowerCase().includes(filterPrenom.toLowerCase()));
@@ -851,11 +863,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
             {activeTab === 'chat' && (
               <div>
-                <div className="mb-6 sm:mb-8">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
+                <div className="mb-8 md:mb-10">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                     Chat Client
                   </h1>
-                  <p className="text-sm sm:text-base text-gray-600 font-medium">
+                  <p className="text-sm md:text-base text-blue-200 font-medium">
                     Communiquez avec vos clients en temps réel
                   </p>
                 </div>
@@ -871,11 +883,11 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
             {activeTab === 'chat-travail' && (
               <div>
-                <div className="mb-6 sm:mb-8">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent mb-2">
+                <div className="mb-8 md:mb-10">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
                     Chat Travail
                   </h1>
-                  <p className="text-sm sm:text-base text-gray-600 font-medium">
+                  <p className="text-sm md:text-base text-blue-200 font-medium">
                     Communication interne avec l'équipe et les administrateurs
                   </p>
                 </div>
@@ -894,8 +906,10 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 <ArgumentaireViewer />
               </div>
             )}
+            </div>
           </div>
         </main>
+      </div>
       </div>
 
       {selectedClientDetails && editedClient && (

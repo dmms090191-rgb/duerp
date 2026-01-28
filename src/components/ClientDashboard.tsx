@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send } from 'lucide-react';
+import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send, Trash2, AlertCircle } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import ClientNotificationSystem from './ClientNotificationSystem';
 import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../services/pdfService';
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
 import { supabase } from '../lib/supabase';
 import { sendEmail, EmailType } from '../services/emailSendService';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 interface ClientDashboardProps {
   clientData: {
@@ -40,13 +41,46 @@ interface ClientDashboardProps {
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout, isAdminViewing, onReturnToAdmin, isSellerViewing, onReturnToSeller }) => {
   const { client } = clientData;
+
+  useOnlineStatus(client.id, 'client');
+
   const [activeTab, setActiveTab] = useState('info-juridiques');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [secteurActivite, setSecteurActivite] = useState('');
+  const [sellerOnlineStatus, setSellerOnlineStatus] = useState<{isOnline: boolean, lastConnection: string | null}>({ isOnline: false, lastConnection: null });
 
   const [nomConseiller, setNomConseiller] = useState('');
   const [nomSociete, setNomSociete] = useState('');
   const [siretSiren, setSiretSiren] = useState('');
+
+  useEffect(() => {
+    const fetchSellerStatus = async () => {
+      if (!client.vendeur || client.vendeur === 'Super Admin') return;
+
+      try {
+        const { data: seller } = await supabase
+          .from('sellers')
+          .select('is_online, last_connection')
+          .ilike('full_name', client.vendeur)
+          .maybeSingle();
+
+        if (seller) {
+          setSellerOnlineStatus({
+            isOnline: seller.is_online || false,
+            lastConnection: seller.last_connection
+          });
+        }
+      } catch (error) {
+        console.error('Erreur récupération statut vendeur:', error);
+      }
+    };
+
+    fetchSellerStatus();
+
+    const interval = setInterval(fetchSellerStatus, 5000);
+
+    return () => clearInterval(interval);
+  }, [client.vendeur]);
   const [adresse, setAdresse] = useState('');
   const [ville, setVille] = useState('');
   const [codePostal, setCodePostal] = useState('');
@@ -75,6 +109,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   const [savingInfo, setSavingInfo] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [currentVendeur, setCurrentVendeur] = useState(client.vendeur || '');
+
+  const [currentPasswordDigits, setCurrentPasswordDigits] = useState(['', '', '', '', '', '']);
+  const [newPasswordDigits, setNewPasswordDigits] = useState(['', '', '', '', '', '']);
+  const [confirmPasswordDigits, setConfirmPasswordDigits] = useState(['', '', '', '', '', '']);
+  const [passwordChangeMessage, setPasswordChangeMessage] = useState('');
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const [covidInfo, setCovidInfo] = useState('');
   const [affichageSpecifique, setAffichageSpecifique] = useState('');
@@ -447,10 +489,20 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     setEmailMessage('');
 
     try {
+      let senderEmail: string | undefined = undefined;
+
+      if (isAdminViewing || isSellerViewing) {
+        const storedAdminEmail = sessionStorage.getItem('adminEmail');
+        const storedSellerEmail = sessionStorage.getItem('sellerEmail');
+        senderEmail = storedAdminEmail || storedSellerEmail || undefined;
+        console.log('📧 Email de l\'expéditeur (admin/seller):', senderEmail);
+      }
+
       const result = await sendEmail({
         clientId: parseInt(client.id),
         emailType,
-        generatePDFs
+        generatePDFs,
+        senderEmail
       });
 
       if (result.success) {
@@ -477,19 +529,18 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-100 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.15),transparent_50%)]"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(14,165,233,0.1),transparent_50%)]"></div>
+    <div className="min-h-screen bg-gradient-to-br from-[#1a2847] via-[#2d4578] to-[#1a2847] relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.08)_0%,transparent_70%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]"></div>
       <div className="relative z-0">
-      <header className="fixed top-0 left-0 right-0 z-40 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 opacity-95"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.8),transparent_50%)]"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(99,102,241,0.6),transparent_50%)]"></div>
-        <div className="absolute inset-0 backdrop-blur-3xl"></div>
+      <header className="fixed top-0 left-0 right-0 z-40 overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#1a2847]/98 via-[#2d4578]/98 to-[#1a2847]/98"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(96,165,250,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 backdrop-blur-2xl"></div>
 
         <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6 md:py-8 lg:py-10">
-            <div className="flex items-center gap-3 md:gap-4 flex-1">
+          <div className="relative flex items-center h-24 md:h-28 lg:h-32">
+            <div className="flex-1 flex items-center gap-3 md:gap-4">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="lg:hidden flex items-center justify-center w-11 h-11 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
@@ -497,53 +548,37 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               >
                 <Menu className="w-6 h-6" />
               </button>
+            </div>
+
+            <div className="absolute top-4 md:top-5 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+              <div className="bg-white rounded-lg md:rounded-xl shadow-2xl p-1.5 md:p-2 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
+                <img
+                  src="/kk copy.png"
+                  alt="Cabinet FPE"
+                  className="h-10 md:h-14 lg:h-16 w-auto"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col md:flex-row items-end md:items-center justify-end gap-2 md:gap-3">
               {isAdminViewing && onReturnToAdmin && (
                 <button
                   onClick={onReturnToAdmin}
-                  className="hidden md:flex items-center gap-2.5 px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 text-sm font-bold"
+                  className="flex items-center justify-center w-9 h-9 md:w-11 md:h-11 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-xl md:rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
                   title="Retour au panel admin"
                 >
-                  <ArrowLeft className="w-5 h-5" />
-                  <span>Retour Admin</span>
+                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
               )}
               {isSellerViewing && onReturnToSeller && (
                 <button
                   onClick={onReturnToSeller}
-                  className="hidden md:flex items-center gap-2.5 px-5 py-3 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:scale-105 text-sm font-bold"
+                  className="flex items-center justify-center w-9 h-9 md:w-11 md:h-11 bg-white/20 backdrop-blur-xl border border-white/30 text-white hover:bg-white/30 rounded-xl md:rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
                   title="Retour au panel vendeur"
                 >
-                  <ArrowLeft className="w-5 h-5" />
-                  <span>Retour Vendeur</span>
+                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
               )}
-              {isAdminViewing && (
-                <div className="hidden md:block">
-                  <div className="px-4 py-2 bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl">
-                    <p className="text-xs text-white font-bold tracking-wide">MODE ADMIN</p>
-                  </div>
-                </div>
-              )}
-              {isSellerViewing && (
-                <div className="hidden md:block">
-                  <div className="px-4 py-2 bg-white/20 backdrop-blur-xl border border-white/30 rounded-xl">
-                    <p className="text-xs text-white font-bold tracking-wide">MODE VENDEUR</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="absolute top-1 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-              <div className="bg-white rounded-xl md:rounded-2xl shadow-2xl p-2 md:p-3 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
-                <img
-                  src="/kk copy.png"
-                  alt="Cabinet FPE"
-                  className="h-12 md:h-16 lg:h-20 w-auto"
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 flex items-center justify-end gap-3">
               <ClientNotificationSystem
                 clientId={client.id}
                 onNotificationClick={() => setActiveTab('messagerie')}
@@ -552,15 +587,15 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-600 shadow-lg"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"></div>
       </header>
 
       <div className="pt-32 md:pt-40 lg:pt-48 pb-8 md:pb-16 flex">
         <aside className={`fixed left-0 top-32 md:top-40 lg:top-48 bottom-0 w-64 md:w-72 flex flex-col transition-transform duration-300 z-30 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/95 via-blue-700/95 to-indigo-800/95 backdrop-blur-2xl"></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.4),transparent_70%)]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1e3a5f]/98 via-[#2d4578]/98 to-[#1a2847]/98 backdrop-blur-2xl border-r border-white/5"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(96,165,250,0.08),transparent_70%)]"></div>
 
           <nav className="relative p-4 md:p-5 space-y-2 flex-1 overflow-y-auto">
             {menuItems.map((item) => {
@@ -573,17 +608,17 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     setActiveTab(item.id);
                     setIsMobileMenuOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 rounded-2xl font-bold transition-all duration-300 text-xs md:text-sm group relative overflow-hidden ${
+                  className={`w-full flex items-center gap-3 px-4 md:px-5 py-3.5 md:py-4 rounded-xl font-semibold transition-all duration-300 text-xs md:text-sm group relative overflow-hidden ${
                     isActive
-                      ? 'bg-white text-blue-600 shadow-2xl transform scale-105'
-                      : 'text-white/90 hover:text-white hover:bg-white/20'
+                      ? 'bg-white/95 text-[#1a2847] shadow-xl transform scale-[1.02]'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 hover:scale-[1.01]'
                   }`}
                 >
                   {isActive && (
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-white opacity-90"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-white to-blue-50 opacity-95"></div>
                   )}
                   {!isActive && (
-                    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-white/0 group-hover:bg-white/8 transition-all duration-300"></div>
                   )}
                   <Icon className={`w-5 h-5 md:w-5 md:h-5 relative z-10 ${isActive ? 'text-blue-600' : 'text-white'} transition-all duration-300`} />
                   <span className="text-left relative z-10">{item.label}</span>
@@ -633,9 +668,9 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
         <div className="lg:ml-72 flex-1 px-4 md:px-6 lg:px-8">
           {activeTab === 'info-juridiques' && (
             <>
-              <div className="mb-4 md:mb-6 relative overflow-hidden rounded-3xl shadow-2xl">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800"></div>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.8),transparent_60%)]"></div>
+              <div className="mb-4 md:mb-6 relative overflow-hidden rounded-2xl shadow-2xl border border-white/10">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#2d4578]/95 via-[#3d5a9e]/95 to-[#2d4578]/95"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(96,165,250,0.15),transparent_60%)]"></div>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(99,102,241,0.5),transparent_60%)]"></div>
                 <div className="relative p-6 md:p-10">
                   <div className="flex items-center gap-4 md:gap-6">
@@ -650,20 +685,20 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     </div>
                   </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-400/40 to-transparent"></div>
               </div>
 
-              <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-blue-200/50 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
-                  <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+              <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-10 border border-white/20 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-50/30 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+                <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b border-gray-200/50">
+                  <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-[#2d4578] to-[#3d5a9e] rounded-xl shadow-xl border border-blue-400/20 transform hover:scale-105 transition-transform duration-300">
                     <User className="w-7 h-7 md:w-8 md:h-8 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">
+                    <h2 className="text-2xl md:text-4xl font-bold text-[#1a2847]">
                       Renseignements Juridiques
                     </h2>
-                    <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">Vos informations juridiques et personnelles</p>
+                    <p className="text-sm md:text-base text-gray-600 font-medium mt-1.5">Vos informations juridiques et personnelles</p>
                   </div>
                 </div>
 
@@ -676,7 +711,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
 
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
+                  <div className="relative bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-2xl border border-gray-200/60/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
                     <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
                       Société
                     </label>
@@ -689,7 +724,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     SIRET
                   </label>
@@ -697,11 +732,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editableSiret}
                     onChange={(e) => setEditableSiret(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Nom
                   </label>
@@ -709,11 +744,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editableNom}
                     onChange={(e) => setEditableNom(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Prénom
                   </label>
@@ -721,11 +756,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editablePrenom}
                     onChange={(e) => setEditablePrenom(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Mot de passe
                   </label>
@@ -735,7 +770,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       value={editablePassword}
                       onChange={(e) => setEditablePassword(e.target.value)}
                       placeholder="Laisser vide pour ne pas modifier"
-                      className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 md:pr-12 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 md:pr-12 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button
                       type="button"
@@ -750,7 +785,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   )}
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Adresse
                   </label>
@@ -758,11 +793,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editableAddress}
                     onChange={(e) => setEditableAddress(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Ville
                   </label>
@@ -770,11 +805,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editableVille}
                     onChange={(e) => setEditableVille(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Code postal
                   </label>
@@ -782,11 +817,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editableCodePostal}
                     onChange={(e) => setEditableCodePostal(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     E-mail
                   </label>
@@ -794,11 +829,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="email"
                     value={editableEmail}
                     onChange={(e) => setEditableEmail(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Numéro de téléphone
                   </label>
@@ -806,11 +841,11 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editablePhone}
                     onChange={(e) => setEditablePhone(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                   <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2">
                     Numéro de portable
                   </label>
@@ -818,7 +853,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     type="text"
                     value={editablePortable}
                     onChange={(e) => setEditablePortable(e.target.value)}
-                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -827,9 +862,9 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   disabled={savingInfo}
                   className="relative w-full overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 group-hover:from-blue-700 group-hover:via-indigo-700 group-hover:to-blue-700 transition-all duration-500"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  <div className="relative flex items-center justify-center gap-3 px-4 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-bold rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#2d4578] to-[#3d5a9e] group-hover:from-[#3d5a9e] group-hover:to-[#4d6aae] transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <div className="relative flex items-center justify-center gap-3 px-4 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-semibold rounded-xl shadow-xl transform group-hover:scale-[1.02] transition-all duration-300">
                   {savingInfo ? (
                     <>
                       <div className="w-5 h-5 md:w-6 md:h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -849,19 +884,19 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'documents' && (
-            <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-blue-200/50 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
-              <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
-                <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+            <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-10 border border-white/20 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-50/30 to-transparent rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
+              <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b border-gray-200/50">
+                <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-[#2d4578] to-[#3d5a9e] rounded-xl shadow-xl border border-blue-400/20 transform hover:scale-105 transition-transform duration-300">
                   <FileText className="w-7 h-7 md:w-8 md:h-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">Mes Documents</h2>
+                  <h2 className="text-2xl md:text-4xl font-bold text-[#1a2847]">Mes Documents</h2>
                   <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">Gérez et téléchargez vos documents</p>
                 </div>
               </div>
               {documents.length === 0 ? (
-                <div className="text-center py-12 md:py-16 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg md:rounded-xl border-2 border-dashed border-blue-200">
+                <div className="text-center py-12 md:py-16 bg-white/50 backdrop-blur-sm rounded-lg md:rounded-xl border-2 border-dashed border-blue-200">
                   <FileText className="w-16 h-16 md:w-20 md:h-20 text-blue-300 mx-auto mb-3 md:mb-4" />
                   <p className="text-sm md:text-base text-gray-600 font-medium px-4">Aucun document disponible pour le moment</p>
                   <p className="text-xs md:text-sm text-gray-500 mt-2 px-4">Remplissez le formulaire DUERP pour générer votre premier document</p>
@@ -869,10 +904,10 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               ) : (
                 <div className="space-y-3 md:space-y-4">
                   {documents.map((doc) => (
-                    <div key={doc.id} className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-all relative">
+                    <div key={doc.id} className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm hover:shadow-md transition-all relative">
                       <button
                         onClick={() => handleDeleteDocument(doc.id, doc.file_path)}
-                        className="absolute top-2 right-2 md:top-3 md:right-3 flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all transform hover:scale-110 shadow-md"
+                        className="absolute top-2 right-2 md:top-3 md:right-3 flex items-center justify-center w-7 h-7 md:w-8 md:h-8 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all transform hover:scale-105 shadow-md"
                         title="Supprimer le document"
                       >
                         <X className="w-4 h-4 md:w-5 md:h-5" />
@@ -927,14 +962,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     </div>
 
                     <div className="space-y-3 md:space-y-4">
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                      <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                         <h3 className="text-base md:text-lg font-bold text-blue-900 mb-2 md:mb-3">Le DUERP</h3>
                         <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
                           Document unique d'évaluation des risques professionnels
                         </p>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-3 md:p-5 rounded-lg md:rounded-xl border border-blue-200">
+                      <div className="bg-white/50 backdrop-blur-sm p-3 md:p-5 rounded-lg md:rounded-xl border border-gray-200/50">
                         <p className="text-xs md:text-sm text-gray-700 leading-relaxed font-medium">
                           Une évaluation des risques professionnels (EVRP) doit être menée au sein de votre entreprise afin d'adapter les conditions de travail et d'assurer la protection de la santé de vos salariés, une mise à jour de votre DUERP est donc indispensable !
                         </p>
@@ -958,14 +993,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     </div>
 
                     <div className="space-y-4 md:space-y-6">
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                           Secteur d'activité <span className="text-red-500">*</span>
                         </label>
                         <select
                           value={secteurActivite}
                           onChange={(e) => setSecteurActivite(e.target.value)}
-                          className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="personnel-sante">A - Personnel de santé</option>
@@ -991,7 +1026,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       </div>
 
                       {secteurActivite === 'personnel-sante' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">A - Personnel de santé</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1060,7 +1095,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'commerce-grande-consommation' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">B - Commerce de produits de grande consommation</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1104,7 +1139,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'commerce-electronique' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">C - Commerce électronique, vente hors magasin</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1132,7 +1167,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'immobilier-logement' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">D - Immobilier, logement</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1176,7 +1211,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'energie-eau-assainissement' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">E - Energie, eau, assainissement</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1208,7 +1243,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'travaux-batiment' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">F - Travaux du bâtiment, travaux d'aménagement extérieur et intérieur</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1248,7 +1283,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'transport-public' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">G - Transport public de voyageurs, transport de marchandises</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1296,7 +1331,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'automobile' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">H - Automobile</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1364,7 +1399,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'hotellerie-restauration' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">I - Hôtellerie, restauration</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1396,7 +1431,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'tourisme-voyage' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">J - Tourisme, voyage</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1424,7 +1459,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'culture-loisirs-sport' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">K - Culture, loisirs, sport</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1480,7 +1515,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'bricolage-jardinage-animaux' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">L - Bricolage, jardinage, animaux</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1512,7 +1547,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'produits-services-personne' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">M - Produits et services à la personne</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1568,7 +1603,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'franchise' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">N - Franchise</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1580,7 +1615,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'metallurgie' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">O - Métallurgie</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1652,7 +1687,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'fabrication-produits-metalliques' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">P - Fabrication de produits métalliques</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1732,7 +1767,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'tri-collecte-dechets' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">Q - Tri et collecte des déchets</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1764,7 +1799,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'culture-production-animale' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">R - Culture et production animale chasse et services annexes</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1896,7 +1931,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       )}
 
                       {secteurActivite === 'sylviculture-exploitation-forestiere' && (
-                        <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                        <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                           <h4 className="text-base font-bold text-gray-900 mb-4 pb-3 border-b border-blue-300">S - Sylviculture et exploitation forestière</h4>
                           <div className="space-y-3">
                             <label className="flex items-start gap-3 cursor-pointer">
@@ -1919,7 +1954,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       )}
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Nom de votre conseiller <span className="text-red-500">*</span>
                         </label>
@@ -1927,12 +1962,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={nomConseiller}
                           onChange={(e) => setNomConseiller(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Nom du conseiller"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Nom de société <span className="text-red-500">*</span>
                         </label>
@@ -1940,12 +1975,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={nomSociete}
                           onChange={(e) => setNomSociete(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Nom de la société"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Siret / Siren <span className="text-red-500">*</span>
                         </label>
@@ -1953,12 +1988,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={siretSiren}
                           onChange={(e) => setSiretSiren(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Siret / Siren"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Adresse <span className="text-red-500">*</span>
                         </label>
@@ -1966,12 +2001,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={adresse}
                           onChange={(e) => setAdresse(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Adresse"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Ville <span className="text-red-500">*</span>
                         </label>
@@ -1979,12 +2014,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={ville}
                           onChange={(e) => setVille(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Ville"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Code postal <span className="text-red-500">*</span>
                         </label>
@@ -1992,12 +2027,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={codePostal}
                           onChange={(e) => setCodePostal(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Code postal"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Nom & prénom du gérant <span className="text-red-500">*</span>
                         </label>
@@ -2005,12 +2040,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="text"
                           value={nomPrenomGerant}
                           onChange={(e) => setNomPrenomGerant(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Nom & prénom du gérant"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           Téléphone <span className="text-red-500">*</span>
                         </label>
@@ -2018,12 +2053,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="tel"
                           value={telephone}
                           onChange={(e) => setTelephone(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="Téléphone"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-semibold text-blue-900 mb-3">
                           E-mail <span className="text-red-500">*</span>
                         </label>
@@ -2031,14 +2066,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                           placeholder="E-mail"
                         />
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <h4 className="text-base font-bold text-gray-900 mb-4">Salariés de l'entreprise</h4>
-                        <select className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                        <select className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="1-3">1 à 3</option>
                           <option value="3-6">3 à 6</option>
@@ -2049,14 +2084,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </select>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-medium text-gray-900 mb-4">
                           1. Informations transmises aux travailleurs sur le Covid-19, les recommandations sanitaires, les gestes barrières ?
                         </label>
                         <select
                           value={covidInfo}
                           onChange={(e) => setCovidInfo(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="oui">Oui</option>
@@ -2064,14 +2099,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </select>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-medium text-gray-900 mb-4">
                           2. Affichage spécifique dans les locaux (et les véhicules, les installations de chantier etc.) ?
                         </label>
                         <select
                           value={affichageSpecifique}
                           onChange={(e) => setAffichageSpecifique(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="oui">Oui</option>
@@ -2079,14 +2114,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </select>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-medium text-gray-900 mb-4">
                           5. Mise à disposition de solution Hydroalcoolique ?
                         </label>
                         <select
                           value={solutionHydroalcoolique}
                           onChange={(e) => setSolutionHydroalcoolique(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="oui">Oui</option>
@@ -2094,14 +2129,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </select>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-medium text-gray-900 mb-4">
                           5. Définition et mise en œuvre de processus de nettoyage des équipements, engins et véhicules partagés ainsi que les locaux utilisés par plusieurs personnes (vestiaires, salle de pause, accueil, etc.) ?
                         </label>
                         <select
                           value={processusNettoyage}
                           onChange={(e) => setProcessusNettoyage(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="oui">Oui</option>
@@ -2109,14 +2144,14 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </select>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <label className="block text-sm font-medium text-gray-900 mb-4">
                           6. Définition et mise en œuvre de processus d'aération des locaux de travail ?
                         </label>
                         <select
                           value={processusAeration}
                           onChange={(e) => setProcessusAeration(e.target.value)}
-                          className="w-full px-4 py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                          className="w-full px-4 py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
                         >
                           <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                           <option value="oui">Oui</option>
@@ -2124,7 +2159,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </select>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">7. Catégorie: Circulation</h4>
                           {isAdminViewing && (
@@ -2392,7 +2427,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">8. Catégorie: Stockage</h4>
                           {isAdminViewing && (
@@ -2582,7 +2617,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">9. Catégorie: Engins mécaniques</h4>
                           {isAdminViewing && (
@@ -2733,7 +2768,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">10. Catégorie: Usine / Production</h4>
                           {isAdminViewing && (
@@ -3040,7 +3075,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">11. Catégorie: Thermique</h4>
                           {isAdminViewing && (
@@ -3191,7 +3226,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">12. Catégorie: Machine pour usine</h4>
                           {isAdminViewing && (
@@ -3381,7 +3416,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">13. Catégorie: Autre</h4>
                           {isAdminViewing && (
@@ -3454,7 +3489,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">14. Catégorie: Manutention Circulation</h4>
                           {isAdminViewing && (
@@ -3722,7 +3757,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">15. Catégorie: Ambiance</h4>
                           {isAdminViewing && (
@@ -3951,7 +3986,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </div>
                       </div>
 
-                      <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200 shadow-sm">
+                      <div className="bg-white/50 backdrop-blur-sm p-6 rounded-xl border border-gray-200/50 shadow-sm">
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-300">
                           <h4 className="text-lg font-bold text-gray-900">16. Catégorie: Equipement & Organisation</h4>
                           {isAdminViewing && (
@@ -4321,7 +4356,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 <div className="px-4 md:px-8 py-6 md:py-10">
                   <div className="mb-6 md:mb-8">
                     <h3 className="text-xl md:text-2xl font-bold text-blue-900 mb-3 md:mb-4">OPCO opérateur de compétences</h3>
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 space-y-2 md:space-y-3">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 space-y-2 md:space-y-3">
                       <p className="text-sm md:text-base text-gray-700 font-medium">
                         Organisme agréé par l'État chargé d'accompagner la formation professionnelle.
                       </p>
@@ -4332,24 +4367,24 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   </div>
 
                   <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Avez vous déjà un compte OPCO ?
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                         <option value="oui">Oui</option>
                         <option value="non">Non</option>
                       </select>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         De quelle OPCO dépend la société ?
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Selectionnez votre reponse</option>
                         <option value="afdas">OPCO AFDAS</option>
                         <option value="akto">OPCO AKTO</option>
@@ -4365,7 +4400,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       </select>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Nom de la société <span className="text-red-500">*</span>
                       </label>
@@ -4373,12 +4408,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="text"
                         value={nomSociete}
                         onChange={(e) => setNomSociete(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Nom de la société"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Siret / Siren <span className="text-red-500">*</span>
                       </label>
@@ -4386,12 +4421,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="text"
                         value={siretSiren}
                         onChange={(e) => setSiretSiren(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Siret / Siren"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Adresse <span className="text-red-500">*</span>
                       </label>
@@ -4399,12 +4434,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="text"
                         value={adresse}
                         onChange={(e) => setAdresse(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Adresse"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Ville <span className="text-red-500">*</span>
                       </label>
@@ -4412,12 +4447,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="text"
                         value={ville}
                         onChange={(e) => setVille(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Ville"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Code postal <span className="text-red-500">*</span>
                       </label>
@@ -4425,12 +4460,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="text"
                         value={codePostal}
                         onChange={(e) => setCodePostal(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Code postal"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Nom & prénom du gérant <span className="text-red-500">*</span>
                       </label>
@@ -4438,12 +4473,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="text"
                         value={nomPrenomGerant}
                         onChange={(e) => setNomPrenomGerant(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Nom & prénom du gérant"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         Téléphone <span className="text-red-500">*</span>
                       </label>
@@ -4451,12 +4486,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="tel"
                         value={telephone}
                         onChange={(e) => setTelephone(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="Téléphone"
                       />
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="block text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         E-mail <span className="text-red-500">*</span>
                       </label>
@@ -4464,7 +4499,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
+                        className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300"
                         placeholder="E-mail"
                       />
                     </div>
@@ -4536,13 +4571,13 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   </div>
 
                   <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         <User className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
                         Nombre de salariés
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-xs md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-xs md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Sélectionnez le nombre de salariés</option>
                         <option value="5">Jusqu'à 5 salariés (Rapport DUERP + Attestation de conformité) 830 € HT</option>
                         <option value="10">Jusqu'à 10 salariés (Rapport DUERP + Attestation de conformité) 1000 € HT</option>
@@ -4553,7 +4588,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       </select>
                     </div>
 
-                    <div className="bg-gradient-to-br from-blue-50 to-sky-50 p-4 md:p-6 rounded-lg md:rounded-xl border border-blue-200 shadow-sm">
+                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
                       <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
                         <svg className="w-3 h-3 md:w-4 md:h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -4561,7 +4596,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         Méthode de règlement
                         <span className="text-red-500">*</span>
                       </label>
-                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border-2 border-blue-200 rounded-lg bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
+                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
                         <option value="" className="text-gray-500">Choisissez votre mode de paiement</option>
                         <option value="cb-1fois">Règlement CB en 1 fois</option>
                         <option value="cb-3fois">Règlement CB en 3 fois sans frais</option>
@@ -4599,65 +4634,308 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'password' && (
-            <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-10 border-2 border-blue-200/50 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
-              <div className="relative flex items-center gap-4 md:gap-5 mb-8 md:mb-10 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
-                <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
-                  <Lock className="w-7 h-7 md:w-8 md:h-8 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-2xl md:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">Changer votre mot de passe</h2>
-                  <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">Bienvenue, {client.full_name}</p>
+            <div className="space-y-4">
+              <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#3d5a9e] via-[#4d6bb8] to-[#3d5a9e]"></div>
+                <div className="relative px-6 md:px-10 py-8 md:py-12 flex items-center justify-center gap-4">
+                  <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30">
+                    <Lock className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white">Modifier le mot de passe</h2>
                 </div>
               </div>
-              <div className="relative max-w-md space-y-5 md:space-y-6">
+
+              <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-10 border border-white/20 relative overflow-hidden">
+              <div className="relative max-w-md mx-auto space-y-5 md:space-y-6">
+                {passwordChangeMessage && (
+                  <div className="p-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 font-semibold text-center">
+                    {passwordChangeMessage}
+                  </div>
+                )}
+                {passwordChangeError && (
+                  <div className="p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 font-semibold text-center">
+                    {passwordChangeError}
+                  </div>
+                )}
+
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
-                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                  <div className="relative bg-white/60 backdrop-blur-sm p-4 md:p-6 rounded-xl border border-gray-200/60 hover:border-blue-300/70 transition-all duration-300 shadow-md">
+                    <label className="block text-sm md:text-base font-semibold text-[#1a2847] mb-4 text-center">
                       Mot de passe actuel
                     </label>
-                    <input
-                      type="password"
-                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
-                      placeholder="Entrez votre mot de passe actuel"
-                    />
+                    <div className="flex gap-2 justify-center">
+                      {currentPasswordDigits.map((digit, index) => (
+                        <input
+                          key={`current-${index}`}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, '');
+                            if (value.length <= 1) {
+                              const newDigits = [...currentPasswordDigits];
+                              newDigits[index] = value;
+                              setCurrentPasswordDigits(newDigits);
+                              if (value && index < 5) {
+                                const nextInput = document.querySelector(`input[name="current-${index + 1}"]`) as HTMLInputElement;
+                                nextInput?.focus();
+                              }
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Backspace' && !digit && index > 0) {
+                              const prevInput = document.querySelector(`input[name="current-${index - 1}"]`) as HTMLInputElement;
+                              prevInput?.focus();
+                            }
+                          }}
+                          name={`current-${index}`}
+                          className="w-12 h-12 md:w-14 md:h-14 text-center text-xl md:text-2xl font-bold border-2 border-[#3d5a9e]/40 rounded-xl bg-white text-[#1a2847] focus:outline-none focus:ring-3 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] transition-all duration-300 shadow-md"
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
+
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
-                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                  <div className="relative bg-white/60 backdrop-blur-sm p-4 md:p-6 rounded-xl border border-gray-200/60 hover:border-blue-300/70 transition-all duration-300 shadow-md">
+                    <label className="block text-sm md:text-base font-semibold text-[#1a2847] mb-4 text-center">
                       Nouveau mot de passe
                     </label>
-                    <input
-                      type="password"
-                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
-                      placeholder="Entrez votre nouveau mot de passe"
-                    />
+                    <div className="flex gap-2 justify-center">
+                      {newPasswordDigits.map((digit, index) => (
+                        <input
+                          key={`new-${index}`}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, '');
+                            if (value.length <= 1) {
+                              const newDigits = [...newPasswordDigits];
+                              newDigits[index] = value;
+                              setNewPasswordDigits(newDigits);
+                              if (value && index < 5) {
+                                const nextInput = document.querySelector(`input[name="new-${index + 1}"]`) as HTMLInputElement;
+                                nextInput?.focus();
+                              }
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Backspace' && !digit && index > 0) {
+                              const prevInput = document.querySelector(`input[name="new-${index - 1}"]`) as HTMLInputElement;
+                              prevInput?.focus();
+                            }
+                          }}
+                          name={`new-${index}`}
+                          className="w-12 h-12 md:w-14 md:h-14 text-center text-xl md:text-2xl font-bold border-2 border-[#3d5a9e]/40 rounded-xl bg-white text-[#1a2847] focus:outline-none focus:ring-3 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] transition-all duration-300 shadow-md"
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
+
                 <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300"></div>
-                  <div className="relative bg-gradient-to-br from-blue-50/90 to-cyan-50/90 backdrop-blur-sm p-4 md:p-6 rounded-2xl border-2 border-blue-200/50 hover:border-blue-400/70 transition-all duration-300 shadow-lg">
-                    <label className="block text-sm md:text-base font-bold text-blue-900 mb-3 tracking-wide">
+                  <div className="relative bg-white/60 backdrop-blur-sm p-4 md:p-6 rounded-xl border border-gray-200/60 hover:border-blue-300/70 transition-all duration-300 shadow-md">
+                    <label className="block text-sm md:text-base font-semibold text-[#1a2847] mb-4 text-center">
                       Confirmer le nouveau mot de passe
                     </label>
-                    <input
-                      type="password"
-                      className="w-full px-4 md:px-5 py-3 md:py-4 text-sm md:text-base border-2 border-blue-300 rounded-xl bg-white/80 backdrop-blur-sm text-gray-800 font-semibold focus:outline-none focus:ring-4 focus:ring-blue-500/50 focus:border-blue-600 transition-all duration-300 shadow-inner"
-                      placeholder="Confirmez votre nouveau mot de passe"
-                    />
+                    <div className="flex gap-2 justify-center">
+                      {confirmPasswordDigits.map((digit, index) => (
+                        <input
+                          key={`confirm-${index}`}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/[^0-9]/g, '');
+                            if (value.length <= 1) {
+                              const newDigits = [...confirmPasswordDigits];
+                              newDigits[index] = value;
+                              setConfirmPasswordDigits(newDigits);
+                              if (value && index < 5) {
+                                const nextInput = document.querySelector(`input[name="confirm-${index + 1}"]`) as HTMLInputElement;
+                                nextInput?.focus();
+                              }
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Backspace' && !digit && index > 0) {
+                              const prevInput = document.querySelector(`input[name="confirm-${index - 1}"]`) as HTMLInputElement;
+                              prevInput?.focus();
+                            }
+                          }}
+                          name={`confirm-${index}`}
+                          className="w-12 h-12 md:w-14 md:h-14 text-center text-xl md:text-2xl font-bold border-2 border-[#3d5a9e]/40 rounded-xl bg-white text-[#1a2847] focus:outline-none focus:ring-3 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] transition-all duration-300 shadow-md"
+                        />
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <button className="relative w-full overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 group-hover:from-blue-700 group-hover:via-indigo-700 group-hover:to-blue-700 transition-all duration-500"></div>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  <div className="relative flex items-center justify-center gap-3 px-5 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-bold rounded-2xl shadow-2xl transform group-hover:scale-105 transition-all duration-300">
+
+                <button
+                  onClick={async () => {
+                    setPasswordChangeError('');
+                    setPasswordChangeMessage('');
+
+                    const currentPassword = currentPasswordDigits.join('');
+                    const newPassword = newPasswordDigits.join('');
+                    const confirmPassword = confirmPasswordDigits.join('');
+
+                    if (currentPassword.length !== 6) {
+                      setPasswordChangeError('Le mot de passe actuel doit contenir 6 chiffres');
+                      return;
+                    }
+
+                    if (newPassword.length !== 6) {
+                      setPasswordChangeError('Le nouveau mot de passe doit contenir 6 chiffres');
+                      return;
+                    }
+
+                    if (newPassword !== confirmPassword) {
+                      setPasswordChangeError('Les mots de passe ne correspondent pas');
+                      return;
+                    }
+
+                    try {
+                      const clientId = typeof client.id === 'string' ? parseInt(client.id, 10) : client.id;
+
+                      const { data: clientData, error: fetchError } = await supabase
+                        .from('clients')
+                        .select('client_password')
+                        .eq('id', clientId)
+                        .maybeSingle();
+
+                      if (fetchError) {
+                        console.error('Erreur récupération client:', fetchError);
+                        setPasswordChangeError('Erreur lors de la vérification du mot de passe');
+                        return;
+                      }
+
+                      if (!clientData) {
+                        setPasswordChangeError('Client introuvable');
+                        return;
+                      }
+
+                      if (clientData.client_password !== currentPassword) {
+                        setPasswordChangeError('Le mot de passe actuel est incorrect');
+                        return;
+                      }
+
+                      const { error: updateError } = await supabase
+                        .from('clients')
+                        .update({ client_password: newPassword })
+                        .eq('id', clientId);
+
+                      if (updateError) {
+                        console.error('Erreur mise à jour mot de passe:', updateError);
+                        setPasswordChangeError('Erreur lors de la mise à jour du mot de passe');
+                        return;
+                      }
+
+                      setPasswordChangeMessage('Mot de passe modifié avec succès');
+                      setCurrentPasswordDigits(['', '', '', '', '', '']);
+                      setNewPasswordDigits(['', '', '', '', '', '']);
+                      setConfirmPasswordDigits(['', '', '', '', '', '']);
+
+                      setTimeout(() => {
+                        setPasswordChangeMessage('');
+                      }, 3000);
+                    } catch (error) {
+                      console.error('Erreur changement mot de passe:', error);
+                      setPasswordChangeError('Une erreur est survenue');
+                    }
+                  }}
+                  className="relative w-full overflow-hidden group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-[#3d5a9e] via-[#4d6bb8] to-[#3d5a9e] group-hover:from-[#4d6bb8] group-hover:to-[#4d6bb8] transition-all duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                  <div className="relative flex items-center justify-center gap-3 px-5 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-semibold rounded-xl shadow-xl transform group-hover:scale-[1.02] transition-all duration-300">
                     <Lock className="w-5 h-5 md:w-6 md:h-6" />
                     <span>Modifier le mot de passe</span>
                   </div>
                 </button>
+
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="relative w-full overflow-hidden group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-red-600 group-hover:from-red-600 group-hover:to-red-700 transition-all duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    <div className="relative flex items-center justify-center gap-3 px-5 md:px-6 py-4 md:py-5 text-white text-sm md:text-base font-semibold rounded-xl shadow-xl transform group-hover:scale-[1.02] transition-all duration-300">
+                      <Trash2 className="w-5 h-5 md:w-6 md:h-6" />
+                      <span>Supprimer mon compte</span>
+                    </div>
+                  </button>
+                  <p className="text-xs md:text-sm text-gray-500 text-center mt-3">
+                    Cette action est irréversible et supprimera toutes vos données
+                  </p>
+                </div>
+              </div>
+            </div>
+            </div>
+          )}
+
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 md:p-8 relative animate-in zoom-in duration-300">
+                <div className="flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full mx-auto mb-6">
+                  <AlertCircle className="w-8 h-8 md:w-10 md:h-10 text-white" />
+                </div>
+
+                <h3 className="text-2xl md:text-3xl font-black text-gray-900 text-center mb-4">
+                  Supprimer votre compte ?
+                </h3>
+
+                <p className="text-sm md:text-base text-gray-600 text-center mb-6 leading-relaxed">
+                  Cette action est <span className="font-bold text-red-600">définitive et irréversible</span>.
+                  Toutes vos données seront supprimées de manière permanente.
+                </p>
+
+                <div className="space-y-3">
+                  <button
+                    onClick={async () => {
+                      setDeletingAccount(true);
+                      try {
+                        const clientId = typeof client.id === 'string' ? parseInt(client.id, 10) : client.id;
+
+                        const { error: deleteError } = await supabase
+                          .from('clients')
+                          .delete()
+                          .eq('id', clientId);
+
+                        if (deleteError) {
+                          console.error('Erreur suppression compte:', deleteError);
+                          alert('Erreur lors de la suppression du compte');
+                          setDeletingAccount(false);
+                          return;
+                        }
+
+                        alert('Votre compte a été supprimé avec succès');
+                        onLogout();
+                      } catch (error) {
+                        console.error('Erreur suppression compte:', error);
+                        alert('Une erreur est survenue');
+                        setDeletingAccount(false);
+                      }
+                    }}
+                    disabled={deletingAccount}
+                    className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deletingAccount ? 'Suppression en cours...' : 'Oui, supprimer définitivement'}
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeleteConfirm(false)}
+                    disabled={deletingAccount}
+                    className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-4 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Annuler
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -4792,15 +5070,15 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           {activeTab === 'chat' && (
             <div className="max-w-5xl mx-auto">
               <div className="space-y-5 md:space-y-7">
-                <div className="bg-white/80 backdrop-blur-2xl rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 border-2 border-blue-200/50 relative overflow-hidden">
+                <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 md:p-8 lg:p-10 border border-gray-200/60/50 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-100/50 to-transparent rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                  <div className="relative flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 pb-5 md:pb-7 border-b-2 border-gradient-to-r from-blue-200 via-cyan-200 to-blue-200 gap-3">
+                  <div className="relative flex flex-col md:flex-row md:items-center md:justify-between mb-6 md:mb-8 pb-5 md:pb-7 border-b border-gray-200/50 gap-3">
                     <div className="flex items-center gap-4 md:gap-5">
-                      <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-700 rounded-2xl md:rounded-3xl shadow-2xl border-2 border-blue-400/30 transform hover:scale-110 transition-transform duration-300">
+                      <div className="flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-[#2d4578] to-[#3d5a9e] rounded-xl shadow-xl border border-blue-400/20 transform hover:scale-105 transition-transform duration-300">
                         <MessageSquare className="w-7 h-7 md:w-8 md:h-8 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">Chat Client - Vendeur</h2>
+                        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#1a2847]">Chat Client - Vendeur</h2>
                         <p className="text-sm md:text-base text-gray-600 font-semibold mt-1.5">
                           {client.vendeur && client.vendeur !== 'Super Admin'
                             ? `Communiquez avec ${client.vendeur}`
@@ -4808,13 +5086,26 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         </p>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-green-200 flex items-center gap-2 self-start md:self-auto">
-                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full animate-pulse"></div>
-                      <span className="text-xs md:text-sm font-semibold text-green-700">En ligne</span>
-                    </div>
+                    {(() => {
+                      const isReallyOnline = sellerOnlineStatus.isOnline &&
+                        sellerOnlineStatus.lastConnection &&
+                        (Date.now() - new Date(sellerOnlineStatus.lastConnection).getTime()) < 2 * 60 * 1000;
+
+                      return isReallyOnline ? (
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-green-200 flex items-center gap-2 self-start md:self-auto">
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-xs md:text-sm font-semibold text-green-700">En ligne</span>
+                        </div>
+                      ) : (
+                        <div className="bg-gradient-to-br from-gray-50 to-slate-50 px-3 md:px-4 py-1.5 md:py-2 rounded-lg md:rounded-xl border border-gray-200 flex items-center gap-2 self-start md:self-auto">
+                          <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-gray-400 rounded-full"></div>
+                          <span className="text-xs md:text-sm font-semibold text-gray-600">Hors ligne</span>
+                        </div>
+                      );
+                    })()}
                   </div>
 
-                  <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 border border-blue-200">
+                  <div className="bg-white/50 backdrop-blur-sm rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 border border-gray-200/50">
                     <div className="flex items-start gap-3 md:gap-4">
                       <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full shadow-lg flex-shrink-0">
                         <User className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -4839,7 +5130,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 text-white shadow-lg">
+                  <div className="bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] rounded-lg md:rounded-xl p-4 md:p-6 mb-4 md:mb-6 text-white shadow-lg">
                     <div className="flex items-center gap-3 mb-3">
                       <MessageSquare className="w-6 h-6" />
                       <h3 className="text-xl font-bold">
@@ -4848,7 +5139,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           : 'Écrire à votre conseiller'}
                       </h3>
                     </div>
-                    <p className="text-emerald-50 text-sm">
+                    <p className="text-blue-50 text-sm">
                       Posez vos questions, partagez vos préoccupations, ou demandez des conseils.
                       {client.vendeur && client.vendeur !== 'Super Admin'
                         ? ' Votre vendeur vous répondra rapidement.'

@@ -66,6 +66,7 @@ Deno.serve(async (req: Request) => {
           phone: phone || null,
           commission_rate: commissionRate || 0,
           status: "active",
+          password: password,
         })
         .eq("id", userId);
 
@@ -101,6 +102,7 @@ Deno.serve(async (req: Request) => {
           phone: phone || null,
           commission_rate: commissionRate || 0,
           status: "active",
+          password: password,
         });
 
       if (sellerError) {
