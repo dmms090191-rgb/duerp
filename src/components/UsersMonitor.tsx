@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Users, Circle, UserCircle } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { Lead } from '../types/Lead';
-import { supabase } from '../lib/supabase';
 
 interface UsersMonitorProps {
   sellers: Seller[];
@@ -10,111 +9,15 @@ interface UsersMonitorProps {
 }
 
 const UsersMonitor: React.FC<UsersMonitorProps> = ({ sellers, clients }) => {
-  const [liveSellers, setLiveSellers] = useState<Seller[]>(sellers);
-  const [liveClients, setLiveClients] = useState<Lead[]>(clients);
 
-  const isReallyOnline = (isOnline: boolean, lastConnection: string | null | undefined): boolean => {
-    if (!isOnline || !lastConnection) {
-      return false;
-    }
-
-    const lastConnectionTime = new Date(lastConnection).getTime();
-    const now = new Date().getTime();
-    const twoMinutes = 2 * 60 * 1000;
-
-    return (now - lastConnectionTime) < twoMinutes;
-  };
-
-  const fetchLiveData = async () => {
-    try {
-      const [sellersData, clientsData] = await Promise.all([
-        supabase.from('sellers').select('*'),
-        supabase.from('clients').select('*')
-      ]);
-
-      if (sellersData.data) {
-        const formattedSellers = sellersData.data.map((s: any) => ({
-          id: s.id,
-          nom: s.full_name?.split(' ').pop() || '',
-          prenom: s.full_name?.split(' ')[0] || '',
-          full_name: s.full_name,
-          email: s.email,
-          isOnline: s.is_online || false,
-          lastConnection: s.last_connection || undefined
-        }));
-        setLiveSellers(formattedSellers);
-      }
-
-      if (clientsData.data) {
-        const formattedClients = clientsData.data.map((c: any) => ({
-          id: c.id,
-          nom: c.nom || c.full_name?.split(' ').pop() || '',
-          prenom: c.prenom || c.full_name?.split(' ')[0] || '',
-          email: c.email,
-          isOnline: c.is_online || false,
-          lastConnection: c.last_connection || undefined
-        }));
-        setLiveClients(formattedClients);
-      }
-    } catch (error) {
-      console.error('Erreur chargement données en direct:', error);
-    }
-  };
-
-  useEffect(() => {
-    const cleanupStaleConnections = async () => {
-      try {
-        const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
-
-        await Promise.all([
-          supabase
-            .from('clients')
-            .update({ is_online: false })
-            .eq('is_online', true)
-            .lt('last_connection', twoMinutesAgo),
-
-          supabase
-            .from('sellers')
-            .update({ is_online: false })
-            .eq('is_online', true)
-            .lt('last_connection', twoMinutesAgo),
-
-          supabase
-            .from('admins')
-            .update({ is_online: false })
-            .eq('is_online', true)
-            .lt('last_connection', twoMinutesAgo)
-        ]);
-
-        await fetchLiveData();
-      } catch (error) {
-        console.error('Erreur nettoyage connexions:', error);
-      }
-    };
-
-    fetchLiveData();
-    cleanupStaleConnections();
-
-    const interval = setInterval(() => {
-      cleanupStaleConnections();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    setLiveSellers(sellers);
-    setLiveClients(clients);
-  }, [sellers, clients]);
-
-  const onlineClients = liveClients.filter(c => isReallyOnline(c.isOnline, c.lastConnection)).sort((a, b) => {
+  const onlineClients = clients.filter(c => c.isOnline).sort((a, b) => {
     if (a.lastConnection && b.lastConnection) {
       return new Date(b.lastConnection).getTime() - new Date(a.lastConnection).getTime();
     }
     return 0;
   });
 
-  const onlineSellers = liveSellers.filter(s => isReallyOnline(s.isOnline, s.lastConnection)).sort((a, b) => {
+  const onlineSellers = sellers.filter(s => s.isOnline).sort((a, b) => {
     if (a.lastConnection && b.lastConnection) {
       return new Date(b.lastConnection).getTime() - new Date(a.lastConnection).getTime();
     }

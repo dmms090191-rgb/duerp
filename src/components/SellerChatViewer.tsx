@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, User, Send, Search, ShoppingBag, X, Trash2, Paperclip, FileText, Download } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { MessageSquare, User, Send, Search, ShoppingBag, X, Trash2 } from 'lucide-react';
 
 interface Seller {
   id: string;
@@ -18,9 +17,6 @@ interface Message {
   message: string;
   read: boolean;
   created_at: string;
-  attachment_url?: string;
-  attachment_name?: string;
-  attachment_type?: string;
 }
 
 interface SellerChatViewerProps {
@@ -45,10 +41,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadSellersWithDiscussions();
@@ -125,71 +118,11 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
     }
   };
 
-  const uploadFile = async (file: File): Promise<string | null> => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
-      const filePath = `seller-admin-${selectedSeller?.id}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('chat-attachments')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        console.error('Erreur upload fichier:', uploadError);
-        return null;
-      }
-
-      const { data } = supabase.storage
-        .from('chat-attachments')
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
-    } catch (error) {
-      console.error('Erreur upload fichier:', error);
-      return null;
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Le fichier est trop volumineux (max 10 Mo)');
-        return;
-      }
-      setSelectedFile(file);
-    }
-  };
-
-  const removeSelectedFile = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   const handleSendMessage = async () => {
-    if ((!newMessage.trim() && !selectedFile) || !selectedSeller || sending) return;
+    if (!newMessage.trim() || !selectedSeller || sending) return;
 
     setSending(true);
-    setUploading(true);
-
     try {
-      let attachmentUrl = null;
-      let attachmentName = null;
-      let attachmentType = null;
-
-      if (selectedFile) {
-        attachmentUrl = await uploadFile(selectedFile);
-        if (!attachmentUrl) {
-          alert('Erreur lors de l\'upload du fichier');
-          return;
-        }
-        attachmentName = selectedFile.name;
-        attachmentType = selectedFile.type;
-      }
-
       const response = await fetch(
         `${supabaseUrl}/rest/v1/admin_seller_messages`,
         {
@@ -205,25 +138,20 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             sender_id: adminEmail,
             sender_type: 'admin',
             sender_name: 'Admin',
-            message: newMessage.trim() || '📎 Fichier joint',
+            message: newMessage.trim(),
             read: false,
-            attachment_url: attachmentUrl,
-            attachment_name: attachmentName,
-            attachment_type: attachmentType,
           }),
         }
       );
 
       if (response.ok) {
         setNewMessage('');
-        setSelectedFile(null);
         loadMessages(selectedSeller.id);
       }
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
       setSending(false);
-      setUploading(false);
     }
   };
 
@@ -501,31 +429,6 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                             </p>
                           </div>
                           <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-
-                          {msg.attachment_url && (
-                            <div className="mt-2 pt-2 border-t border-white/20">
-                              <a
-                                href={msg.attachment_url}
-                                download={msg.attachment_name}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`flex items-center gap-2 p-2 rounded-lg ${
-                                  msg.sender_type === 'admin'
-                                    ? 'bg-emerald-700/30 hover:bg-emerald-700/50'
-                                    : 'bg-gray-100 hover:bg-gray-200'
-                                } transition-colors`}
-                              >
-                                <FileText className="w-5 h-5 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-medium truncate">
-                                    {msg.attachment_name || 'Fichier'}
-                                  </p>
-                                </div>
-                                <Download className="w-4 h-4 flex-shrink-0" />
-                              </a>
-                            </div>
-                          )}
-
                           <p className={`text-xs mt-2 ${msg.sender_type === 'admin' ? 'text-emerald-100' : 'text-gray-400'}`}>
                             {new Date(msg.created_at).toLocaleString('fr-FR', {
                               hour: '2-digit',
@@ -549,44 +452,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             </div>
 
             <div className="p-6 border-t border-gray-200 bg-white rounded-b-2xl">
-              {selectedFile && (
-                <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-blue-900 truncate">
-                      {selectedFile.name}
-                    </p>
-                    <p className="text-xs text-blue-600">
-                      {(selectedFile.size / 1024).toFixed(1)} Ko
-                    </p>
-                  </div>
-                  <button
-                    onClick={removeSelectedFile}
-                    className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
-                    title="Retirer le fichier"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-
               <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-3">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  accept="*/*"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={sending || uploading}
-                  className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  title="Joindre un fichier"
-                >
-                  <Paperclip className="w-5 h-5" />
-                </button>
                 <textarea
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -597,14 +463,10 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                 />
                 <button
                   type="submit"
-                  disabled={(!newMessage.trim() && !selectedFile) || sending}
+                  disabled={!newMessage.trim() || sending}
                   className="px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg"
                 >
-                  {uploading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Send className="w-5 h-5" />
-                  )}
+                  <Send className="w-5 h-5" />
                 </button>
               </form>
             </div>

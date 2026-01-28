@@ -13,7 +13,6 @@ interface EmailRequest {
   clientId: number;
   emailType: 'identifiants' | 'relance' | 'procedure_prise_en_charge';
   generatePDFs?: boolean;
-  senderEmail?: string;
 }
 
 function generateFacturePDF(data: any): Buffer {
@@ -323,9 +322,9 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { clientId, emailType, generatePDFs = false, senderEmail }: EmailRequest = await req.json();
+    const { clientId, emailType, generatePDFs = false }: EmailRequest = await req.json();
 
-    console.log('Requête reçue:', { clientId, emailType, generatePDFs, senderEmail });
+    console.log('Requête reçue:', { clientId, emailType, generatePDFs });
 
     const { data: client, error: clientError } = await supabase
       .from('clients')
@@ -447,7 +446,7 @@ Deno.serve(async (req: Request) => {
       console.log('PDFs générés');
     }
 
-    const mailOptions: any = {
+    const mailOptions = {
       from: {
         name: 'Cabinet FPE',
         address: 'administration@securiteprofessionnelle.fr'
@@ -458,11 +457,6 @@ Deno.serve(async (req: Request) => {
       html: body.replace(/\n/g, '<br>'),
       attachments: attachments
     };
-
-    if (senderEmail) {
-      mailOptions.bcc = senderEmail;
-      console.log('📧 Copie BCC envoyée à:', senderEmail);
-    }
 
     console.log('Envoi de l\'email à:', client.email);
 

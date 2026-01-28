@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Mail, Lock, LogIn, AlertCircle, Sparkles, Home } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Shield, Mail, Lock, LogIn, AlertCircle, Sparkles } from 'lucide-react';
 import { Admin } from '../types/Admin';
 
 interface AdminLoginProps {
@@ -9,7 +8,6 @@ interface AdminLoginProps {
 }
 
 const AdminLogin: React.FC<AdminLoginProps> = ({ admins, onLoginSuccess }) => {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -48,14 +46,6 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ admins, onLoginSuccess }) => {
       <div className="absolute -bottom-8 left-40 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <div className="max-w-md w-full relative z-10">
-        <button
-          onClick={() => navigate('/')}
-          className="mb-4 flex items-center gap-2 text-white/90 hover:text-white font-medium transition-colors group"
-        >
-          <Home className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          <span>Retour à l'accueil</span>
-        </button>
-
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-white/20">
           <div className="text-center mb-8">
             <div className="relative inline-flex items-center justify-center mb-6">

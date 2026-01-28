@@ -59,15 +59,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const { error: updateError } = await supabase
-      .from("sellers")
-      .update({ password: newPassword })
-      .eq("id", sellerId);
-
-    if (updateError) {
-      console.error("Erreur mise à jour table sellers:", updateError);
-    }
-
     return new Response(
       JSON.stringify({
         success: true,

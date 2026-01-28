@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Capacitor } from '@capacitor/core';
 import LoginPage from './components/LoginPage';
-import MobileLoginScreen from './components/MobileLoginScreen';
 import Dashboard from './components/Dashboard';
+import ClientLogin from './components/ClientLogin';
 import ClientDashboard from './components/ClientDashboard';
+import SellerLogin from './components/SellerLogin';
 import SellerDashboard from './components/SellerDashboard';
+import AdminLogin from './components/AdminLogin';
 import SecteurTertiaire from './pages/SecteurTertiaire';
 import SecteurResidentiel from './pages/SecteurResidentiel';
 import SecteurIndustriel from './pages/SecteurIndustriel';
@@ -28,8 +29,6 @@ import { clientService } from './services/clientService';
 import { supabase } from './lib/supabase';
 
 function App() {
-  const isMobileApp = Capacitor.isNativePlatform() || localStorage.getItem('forceMobileMode') === 'true';
-
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const stored = sessionStorage.getItem('isAdminLoggedIn');
     return stored === 'true';
@@ -164,7 +163,7 @@ function App() {
           prenom: seller.full_name?.split(' ')[0] || '',
           full_name: seller.full_name,
           email: seller.email,
-          motDePasse: seller.password || '',
+          motDePasse: '',
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined
@@ -267,18 +266,6 @@ function App() {
     );
 
     if (sellerIndex !== -1) {
-      try {
-        await supabase
-          .from('sellers')
-          .update({
-            is_online: true,
-            last_connection: new Date().toISOString()
-          })
-          .eq('id', sellers[sellerIndex].id);
-      } catch (error) {
-        console.error('Erreur mise à jour statut seller:', error);
-      }
-
       const updatedSeller = {
         ...sellers[sellerIndex],
         isOnline: true,
@@ -289,7 +276,6 @@ function App() {
       setSellers(updatedSellers);
       setSellerData(updatedSeller);
       sessionStorage.setItem('sellerData', JSON.stringify(updatedSeller));
-      sessionStorage.setItem('sellerEmail', email);
       return true;
     }
 
@@ -301,14 +287,6 @@ function App() {
       try {
         const adminData = await adminService.getAdminByEmail(email);
         if (adminData) {
-          await supabase
-            .from('admins')
-            .update({
-              is_online: true,
-              last_connection: new Date().toISOString()
-            })
-            .eq('id', adminData.id);
-
           const updatedAdmin = {
             id: adminData.id,
             nom: adminData.full_name?.split(' ').slice(1).join(' ') || adminData.full_name || '',
@@ -335,7 +313,6 @@ function App() {
           setUser(adminUser);
           sessionStorage.setItem('isAdminLoggedIn', 'true');
           sessionStorage.setItem('adminUser', JSON.stringify(adminUser));
-          sessionStorage.setItem('adminEmail', email);
           return true;
         }
       } catch (error) {
@@ -355,27 +332,14 @@ function App() {
       setUser(adminUser);
       sessionStorage.setItem('isAdminLoggedIn', 'true');
       sessionStorage.setItem('adminUser', JSON.stringify(adminUser));
-      sessionStorage.setItem('adminEmail', email);
       return true;
     }
 
     return false;
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     if (user) {
-      try {
-        await supabase
-          .from('admins')
-          .update({
-            is_online: false,
-            last_connection: new Date().toISOString()
-          })
-          .eq('id', user.id);
-      } catch (error) {
-        console.error('Erreur mise à jour statut admin:', error);
-      }
-
       const adminIndex = admins.findIndex(a => a.id === user.id);
       if (adminIndex !== -1) {
         const updatedAdmin = {
@@ -530,8 +494,6 @@ function App() {
           }
         }
       }
-
-      await supabase.auth.signOut();
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     } finally {
@@ -1126,7 +1088,13 @@ function App() {
 
           <Route
             path="/client-login"
-            element={<Navigate to="/" replace />}
+            element={
+              clientData ? (
+                <Navigate to="/client/dashboard" replace />
+              ) : (
+                <ClientLogin onLoginSuccess={handleClientLogin} />
+              )
+            }
           />
 
           <Route
@@ -1154,7 +1122,13 @@ function App() {
 
           <Route
             path="/seller-login"
-            element={<Navigate to="/" replace />}
+            element={
+              sellerData ? (
+                <Navigate to="/seller/dashboard" replace />
+              ) : (
+                <SellerLogin sellers={sellers} onLoginSuccess={handleSellerLogin} />
+              )
+            }
           />
 
           <Route
@@ -1185,55 +1159,12 @@ function App() {
 
           <Route
             path="/admin-login"
-            element={<Navigate to="/" replace />}
-          />
-
-          <Route
-            path="/dashboard"
             element={
-              (() => {
-                if (isLoggedIn && user?.type === 'admin') {
-                  return (
-                    <Dashboard
-                      user={user}
-                      onLogout={handleLogout}
-                      leads={leads}
-                      onLeadCreated={handleLeadCreated}
-                      onLeadsDeleted={handleLeadsDeleted}
-                      onLeadsTransferred={handleLeadsTransferred}
-                      transferredLeads={transferredLeads}
-                      onTransferredLeadsDeleted={handleTransferredLeadsDeleted}
-                      bulkLeads={bulkLeads}
-                      onBulkLeadCreated={handleBulkLeadCreated}
-                      onBulkLeadsDeleted={handleBulkLeadsDeleted}
-                      onBulkLeadsTransferred={handleBulkLeadsTransferred}
-                      homepageImage={homepageImage}
-                      onHomepageImageUpdate={handleHomepageImageUpdate}
-                      registrations={registrations}
-                      onApproveRegistration={handleApproveRegistration}
-                      onRejectRegistration={handleRejectRegistration}
-                      onRestoreLeads={handleRestoreLeads}
-                      onRestoreRegistrations={handleRestoreRegistrations}
-                      sellers={sellers}
-                      onSellerCreated={handleSellerCreated}
-                      onSellerUpdated={handleSellerUpdated}
-                      onSellersDeleted={handleSellersDeleted}
-                      admins={admins}
-                      onAdminCreated={handleAdminCreated}
-                      onAdminsDeleted={handleAdminsDeleted}
-                      onRefreshAdmins={handleRefreshAdmins}
-                      onClientLogin={handleAdminLoginAsClient}
-                      onSellerLogin={handleAdminLoginAsSeller}
-                      onStatusChanged={handleStatusChanged}
-                      onLeadUpdated={handleLeadUpdated}
-                      onAdminCredentialsUpdated={handleAdminCredentialsUpdated}
-                      superAdminPassword={superAdminCredentials.password}
-                      superAdminEmail={superAdminCredentials.email}
-                    />
-                  );
-                }
-                return <Navigate to="/" replace />;
-              })()
+              isLoggedIn && user?.type === 'admin' ? (
+                <Navigate to="/" replace />
+              ) : (
+                <AdminLogin admins={admins} onLoginSuccess={handleLogin} />
+              )
             }
           />
 
@@ -1241,19 +1172,6 @@ function App() {
             path="/"
             element={
               (() => {
-                if (isMobileApp) {
-                  if (sellerData) {
-                    return <Navigate to="/seller/dashboard" replace />;
-                  }
-                  if (isLoggedIn && user?.type === 'admin') {
-                    return <Navigate to="/dashboard" replace />;
-                  }
-                  if (clientData) {
-                    return <Navigate to="/client/dashboard" replace />;
-                  }
-                  return <MobileLoginScreen />;
-                }
-
                 if (sellerData) {
                   return <Navigate to="/seller/dashboard" replace />;
                 }

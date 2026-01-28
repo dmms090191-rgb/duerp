@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Check, CheckCheck, X, Trash2, Paperclip, FileText, Download } from 'lucide-react';
+import { Send, Check, CheckCheck, X, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Message {
@@ -11,9 +11,6 @@ interface Message {
   message: string;
   read: boolean;
   created_at: string;
-  attachment_url?: string;
-  attachment_name?: string;
-  attachment_type?: string;
 }
 
 interface ChatWindowProps {
@@ -39,10 +36,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -105,63 +99,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   };
 
-  const uploadFile = async (file: File): Promise<string | null> => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}-${Date.now()}.${fileExt}`;
-      const filePath = `${clientId}/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('chat-attachments')
-        .upload(filePath, file);
-
-      if (uploadError) {
-        console.error('Erreur upload fichier:', uploadError);
-        return null;
-      }
-
-      const { data } = supabase.storage
-        .from('chat-attachments')
-        .getPublicUrl(filePath);
-
-      return data.publicUrl;
-    } catch (error) {
-      console.error('Erreur upload fichier:', error);
-      return null;
-    }
-  };
-
   const sendMessage = async () => {
-    if ((!newMessage.trim() && !selectedFile) || loading) return;
+    if (!newMessage.trim() || loading) return;
 
     setLoading(true);
-    setUploading(true);
-
     try {
-      let attachmentUrl = null;
-      let attachmentName = null;
-      let attachmentType = null;
-
-      if (selectedFile) {
-        attachmentUrl = await uploadFile(selectedFile);
-        if (!attachmentUrl) {
-          alert('Erreur lors de l\'upload du fichier');
-          return;
-        }
-        attachmentName = selectedFile.name;
-        attachmentType = selectedFile.type;
-      }
-
       const messageData = {
         client_id: parseInt(clientId),
         sender_id: currentUserId,
         sender_type: currentUserType,
         sender_name: senderName,
-        message: newMessage.trim() || '📎 Fichier joint',
+        message: newMessage.trim(),
         read: false,
-        attachment_url: attachmentUrl,
-        attachment_name: attachmentName,
-        attachment_type: attachmentType,
       };
 
       console.log('📤 Envoi du message:', messageData);
@@ -176,7 +125,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       } else {
         console.log('✅ Message envoyé avec succès');
         setNewMessage('');
-        setSelectedFile(null);
         await loadMessages();
       }
     } catch (error) {
@@ -184,25 +132,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       alert('Erreur lors de l\'envoi du message');
     } finally {
       setLoading(false);
-      setUploading(false);
-    }
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Le fichier est trop volumineux (max 10 Mo)');
-        return;
-      }
-      setSelectedFile(file);
-    }
-  };
-
-  const removeSelectedFile = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
     }
   };
 
@@ -283,7 +212,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-white relative">
-      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8]">
+      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-500 to-teal-600">
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
             <span className="text-2xl font-bold text-white">
@@ -295,8 +224,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               {recipientName}
             </h3>
             <div className="flex items-center gap-2 mt-1">
-              <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"></div>
-              <p className="text-blue-100 text-sm">
+              <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+              <p className="text-emerald-100 text-sm">
                 {currentUserType === 'client' ? 'Votre conseiller' : 'Client'}
               </p>
             </div>
@@ -372,9 +301,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     <div
                       className={`${
                         isOwnMessage
-                          ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
                           : isAdminMessage
-                          ? 'bg-gradient-to-r from-[#2d4578] to-[#3d5a9e] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl'
+                          ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl'
                           : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
                       } px-4 py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
                     >
@@ -384,31 +313,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                         </p>
                       )}
                       <p className="text-sm break-words leading-relaxed">{msg.message}</p>
-
-                      {msg.attachment_url && (
-                        <div className="mt-2 pt-2 border-t border-white/20">
-                          <a
-                            href={msg.attachment_url}
-                            download={msg.attachment_name}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`flex items-center gap-2 p-2 rounded-lg ${
-                              isOwnMessage || isAdminMessage
-                                ? 'bg-white/10 hover:bg-white/20'
-                                : 'bg-gray-100 hover:bg-gray-200'
-                            } transition-colors`}
-                          >
-                            <FileText className="w-5 h-5 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium truncate">
-                                {msg.attachment_name || 'Fichier'}
-                              </p>
-                            </div>
-                            <Download className="w-4 h-4 flex-shrink-0" />
-                          </a>
-                        </div>
-                      )}
-
                       <div className="flex items-center gap-1.5 justify-end mt-2">
                         <span
                           className={`text-xs font-medium ${
@@ -445,43 +349,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       </div>
 
       <div className="p-6 border-t border-gray-200 bg-white">
-        {selectedFile && (
-          <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-blue-900 truncate">
-                {selectedFile.name}
-              </p>
-              <p className="text-xs text-blue-600">
-                {(selectedFile.size / 1024).toFixed(1)} Ko
-              </p>
-            </div>
-            <button
-              onClick={removeSelectedFile}
-              className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
-              title="Retirer le fichier"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-
         <div className="flex gap-3 items-end">
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={handleFileSelect}
-            className="hidden"
-            accept="*/*"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={loading || uploading}
-            className="flex-shrink-0 w-12 h-12 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
-            title="Joindre un fichier"
-          >
-            <Paperclip className="w-5 h-5" />
-          </button>
           <div className="flex-1">
             <textarea
               value={newMessage}
@@ -490,21 +358,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               placeholder="💬 Écrivez votre message..."
               disabled={loading}
               rows={1}
-              className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
+              className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
               style={{ minHeight: '48px', maxHeight: '120px' }}
             />
           </div>
           <button
             onClick={sendMessage}
-            disabled={(!newMessage.trim() && !selectedFile) || loading}
-            className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+            disabled={!newMessage.trim() || loading}
+            className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full font-bold hover:from-emerald-600 hover:to-teal-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
             title="Envoyer le message"
           >
-            {uploading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <Send className="w-5 h-5" />
-            )}
+            <Send className="w-5 h-5" />
           </button>
         </div>
         <p className="text-xs text-gray-500 mt-3 text-center">
