@@ -158,10 +158,12 @@ const Dashboard: React.FC<DashboardProps> = ({
         <div className="flex flex-col h-full p-6">
           {/* Logo Section */}
           <div className="mb-8 flex items-center justify-center">
-            <div className="bg-white rounded-2xl p-4 shadow-lg">
-              <div className="text-center">
-                <span className="text-[#2c4a6f] text-3xl font-bold tracking-wider">FPE</span>
-              </div>
+            <div className="bg-white rounded-2xl p-3 shadow-lg">
+              <img
+                src="/kk copy.png"
+                alt="Cabinet FPE"
+                className="h-14 w-auto"
+              />
             </div>
           </div>
 
@@ -343,9 +345,6 @@ const Dashboard: React.FC<DashboardProps> = ({
             >
               {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
-            <h1 className="text-2xl font-bold text-gray-800">
-              Panneau Administrateur
-            </h1>
           </div>
           <div className="flex items-center gap-4">
             <NotificationSystem
