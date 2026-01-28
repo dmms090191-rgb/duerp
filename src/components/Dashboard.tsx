@@ -137,17 +137,17 @@ const Dashboard: React.FC<DashboardProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white shadow-md border-b border-gray-100 backdrop-blur-sm bg-white/95 sticky top-0 z-30">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                className="lg:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="lg:hidden p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl transition-all duration-200 hover:scale-105"
               >
-                {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMobileSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
             </div>
 
@@ -156,24 +156,24 @@ const Dashboard: React.FC<DashboardProps> = ({
                 adminEmail={user?.email || ''}
                 onNotificationClick={handleNotificationClick}
               />
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors hidden sm:block">
+              <button className="p-2.5 text-gray-400 hover:text-[#3d5a9e] hover:bg-blue-50 rounded-xl transition-all duration-200 hidden sm:block">
                 <Settings className="w-5 h-5" />
               </button>
-              <div className="hidden sm:flex items-center gap-2">
-                <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
+              <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                <div className="w-9 h-9 bg-gradient-to-br from-[#3d5a9e] to-[#4d6bb8] rounded-full flex items-center justify-center shadow-md">
                   <UserIcon className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-semibold text-gray-800">
                   {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
                 </span>
               </div>
               <button
                 onClick={onLogout}
-                className="group relative flex items-center justify-center gap-2.5 px-2.5 sm:px-5 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
+                className="group relative flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 overflow-hidden"
               >
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <LogOut className="w-5 h-5 relative z-10 transition-transform group-hover:rotate-12" />
-                <span className="relative z-10 hidden sm:inline">Déconnexion</span>
+                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                <LogOut className="w-4 h-4 relative z-10 transition-transform group-hover:-translate-x-0.5" />
+                <span className="relative z-10 hidden sm:inline text-sm">Déconnexion</span>
               </button>
             </div>
           </div>
@@ -183,14 +183,15 @@ const Dashboard: React.FC<DashboardProps> = ({
       {/* Main Content */}
       <main className="mx-auto px-2 sm:px-4 lg:px-6 py-6 w-full box-border overflow-x-hidden">
         {/* Welcome Section */}
-        <div className="mb-6 bg-gradient-to-r from-red-600 via-orange-600 to-red-700 rounded-2xl shadow-2xl p-8 border border-red-200">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg">
-              <Shield className="w-8 h-8 text-white" />
+        <div className="mb-6 bg-gradient-to-r from-[#3d5a9e] via-[#4d6bb8] to-[#5d7bc8] rounded-2xl shadow-xl p-6 sm:p-8 border border-blue-200/20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
+          <div className="relative flex items-center gap-4">
+            <div className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-200">
+              <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-red-100 uppercase tracking-wider mb-1">Administrateur</p>
-              <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+              <p className="text-xs sm:text-sm font-semibold text-blue-100 uppercase tracking-wider mb-1">Panneau Administrateur</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg">
                 {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
               </h1>
             </div>
@@ -200,16 +201,17 @@ const Dashboard: React.FC<DashboardProps> = ({
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${stat.color} flex items-center justify-center`}>
+            <div key={index} className="group bg-white rounded-2xl shadow-sm hover:shadow-xl p-5 transition-all duration-300 hover:-translate-y-1 border border-gray-100 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative flex items-center justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
                   <stat.icon className="w-6 h-6 text-white" />
                 </div>
-                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#3d5a9e] group-hover:translate-x-1 transition-all duration-300" />
               </div>
-              <div>
-                <p className="text-2xl font-bold text-gray-900 mb-1">{stat.value}</p>
-                <p className="text-sm text-gray-600">{stat.label}</p>
+              <div className="relative">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 group-hover:text-[#3d5a9e] transition-colors duration-300">{stat.value}</p>
+                <p className="text-xs sm:text-sm text-gray-500 font-medium">{stat.label}</p>
               </div>
             </div>
           ))}
@@ -227,165 +229,165 @@ const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Sidebar Navigation */}
           <aside className={`
-            w-52 flex-shrink-0 bg-white rounded-xl shadow-sm
+            w-56 flex-shrink-0 bg-white rounded-2xl shadow-lg border border-gray-100
             lg:static lg:block
             fixed top-0 left-0 h-full z-50
             transition-transform duration-300 ease-in-out
             ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}>
-            <div className="p-3 h-full overflow-y-auto">
-              <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
-                <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+            <div className="p-4 h-full overflow-y-auto">
+              <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                <h2 className="text-lg font-bold bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] bg-clip-text text-transparent">Menu</h2>
                 <button
                   onClick={() => setIsMobileSidebarOpen(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600"
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <nav className="space-y-1">
+              <nav className="space-y-1.5">
                 <button
                   onClick={() => handleTabChange('bulk-import')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'bulk-import'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Upload className="w-4 h-4" />
-                  Import de masse
+                  <Upload className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'bulk-import' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Import de masse</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('leads-tab')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'leads-tab'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Users className="w-4 h-4" />
-                  Clients
+                  <Users className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'leads-tab' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Clients</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('leads')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'leads'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Users className="w-4 h-4" />
-                  Gestionnaire de leads
+                  <Users className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'leads' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Gestionnaire de leads</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('sellers')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'sellers'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <ShoppingBag className="w-4 h-4" />
-                  Gestionnaire vendeur
+                  <ShoppingBag className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'sellers' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Gestionnaire vendeur</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('admins')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'admins'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Shield className="w-4 h-4" />
-                  Info Admin
+                  <Shield className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'admins' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Info Admin</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('users-monitor')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'users-monitor'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Monitor className="w-4 h-4" />
-                  Suivi des connexions
+                  <Monitor className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'users-monitor' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Suivi connexions</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('all-accounts')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'all-accounts'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Users className="w-4 h-4" />
-                  Tous les comptes
+                  <Users className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'all-accounts' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Tous les comptes</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('chat')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'chat'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  Chat Client
+                  <MessageSquare className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'chat' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Chat Client</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('chat-vendeur')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'chat-vendeur'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <ShoppingBag className="w-4 h-4" />
-                  Chat Vendeur
+                  <ShoppingBag className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'chat-vendeur' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Chat Vendeur</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('statuses')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'statuses'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Tag className="w-4 h-4" />
-                  Liste des Statuts
+                  <Tag className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'statuses' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Statuts</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('argumentaire')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'argumentaire'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <FileText className="w-4 h-4" />
-                  Argumentaire
+                  <FileText className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'argumentaire' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Argumentaire</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('email-config')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'email-config'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <Settings className="w-4 h-4" />
-                  Config Emails & PDFs
+                  <Settings className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'email-config' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Config Emails</span>
                 </button>
                 <button
                   onClick={() => handleTabChange('signature')}
-                  className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     activeTab === 'signature'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
                   }`}
                 >
-                  <FileSignature className="w-4 h-4" />
-                  Signature Email
+                  <FileSignature className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'signature' ? '' : 'group-hover:scale-110'}`} />
+                  <span>Signature Email</span>
                 </button>
               </nav>
             </div>

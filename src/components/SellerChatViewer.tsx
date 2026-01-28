@@ -49,6 +49,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     loadSellersWithDiscussions();
@@ -75,7 +76,11 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   }, [preselectedSellerId, sellers]);
 
   useEffect(() => {
-    scrollToBottom();
+    // Scroll uniquement si l'utilisateur n'est pas en train de taper
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 200);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -218,6 +223,11 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         setNewMessage('');
         setSelectedFile(null);
         loadMessages(selectedSeller.id);
+
+        // Remettre le focus sur l'input pour garder le clavier ouvert sur mobile
+        setTimeout(() => {
+          messageInputRef.current?.focus();
+        }, 100);
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -290,6 +300,32 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
     }
   };
 
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return "Aujourd'hui";
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Hier';
+    } else {
+      return date.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+      });
+    }
+  };
+
   const sellersWithDiscussions = sellers
     .filter(seller => sellersWithMessages.has(seller.id))
     .filter(seller => {
@@ -329,12 +365,12 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         onClick={() => setSelectedSeller(seller)}
         className={`w-full text-left p-4 rounded-lg border transition-all ${
           selectedSeller?.id === seller.id
-            ? 'border-emerald-500 bg-emerald-50'
-            : 'border-gray-200 hover:border-emerald-300 hover:bg-gray-50'
+            ? 'border-blue-500 bg-blue-50'
+            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
         }`}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center flex-shrink-0">
             <ShoppingBag className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
@@ -348,12 +384,14 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
     );
   };
 
+  let lastDate = '';
+
   return (
     <div className="grid lg:grid-cols-4 gap-6">
       <div className="lg:col-span-1 space-y-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <MessageSquare className="w-5 h-5 text-emerald-600" />
+            <MessageSquare className="w-5 h-5 text-blue-600" />
             <h3 className="text-lg font-bold text-gray-900">
               Avec discussions ({sellersWithDiscussions.length})
             </h3>
@@ -367,7 +405,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un vendeur..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
               />
               {searchQuery && (
                 <button
@@ -410,24 +448,26 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
 
       <div className="lg:col-span-3">
         {selectedSeller ? (
-          <div className="bg-white rounded-2xl shadow-lg relative">
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-emerald-500 to-teal-600">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <MessageSquare className="w-6 h-6 text-white" />
-                  <div>
-                    <h3 className="text-xl font-bold text-white">
-                      {selectedSeller.prenom} {selectedSeller.nom}
-                    </h3>
-                    <p className="text-emerald-100 text-sm">{selectedSeller.email}</p>
-                  </div>
+          <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-2xl shadow-xl overflow-hidden">
+            <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-sky-600">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
+                  <span className="text-lg sm:text-2xl font-bold text-white">
+                    {selectedSeller.prenom.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base sm:text-lg font-bold text-white truncate">
+                    {selectedSeller.prenom} {selectedSeller.nom}
+                  </h3>
+                  <p className="text-blue-100 text-xs sm:text-sm truncate">{selectedSeller.email}</p>
                 </div>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center justify-center w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
                   title="Supprimer la conversation"
                 >
-                  <Trash2 className="w-5 h-5 text-white" />
+                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </button>
               </div>
             </div>
@@ -462,98 +502,103 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
               </div>
             )}
 
-            <div className="h-[500px] overflow-y-auto p-6 bg-gray-50">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30" style={{ maxHeight: '450px' }}>
               {messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">Aucun message pour le moment</p>
-                    <p className="text-sm text-gray-400 mt-2">Envoyez un message pour démarrer la conversation</p>
-                  </div>
+                <div className="text-center text-gray-500 py-8 sm:py-12">
+                  <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-sm sm:text-base">Aucun message pour le moment</p>
+                  <p className="text-xs sm:text-sm mt-2">Commencez la conversation !</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.sender_type === 'admin' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className="relative group inline-block max-w-[85%]">
-                        <div
-                          className={`rounded-lg px-4 py-3 shadow-sm ${
-                            msg.sender_type === 'admin'
-                              ? 'bg-emerald-600 text-white'
-                              : 'bg-white text-gray-900 border border-gray-200'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              msg.sender_type === 'admin' ? 'bg-emerald-700' : 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                            }`}>
-                              {msg.sender_type === 'admin' ? (
-                                <User className="w-3 h-3 text-white" />
-                              ) : (
-                                <ShoppingBag className="w-3 h-3 text-white" />
-                              )}
+                  messages.map((msg) => {
+                    const messageDate = formatDate(msg.created_at);
+                    const showDateSeparator = messageDate !== lastDate;
+                    lastDate = messageDate;
+                    const isAdminMessage = msg.sender_type === 'admin';
+
+                    return (
+                      <React.Fragment key={msg.id}>
+                        {showDateSeparator && (
+                          <div className="flex items-center justify-center my-2 sm:my-3">
+                            <div className="bg-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-full">
+                              {messageDate}
                             </div>
-                            <p className={`text-xs font-medium ${msg.sender_type === 'admin' ? 'text-emerald-100' : 'text-gray-500'}`}>
-                              {msg.sender_name || (msg.sender_type === 'admin' ? 'Admin' : 'Vendeur')}
-                            </p>
                           </div>
-                          <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
-
-                          {msg.attachment_url && (
-                            <div className="mt-2 pt-2 border-t border-white/20">
-                              <a
-                                href={msg.attachment_url}
-                                download={msg.attachment_name}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`flex items-center gap-2 p-2 rounded-lg ${
-                                  msg.sender_type === 'admin'
-                                    ? 'bg-emerald-700/30 hover:bg-emerald-700/50'
-                                    : 'bg-gray-100 hover:bg-gray-200'
-                                } transition-colors`}
-                              >
-                                <FileText className="w-5 h-5 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-medium truncate">
-                                    {msg.attachment_name || 'Fichier'}
-                                  </p>
-                                </div>
-                                <Download className="w-4 h-4 flex-shrink-0" />
-                              </a>
-                            </div>
-                          )}
-
-                          <p className={`text-xs mt-2 ${msg.sender_type === 'admin' ? 'text-emerald-100' : 'text-gray-400'}`}>
-                            {new Date(msg.created_at).toLocaleString('fr-FR', {
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => deleteMessage(msg.id)}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
-                          title="Supprimer ce message"
+                        )}
+                        <div
+                          className={`flex ${isAdminMessage ? 'justify-end' : 'justify-start'}`}
                         >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={messagesEndRef} />
-                </div>
+                          <div className="relative group inline-block max-w-[75%] sm:max-w-[70%] md:max-w-md">
+                            <div
+                              className={`${
+                                isAdminMessage
+                                  ? 'bg-gradient-to-r from-blue-500 to-sky-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                                  : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
+                              } px-3 py-2 sm:px-4 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
+                            >
+                              {!isAdminMessage && (
+                                <p className="text-xs font-bold mb-1.5 text-blue-600">
+                                  {msg.sender_name || 'Vendeur'}
+                                </p>
+                              )}
+                              <p className="text-sm break-words leading-relaxed">{msg.message}</p>
+
+                              {msg.attachment_url && (
+                                <div className="mt-2 pt-2 border-t border-white/20">
+                                  <a
+                                    href={msg.attachment_url}
+                                    download={msg.attachment_name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`flex items-center gap-2 p-2 rounded-lg ${
+                                      isAdminMessage
+                                        ? 'bg-white/10 hover:bg-white/20'
+                                        : 'bg-gray-100 hover:bg-gray-200'
+                                    } transition-colors`}
+                                  >
+                                    <FileText className="w-5 h-5 flex-shrink-0" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-medium truncate">
+                                        {msg.attachment_name || 'Fichier'}
+                                      </p>
+                                    </div>
+                                    <Download className="w-4 h-4 flex-shrink-0" />
+                                  </a>
+                                </div>
+                              )}
+
+                              <div className="flex items-center gap-1.5 justify-end mt-2">
+                                <span
+                                  className={`text-xs font-medium ${
+                                    isAdminMessage ? 'text-white/70' : 'text-gray-500'
+                                  }`}
+                                >
+                                  {formatTime(msg.created_at)}
+                                </span>
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => deleteMessage(msg.id)}
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                              title="Supprimer ce message"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })
               )}
+              <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-6 border-t border-gray-200 bg-white rounded-b-2xl">
+            <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
               {selectedFile && (
-                <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                <div className="mb-2 flex items-center gap-2 p-2 sm:p-2.5 bg-blue-50 border border-blue-200 rounded-lg">
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-blue-900 truncate">
+                    <p className="text-xs sm:text-sm font-medium text-blue-900 truncate">
                       {selectedFile.name}
                     </p>
                     <p className="text-xs text-blue-600">
@@ -562,15 +607,15 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                   </div>
                   <button
                     onClick={removeSelectedFile}
-                    className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
+                    className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
                     title="Retirer le fichier"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="w-3 h-3 sm:w-4 sm:h-4" />
                   </button>
                 </div>
               )}
 
-              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-3">
+              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-2 items-end">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -582,28 +627,34 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={sending || uploading}
-                  className="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="Joindre un fichier"
                 >
-                  <Paperclip className="w-5 h-5" />
+                  <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Tapez votre message..."
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-                  rows={2}
-                />
+                <div className="flex-1">
+                  <textarea
+                    ref={messageInputRef}
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Votre message..."
+                    disabled={sending}
+                    rows={1}
+                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
+                    style={{ minHeight: '42px', maxHeight: '100px' }}
+                  />
+                </div>
                 <button
                   type="submit"
                   disabled={(!newMessage.trim() && !selectedFile) || sending}
-                  className="px-6 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-md hover:shadow-lg"
+                  className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-blue-500 to-sky-600 text-white rounded-full font-bold hover:from-blue-600 hover:to-sky-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+                  title="Envoyer le message"
                 >
                   {uploading ? (
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <Send className="w-5 h-5" />
+                    <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </button>
               </form>
@@ -612,8 +663,8 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         ) : (
           <div className="bg-white rounded-2xl shadow-lg h-full flex items-center justify-center">
             <div className="text-center p-12">
-              <div className="w-24 h-24 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-12 h-12 text-emerald-600" />
+              <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-sky-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageSquare className="w-12 h-12 text-blue-600" />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Chat Vendeur

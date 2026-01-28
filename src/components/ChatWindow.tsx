@@ -43,13 +43,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const messageInputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Scroll uniquement si l'utilisateur n'est pas en train de taper
+    const timer = setTimeout(() => {
+      scrollToBottom();
+    }, 200);
+    return () => clearTimeout(timer);
   }, [messages]);
 
   useEffect(() => {
@@ -178,6 +183,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         setNewMessage('');
         setSelectedFile(null);
         await loadMessages();
+
+        // Remettre le focus sur l'input pour garder le clavier ouvert sur mobile
+        setTimeout(() => {
+          messageInputRef.current?.focus();
+        }, 100);
       }
     } catch (error) {
       console.error('❌ Erreur lors de l\'envoi du message:', error);
@@ -282,31 +292,31 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   let lastDate = '';
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
-      <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8]">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center justify-center w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-            <span className="text-2xl font-bold text-white">
+    <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-2xl shadow-xl overflow-hidden">
+      <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8]">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
+            <span className="text-lg sm:text-2xl font-bold text-white">
               {recipientName.charAt(0).toUpperCase()}
             </span>
           </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-white">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-lg font-bold text-white truncate">
               {recipientName}
             </h3>
-            <div className="flex items-center gap-2 mt-1">
-              <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"></div>
-              <p className="text-blue-100 text-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
+              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-300 rounded-full animate-pulse"></div>
+              <p className="text-blue-100 text-xs sm:text-sm">
                 {currentUserType === 'client' ? 'Votre conseiller' : 'Client'}
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="flex items-center justify-center w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
+            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
             title="Supprimer la conversation"
           >
-            <Trash2 className="w-5 h-5 text-white" />
+            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </button>
         </div>
       </div>
@@ -341,11 +351,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-blue-50/30 to-sky-50/30" style={{ maxHeight: '500px' }}>
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30" style={{ maxHeight: '450px' }}>
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">
-            <p>Aucun message pour le moment</p>
-            <p className="text-sm mt-2">Commencez la conversation !</p>
+          <div className="text-center text-gray-500 py-8 sm:py-12">
+            <p className="text-sm sm:text-base">Aucun message pour le moment</p>
+            <p className="text-xs sm:text-sm mt-2">Commencez la conversation !</p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -359,8 +369,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             return (
               <React.Fragment key={msg.id}>
                 {showDateSeparator && (
-                  <div className="flex items-center justify-center my-4">
-                    <div className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full">
+                  <div className="flex items-center justify-center my-2 sm:my-3">
+                    <div className="bg-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-full">
                       {messageDate}
                     </div>
                   </div>
@@ -368,7 +378,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 <div
                   className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className="relative group inline-block max-w-xs lg:max-w-md xl:max-w-lg">
+                  <div className="relative group inline-block max-w-[75%] sm:max-w-[70%] md:max-w-md">
                     <div
                       className={`${
                         isOwnMessage
@@ -376,7 +386,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                           : isAdminMessage
                           ? 'bg-gradient-to-r from-[#2d4578] to-[#3d5a9e] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl'
                           : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
-                      } px-4 py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
+                      } px-3 py-2 sm:px-4 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
                     >
                       {!isOwnMessage && (
                         <p className={`text-xs font-bold mb-1.5 ${isAdminMessage ? 'text-blue-100' : 'text-blue-600'}`}>
@@ -444,12 +454,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-6 border-t border-gray-200 bg-white">
+      <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
         {selectedFile && (
-          <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
+          <div className="mb-2 flex items-center gap-2 p-2 sm:p-2.5 bg-blue-50 border border-blue-200 rounded-lg">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-blue-900 truncate">
+              <p className="text-xs sm:text-sm font-medium text-blue-900 truncate">
                 {selectedFile.name}
               </p>
               <p className="text-xs text-blue-600">
@@ -458,15 +468,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
             <button
               onClick={removeSelectedFile}
-              className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
+              className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
               title="Retirer le fichier"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
           </div>
         )}
 
-        <div className="flex gap-3 items-end">
+        <div className="flex gap-2 items-end">
           <input
             ref={fileInputRef}
             type="file"
@@ -477,39 +487,37 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={loading || uploading}
-            className="flex-shrink-0 w-12 h-12 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             title="Joindre un fichier"
           >
-            <Paperclip className="w-5 h-5" />
+            <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
           <div className="flex-1">
             <textarea
+              ref={messageInputRef}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="💬 Écrivez votre message..."
+              placeholder=""
               disabled={loading}
               rows={1}
-              className="w-full px-5 py-3.5 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
-              style={{ minHeight: '48px', maxHeight: '120px' }}
+              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
+              style={{ minHeight: '42px', maxHeight: '100px' }}
             />
           </div>
           <button
             onClick={sendMessage}
             disabled={(!newMessage.trim() && !selectedFile) || loading}
-            className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
             title="Envoyer le message"
           >
             {uploading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-3 text-center">
-          Les messages sont sécurisés et visibles uniquement par vous et votre conseiller
-        </p>
       </div>
     </div>
   );
