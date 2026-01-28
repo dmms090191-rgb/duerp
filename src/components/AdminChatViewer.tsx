@@ -520,8 +520,8 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
 
   return (
     <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-4 lg:gap-6">
-      <div className={`lg:col-span-1 space-y-4 ${showMobileChat ? 'hidden lg:block' : 'block'}`}>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
+      <div className={`lg:col-span-1 space-y-4 h-full ${showMobileChat ? 'hidden lg:block' : 'block'}`}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 h-full flex flex-col">
           <div className="flex items-center gap-2 mb-3 lg:mb-4">
             <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5 text-green-600" />
             <h3 className="text-base lg:text-lg font-bold text-gray-900">
@@ -550,7 +550,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[300px] lg:max-h-[400px] overflow-y-auto">
+          <div className="space-y-3 flex-1 overflow-y-auto mb-4">
             {clientsWithDiscussions.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4">
                 {searchQuery ? 'Aucun résultat' : 'Aucune discussion'}
@@ -559,28 +559,28 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
               clientsWithDiscussions.map((client) => <ClientCard key={client.id} client={client} />)
             )}
           </div>
-        </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
-          <div className="flex items-center gap-2 mb-3 lg:mb-4">
-            <User className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
-            <h3 className="text-base lg:text-lg font-bold text-gray-900">
-              Sans discussion ({clientsWithoutDiscussions.length})
-            </h3>
-          </div>
-          <div className="space-y-3 max-h-[300px] lg:max-h-[400px] overflow-y-auto">
-            {clientsWithoutDiscussions.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">Tous les clients ont des discussions</p>
-            ) : (
-              clientsWithoutDiscussions.map((client) => <ClientCard key={client.id} client={client} />)
-            )}
+          <div className="border-t border-gray-200 pt-4">
+            <div className="flex items-center gap-2 mb-3">
+              <User className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
+              <h3 className="text-base lg:text-lg font-bold text-gray-900">
+                Sans discussion ({clientsWithoutDiscussions.length})
+              </h3>
+            </div>
+            <div className="space-y-3 max-h-[200px] overflow-y-auto">
+              {clientsWithoutDiscussions.length === 0 ? (
+                <p className="text-sm text-gray-500 text-center py-4">Tous les clients ont des discussions</p>
+              ) : (
+                clientsWithoutDiscussions.map((client) => <ClientCard key={client.id} client={client} />)
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      <div className={`lg:col-span-3 flex flex-col ${showMobileChat ? 'block' : 'hidden lg:block'} ${showMobileChat ? 'fixed inset-0 z-50 lg:relative lg:z-auto' : ''}`}>
+      <div className={`lg:col-span-3 flex flex-col h-full ${showMobileChat ? 'block' : 'hidden lg:block'} ${showMobileChat ? 'fixed inset-0 z-50 lg:relative lg:z-auto' : ''}`}>
         {selectedClient ? (
-          <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-2xl shadow-xl overflow-hidden w-full">
+          <div className="flex flex-col h-full bg-white relative rounded-2xl shadow-xl overflow-hidden w-full">
             <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] flex-shrink-0">
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
@@ -616,9 +616,6 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             <div
               ref={chatContainerRef}
               className="p-3 sm:p-4 md:p-5 space-y-3 overflow-y-auto flex-1 bg-gradient-to-b from-blue-50/30 to-sky-50/30"
-              style={{
-                maxHeight: showMobileChat ? 'calc(100vh - 180px)' : '450px'
-              }}
             >
               {messages.length === 0 ? (
                 <div className="text-center text-gray-500 py-12">

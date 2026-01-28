@@ -137,264 +137,234 @@ const Dashboard: React.FC<DashboardProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
-      {/* Header */}
-      <header className="bg-white shadow-md border-b border-gray-100 backdrop-blur-sm bg-white/95 sticky top-0 z-30">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-                className="lg:hidden p-2.5 text-gray-600 hover:text-gray-900 hover:bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl transition-all duration-200 hover:scale-105"
-              >
-                {isMobileSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50 flex">
+      {/* Mobile Sidebar Overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
 
-            <div className="flex items-center gap-2 sm:gap-4">
-              <NotificationSystem
-                adminEmail={user?.email || ''}
-                onNotificationClick={handleNotificationClick}
-              />
-              <button className="p-2.5 text-gray-400 hover:text-[#3d5a9e] hover:bg-blue-50 rounded-xl transition-all duration-200 hidden sm:block">
-                <Settings className="w-5 h-5" />
-              </button>
-              <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
-                <div className="w-9 h-9 bg-gradient-to-br from-[#3d5a9e] to-[#4d6bb8] rounded-full flex items-center justify-center shadow-md">
-                  <UserIcon className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-sm font-semibold text-gray-800">
-                  {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
-                </span>
+      {/* Sidebar Navigation */}
+      <aside className={`
+        w-72 flex-shrink-0 bg-gradient-to-b from-[#1e3a5f] via-[#2c4a6f] to-[#1e3a5f]
+        lg:static lg:block
+        fixed top-0 left-0 h-screen z-50
+        transition-transform duration-300 ease-in-out
+        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        shadow-2xl
+      `}>
+        <div className="flex flex-col h-full p-6">
+          {/* Logo Section */}
+          <div className="mb-8 flex items-center justify-center">
+            <div className="bg-white rounded-2xl p-4 shadow-lg">
+              <div className="text-center">
+                <span className="text-[#2c4a6f] text-3xl font-bold tracking-wider">FPE</span>
               </div>
-              <button
-                onClick={onLogout}
-                className="group relative flex items-center justify-center gap-2 px-3 sm:px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
-                <LogOut className="w-4 h-4 relative z-10 transition-transform group-hover:-translate-x-0.5" />
-                <span className="relative z-10 hidden sm:inline text-sm">Déconnexion</span>
-              </button>
             </div>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-6 w-full box-border overflow-x-hidden">
-        {/* Welcome Section */}
-        <div className="mb-6 bg-gradient-to-r from-[#3d5a9e] via-[#4d6bb8] to-[#5d7bc8] rounded-2xl shadow-xl p-6 sm:p-8 border border-blue-200/20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent"></div>
-          <div className="relative flex items-center gap-4">
-            <div className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl shadow-lg transform hover:scale-105 transition-transform duration-200">
-              <Shield className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
-            </div>
-            <div>
-              <p className="text-xs sm:text-sm font-semibold text-blue-100 uppercase tracking-wider mb-1">Panneau Administrateur</p>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white drop-shadow-lg">
-                {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
-              </h1>
-            </div>
+          {/* Top Icons */}
+          <div className="flex items-center justify-end gap-3 mb-6">
+            <button className="p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200">
+              <Bell className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Menu Navigation */}
+          <nav className="space-y-2 flex-1 overflow-y-auto">
+            <button
+              onClick={() => handleTabChange('bulk-import')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'bulk-import'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Upload className="w-5 h-5" />
+              <span className="text-left">Import de masse</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('leads-tab')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'leads-tab'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span className="text-left">Clients</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('leads')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'leads'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span className="text-left">Gestionnaire de leads</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('sellers')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'sellers'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <ShoppingBag className="w-5 h-5" />
+              <span className="text-left">Gestionnaire vendeur</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('admins')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'admins'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Shield className="w-5 h-5" />
+              <span className="text-left">Info Admin</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('users-monitor')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'users-monitor'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Monitor className="w-5 h-5" />
+              <span className="text-left">Suivi connexions</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('all-accounts')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'all-accounts'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Users className="w-5 h-5" />
+              <span className="text-left">Tous les comptes</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('chat')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'chat'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <MessageSquare className="w-5 h-5" />
+              <span className="text-left">Messagerie</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('chat-vendeur')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'chat-vendeur'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <ShoppingBag className="w-5 h-5" />
+              <span className="text-left">Chat Vendeur</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('statuses')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'statuses'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Tag className="w-5 h-5" />
+              <span className="text-left">Statuts</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('argumentaire')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'argumentaire'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <FileText className="w-5 h-5" />
+              <span className="text-left">Argumentaire</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('email-config')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'email-config'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <Settings className="w-5 h-5" />
+              <span className="text-left">Config Emails</span>
+            </button>
+            <button
+              onClick={() => handleTabChange('signature')}
+              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === 'signature'
+                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+              }`}
+            >
+              <FileSignature className="w-5 h-5" />
+              <span className="text-left">Signature Email</span>
+            </button>
+          </nav>
+
+          {/* Logout Button at Bottom */}
+          <div className="mt-auto pt-6 space-y-3">
+            <button
+              onClick={onLogout}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              <LogOut className="w-5 h-5" />
+              <span>Déconnexion</span>
+            </button>
           </div>
         </div>
+      </aside>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {stats.map((stat, index) => (
-            <div key={index} className="group bg-white rounded-2xl shadow-sm hover:shadow-xl p-5 transition-all duration-300 hover:-translate-y-1 border border-gray-100 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="relative flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center shadow-lg transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                  <stat.icon className="w-6 h-6 text-white" />
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-[#3d5a9e] group-hover:translate-x-1 transition-all duration-300" />
-              </div>
-              <div className="relative">
-                <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 group-hover:text-[#3d5a9e] transition-colors duration-300">{stat.value}</p>
-                <p className="text-xs sm:text-sm text-gray-500 font-medium">{stat.label}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main Content with Sidebar */}
-        <div className="flex gap-4 relative w-full box-border overflow-hidden lg:overflow-visible">
-          {/* Mobile Sidebar Overlay */}
-          {isMobileSidebarOpen && (
-            <div
-              className="lg:hidden fixed inset-0 bg-black/50 z-40"
-              onClick={() => setIsMobileSidebarOpen(false)}
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100/50">
+        {/* Top Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+            >
+              {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Panneau Administrateur
+            </h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationSystem
+              adminEmail={user?.email || ''}
+              onNotificationClick={handleNotificationClick}
             />
-          )}
-
-          {/* Sidebar Navigation */}
-          <aside className={`
-            w-56 flex-shrink-0 bg-white rounded-2xl shadow-lg border border-gray-100
-            lg:static lg:block
-            fixed top-0 left-0 h-full z-50
-            transition-transform duration-300 ease-in-out
-            ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          `}>
-            <div className="p-4 h-full overflow-y-auto">
-              <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
-                <h2 className="text-lg font-bold bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] bg-clip-text text-transparent">Menu</h2>
-                <button
-                  onClick={() => setIsMobileSidebarOpen(false)}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-all duration-200"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+            <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 rounded-xl">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#2c4a6f] to-[#3d5a9e] rounded-full flex items-center justify-center">
+                <UserIcon className="w-4 h-4 text-white" />
               </div>
-              <nav className="space-y-1.5">
-                <button
-                  onClick={() => handleTabChange('bulk-import')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'bulk-import'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Upload className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'bulk-import' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Import de masse</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('leads-tab')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'leads-tab'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Users className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'leads-tab' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Clients</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('leads')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'leads'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Users className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'leads' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Gestionnaire de leads</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('sellers')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'sellers'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <ShoppingBag className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'sellers' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Gestionnaire vendeur</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('admins')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'admins'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Shield className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'admins' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Info Admin</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('users-monitor')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'users-monitor'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Monitor className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'users-monitor' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Suivi connexions</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('all-accounts')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'all-accounts'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Users className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'all-accounts' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Tous les comptes</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('chat')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'chat'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <MessageSquare className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'chat' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Chat Client</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('chat-vendeur')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'chat-vendeur'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <ShoppingBag className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'chat-vendeur' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Chat Vendeur</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('statuses')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'statuses'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Tag className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'statuses' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Statuts</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('argumentaire')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'argumentaire'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <FileText className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'argumentaire' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Argumentaire</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('email-config')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'email-config'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <Settings className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'email-config' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Config Emails</span>
-                </button>
-                <button
-                  onClick={() => handleTabChange('signature')}
-                  className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                    activeTab === 'signature'
-                      ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white shadow-md'
-                      : 'text-gray-700 hover:bg-gradient-to-br hover:from-blue-50 hover:to-indigo-50 hover:text-[#3d5a9e]'
-                  }`}
-                >
-                  <FileSignature className={`w-4 h-4 transition-transform duration-200 ${activeTab === 'signature' ? '' : 'group-hover:scale-110'}`} />
-                  <span>Signature Email</span>
-                </button>
-              </nav>
+              <span className="text-sm font-medium text-gray-800">
+                {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
+              </span>
             </div>
-          </aside>
+          </div>
+        </header>
 
-          {/* Main Content Area */}
-          <div className="flex-1 min-w-0 w-full lg:w-auto overflow-x-hidden">
+        {/* Content */}
+        <div className="p-6">
             {activeTab === 'bulk-import' && (
               <BulkImport
                 leads={bulkLeads}
@@ -463,19 +433,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
 
             {activeTab === 'chat' && (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-2xl font-bold mb-2">Chat Client</h2>
-                      <p className="text-blue-100">Consultez toutes les conversations entre clients et vendeurs</p>
-                    </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
-                      <MessageSquare className="w-12 h-12" />
-                    </div>
-                  </div>
-                </div>
-
+              <div className="flex flex-col h-[calc(100vh-200px)]">
                 <AdminChatViewer
                   supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
                   supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
@@ -524,9 +482,8 @@ const Dashboard: React.FC<DashboardProps> = ({
             {activeTab === 'signature' && (
               <EmailSignatureEditor />
             )}
-          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
