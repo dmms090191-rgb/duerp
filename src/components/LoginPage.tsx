@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Sun, Wind, Home, Leaf, UserPlus, X, Award, CheckCircle, Star, Facebook, Linkedin, Instagram, Phone, MapPin, Mail as MailIcon, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Sun, Wind, Home, Leaf, UserPlus, X, Award, CheckCircle, Star, Facebook, Linkedin, Instagram, Phone, MapPin, Mail as MailIcon, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import RegistrationForm from './RegistrationForm';
 import { Registration } from '../types/Registration';
 import UnifiedHeader from './UnifiedHeader';
@@ -458,7 +458,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                         <button
                           key={digit}
                           type="button"
-                          onClick={() => !isLoading && password.length < 6 && handleDigitClick(digit, {} as any)}
+                          onClick={(e) => handleDigitClick(digit, e)}
                           disabled={isLoading || password.length >= 6}
                           className="aspect-square bg-[#2d4578]/60 backdrop-blur-sm hover:bg-[#2d4578]/80 active:bg-[#2d4578] border-2 border-white/20 hover:border-white/30 rounded-xl md:rounded-2xl text-xl md:text-3xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
                         >
@@ -471,7 +471,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
                         <button
                           key={digit}
                           type="button"
-                          onClick={() => !isLoading && password.length < 6 && handleDigitClick(digit, {} as any)}
+                          onClick={(e) => handleDigitClick(digit, e)}
                           disabled={isLoading || password.length >= 6}
                           className="aspect-square bg-[#2d4578]/60 backdrop-blur-sm hover:bg-[#2d4578]/80 active:bg-[#2d4578] border-2 border-white/20 hover:border-white/30 rounded-xl md:rounded-2xl text-xl md:text-3xl font-bold text-white transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg"
                         >
