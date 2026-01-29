@@ -38,6 +38,9 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrollingRef = useRef(false);
+  const lastMessageCountRef = useRef(0);
 
   useEffect(() => {
     loadMessages();
@@ -46,11 +49,32 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
   }, []);
 
   useEffect(() => {
-    // Scroll uniquement si l'utilisateur n'est pas en train de taper
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 200);
-    return () => clearTimeout(timer);
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+      isUserScrollingRef.current = !isAtBottom;
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const messageCountChanged = messages.length !== lastMessageCountRef.current;
+    const shouldScroll = !isUserScrollingRef.current || messageCountChanged;
+
+    if (shouldScroll && messages.length > 0) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      lastMessageCountRef.current = messages.length;
+      return () => clearTimeout(timer);
+    }
+
+    lastMessageCountRef.current = messages.length;
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -197,6 +221,7 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
       if (response.ok) {
         setNewMessage('');
         setSelectedFile(null);
+        isUserScrollingRef.current = false;
         await loadMessages();
 
         // Remettre le focus sur l'input pour garder le clavier ouvert sur mobile
@@ -301,7 +326,7 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
   let lastDate = '';
 
   return (
-    <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-xl shadow-lg overflow-hidden">
+    <div className="flex flex-col h-[calc(100vh-12rem)] md:h-full md:max-h-[600px] w-full lg:max-w-2xl mx-auto bg-white relative rounded-none sm:rounded-xl shadow-lg overflow-hidden">
       <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-800 to-slate-900">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-lg shadow-md">
@@ -351,7 +376,7 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gray-50" style={{ maxHeight: '450px' }}>
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gray-50">
         {messages.length === 0 ? (
           <div className="text-center text-gray-400 py-8 sm:py-12">
             <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />

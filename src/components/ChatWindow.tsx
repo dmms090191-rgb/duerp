@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Check, CheckCheck, X, Trash2, Paperclip, FileText, Download } from 'lucide-react';
+import { Send, Check, CheckCheck, X, Trash2, Paperclip, FileText, Download, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Message {
@@ -24,6 +24,7 @@ interface ChatWindowProps {
   recipientName: string;
   supabaseUrl?: string;
   supabaseKey?: string;
+  onBack?: () => void;
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -34,6 +35,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   recipientName,
   supabaseUrl,
   supabaseKey,
+  onBack,
 }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -44,20 +46,52 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const previousMessagesLength = useRef(messages.length);
+  const isFirstLoadRef = useRef(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    // Scroll uniquement si l'utilisateur n'est pas en train de taper
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [messages]);
+  const isScrolledToBottom = () => {
+    if (!chatContainerRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    return scrollHeight - scrollTop - clientHeight < 100;
+  };
 
   useEffect(() => {
+    const handleScroll = () => {
+      if (chatContainerRef.current) {
+        setIsUserScrolling(!isScrolledToBottom());
+      }
+    };
+
+    const container = chatContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
+
+  useEffect(() => {
+    const hasNewMessages = messages.length > previousMessagesLength.current;
+    previousMessagesLength.current = messages.length;
+
+    const shouldScroll = isFirstLoadRef.current || (!isUserScrolling && hasNewMessages);
+
+    if (shouldScroll && messages.length > 0) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+        isFirstLoadRef.current = false;
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [messages, isUserScrolling]);
+
+  useEffect(() => {
+    isFirstLoadRef.current = true;
     loadMessages();
     const interval = setInterval(loadMessages, 3000);
     return () => clearInterval(interval);
@@ -182,11 +216,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         console.log('✅ Message envoyé avec succès');
         setNewMessage('');
         setSelectedFile(null);
+        setIsUserScrolling(false);
         await loadMessages();
 
         // Remettre le focus sur l'input pour garder le clavier ouvert sur mobile
         setTimeout(() => {
           messageInputRef.current?.focus();
+          scrollToBottom();
         }, 100);
       }
     } catch (error) {
@@ -292,9 +328,18 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   let lastDate = '';
 
   return (
-    <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-2xl shadow-xl overflow-hidden">
-      <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8]">
-        <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex flex-col h-full w-full bg-white relative rounded-2xl shadow-xl overflow-hidden">
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-slate-700 to-slate-800 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 active:scale-95"
+              title="Retour à la liste"
+            >
+              <ArrowLeft className="w-5 h-5 text-white" />
+            </button>
+          )}
           <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
             <span className="text-lg sm:text-2xl font-bold text-white">
               {recipientName.charAt(0).toUpperCase()}
@@ -304,8 +349,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <h3 className="text-base sm:text-lg font-bold text-white truncate">
               {recipientName}
             </h3>
-            <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-300 rounded-full animate-pulse"></div>
+            <div className="flex items-center gap-2 mt-0.5">
+              <div className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"></div>
               <p className="text-blue-100 text-xs sm:text-sm">
                 {currentUserType === 'client' ? 'Votre conseiller' : 'Client'}
               </p>
@@ -313,27 +358,27 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
+            className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
             title="Supprimer la conversation"
           >
-            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            <Trash2 className="w-5 h-5 text-white" />
           </button>
         </div>
       </div>
 
       {showDeleteConfirm && (
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 sm:p-6 transform transition-all mx-4">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+              <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full flex-shrink-0">
                 <Trash2 className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900">Supprimer la conversation</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Supprimer la conversation</h3>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm sm:text-base text-gray-600 mb-6">
               Êtes-vous sûr de vouloir supprimer tous les messages de cette conversation ? Cette action est irréversible.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all duration-200"
@@ -351,11 +396,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30" style={{ maxHeight: '450px' }}>
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30">
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 sm:py-12">
-            <p className="text-sm sm:text-base">Aucun message pour le moment</p>
-            <p className="text-xs sm:text-sm mt-2">Commencez la conversation !</p>
+          <div className="text-center text-gray-500 py-12">
+            <p className="text-base">Aucun message pour le moment</p>
+            <p className="text-sm mt-2">Commencez la conversation !</p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -369,8 +414,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             return (
               <React.Fragment key={msg.id}>
                 {showDateSeparator && (
-                  <div className="flex items-center justify-center my-2 sm:my-3">
-                    <div className="bg-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-full">
+                  <div className="flex items-center justify-center my-3">
+                    <div className="bg-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-full font-medium">
                       {messageDate}
                     </div>
                   </div>
@@ -378,7 +423,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 <div
                   className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className="relative group inline-block max-w-[75%] sm:max-w-[70%] md:max-w-md">
+                  <div className="relative group inline-block max-w-[85%] sm:max-w-[75%] md:max-w-md">
                     <div
                       className={`${
                         isOwnMessage
@@ -386,14 +431,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                           : isAdminMessage
                           ? 'bg-gradient-to-r from-[#2d4578] to-[#3d5a9e] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl'
                           : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
-                      } px-3 py-2 sm:px-4 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
+                      } px-4 py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
                     >
                       {!isOwnMessage && (
                         <p className={`text-xs font-bold mb-1.5 ${isAdminMessage ? 'text-blue-100' : 'text-blue-600'}`}>
                           {msg.sender_name || (isAdminMessage ? 'Admin' : recipientName)}
                         </p>
                       )}
-                      <p className="text-sm break-words leading-relaxed">{msg.message}</p>
+                      <p className="text-sm sm:text-base break-words leading-relaxed">{msg.message}</p>
 
                       {msg.attachment_url && (
                         <div className="mt-2 pt-2 border-t border-white/20">
@@ -440,7 +485,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     </div>
                     <button
                       onClick={() => deleteMessage(msg.id)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                      className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                       title="Supprimer ce message"
                     >
                       <X className="w-4 h-4" />
@@ -454,12 +499,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+      <div className="p-4 border-t border-gray-200 bg-white">
         {selectedFile && (
-          <div className="mb-2 flex items-center gap-2 p-2 sm:p-2.5 bg-blue-50 border border-blue-200 rounded-lg">
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
+          <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-blue-900 truncate">
+              <p className="text-sm font-medium text-blue-900 truncate">
                 {selectedFile.name}
               </p>
               <p className="text-xs text-blue-600">
@@ -468,10 +513,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
             <button
               onClick={removeSelectedFile}
-              className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
+              className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
               title="Retirer le fichier"
             >
-              <X className="w-3 h-3 sm:w-4 sm:h-4" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -487,10 +532,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={loading || uploading}
-            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-shrink-0 w-11 h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             title="Joindre un fichier"
           >
-            <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Paperclip className="w-5 h-5" />
           </button>
           <div className="flex-1">
             <textarea
@@ -501,20 +546,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               placeholder=""
               disabled={loading}
               rows={1}
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
-              style={{ minHeight: '42px', maxHeight: '100px' }}
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm sm:text-base bg-gray-50 hover:bg-white transition-colors duration-200"
+              style={{ minHeight: '44px', maxHeight: '120px' }}
             />
           </div>
           <button
             onClick={sendMessage}
             disabled={(!newMessage.trim() && !selectedFile) || loading}
-            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+            className="flex-shrink-0 w-11 h-11 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
             title="Envoyer le message"
           >
             {uploading ? (
-              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Send className="w-5 h-5" />
             )}
           </button>
         </div>

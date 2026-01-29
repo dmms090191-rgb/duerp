@@ -100,8 +100,13 @@ const Dashboard: React.FC<DashboardProps> = ({
   const pendingRegistrations = registrations.filter(reg => reg.statut === 'en_attente');
 
   const handleOpenChatWithClient = (clientId: string | number) => {
-    setSelectedClientForChat(clientId);
+    console.log('🚀 Ouverture du chat avec le client:', clientId, 'type:', typeof clientId);
+    setSelectedClientForChat(null);
     setActiveTab('chat');
+    setTimeout(() => {
+      console.log('⏰ setTimeout: définit selectedClientForChat à:', clientId);
+      setSelectedClientForChat(clientId);
+    }, 50);
   };
 
   const handleOpenChatWithSeller = (sellerId: string) => {
@@ -112,6 +117,12 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleTabChange = (tab: typeof activeTab) => {
     setActiveTab(tab);
     setIsMobileSidebarOpen(false);
+    if (tab !== 'chat') {
+      setSelectedClientForChat(null);
+    }
+    if (tab !== 'chat-vendeur') {
+      setSelectedSellerForChat(null);
+    }
   };
 
   const handleNotificationClick = (chatType: 'client' | 'seller', entityId: number | string) => {
@@ -479,7 +490,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             )}
 
             {activeTab === 'all-accounts' && (
-              <AllAccountsList />
+              <AllAccountsList onOpenChat={handleOpenChatWithClient} />
             )}
 
 
@@ -499,6 +510,12 @@ const Dashboard: React.FC<DashboardProps> = ({
                     supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
                     preselectedClientId={selectedClientForChat}
                     adminEmail={user?.email || 'admin@system'}
+                    clients={transferredLeads.map(lead => ({
+                      id: parseInt(lead.id as any),
+                      full_name: lead.prenom && lead.nom ? `${lead.prenom} ${lead.nom}` : (lead.prenom || lead.nom || ''),
+                      email: lead.email || '',
+                      vendeur: lead.sellerName || ''
+                    }))}
                   />
                 </div>
               </div>
@@ -514,14 +531,15 @@ const Dashboard: React.FC<DashboardProps> = ({
                     Espace de communication avec les vendeurs
                   </p>
                 </div>
-
-                <SellerChatViewer
-                  supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
-                  supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
-                  preselectedSellerId={selectedSellerForChat}
-                  adminEmail={user?.email || 'admin@system'}
-                  sellers={sellers}
-                />
+                <div className="flex flex-col h-[calc(100vh-300px)]">
+                  <SellerChatViewer
+                    supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
+                    supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
+                    preselectedSellerId={selectedSellerForChat}
+                    adminEmail={user?.email || 'admin@system'}
+                    sellers={sellers}
+                  />
+                </div>
               </div>
             )}
 

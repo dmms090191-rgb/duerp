@@ -81,9 +81,9 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
   onClientLogin,
 }) => {
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-900/90 via-blue-800/90 to-indigo-900/90 backdrop-blur-xl flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300">
-      <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/20 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
-        <div className="relative bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 px-3 sm:px-8 py-4 sm:py-6 overflow-hidden">
+    <div className="fixed inset-0 bg-gradient-to-br from-[#1a2847]/95 via-[#2d4578]/95 to-[#1a2847]/95 backdrop-blur-xl flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300">
+      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/10 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
+        <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-3 sm:px-8 py-4 sm:py-6 overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
           <div className="relative flex items-center justify-between">
             <h2 className="text-base sm:text-3xl font-extrabold text-white uppercase tracking-tight drop-shadow-lg">
@@ -98,14 +98,14 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
           </div>
         </div>
 
-        <div className="border-b-2 border-blue-200/50 overflow-x-auto bg-gradient-to-r from-blue-50/80 via-indigo-50/80 to-blue-50/80 backdrop-blur-sm">
+        <div className="border-b-2 border-white/10 overflow-x-auto bg-gradient-to-r from-[#1e3a5f]/80 via-[#2d4578]/80 to-[#1e3a5f]/80 backdrop-blur-sm">
           <div className="flex gap-1 sm:gap-2 px-3 sm:px-6 min-w-max">
             <button
               onClick={() => onTabChange('information')}
               className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'information'
-                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
-                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
+                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
               }`}
             >
               Information
@@ -114,8 +114,8 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
               onClick={() => onTabChange('liste-commentaire')}
               className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'liste-commentaire'
-                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
-                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
+                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
               }`}
             >
               Liste commentaire
@@ -124,8 +124,8 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
               onClick={() => onTabChange('mail')}
               className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'mail'
-                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
-                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
+                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
               }`}
             >
               Mail
@@ -134,88 +134,91 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
               onClick={() => onTabChange('panel-client')}
               className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
                 modalTab === 'panel-client'
-                  ? 'text-blue-700 bg-white shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-600 transform scale-105'
-                  : 'text-gray-600 hover:text-blue-700 hover:bg-white/50 rounded-t-lg'
+                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
               }`}
             >
               Panel client
             </button>
           </div>
+          <div className="px-3 sm:px-6 py-2 bg-[#1a2847]/60">
+            <p className="text-xs text-blue-200 font-medium">{client.prenom} {client.nom}</p>
+          </div>
         </div>
 
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gradient-to-b from-white/80 to-blue-50/40 backdrop-blur-xl">
+        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
           {/* Onglet Information */}
           {modalTab === 'information' && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
                 {/* Colonne Gauche */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Prénom :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Prénom :</label>
                     <input
                       type="text"
                       value={editedClient?.prenom || ''}
                       onChange={(e) => onFieldChange('prenom', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Téléphone :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Téléphone :</label>
                     <input
                       type="text"
                       value={editedClient?.phone || ''}
                       onChange={(e) => onFieldChange('phone', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Pays :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Pays :</label>
                     <input
                       type="text"
                       value={editedClient?.pays || 'France'}
                       onChange={(e) => onFieldChange('pays', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300 bg-white"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Adresse :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Adresse :</label>
                     <input
                       type="text"
                       value={editedClient?.address || ''}
                       onChange={(e) => onFieldChange('address', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Date de création :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Date de création :</label>
                     <input
                       type="text"
                       value={new Date(editedClient?.created_at).toLocaleString('fr-FR')}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold shadow-sm"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/70 text-white/70 rounded-xl font-semibold shadow-sm"
                       readOnly
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">E-mail :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">E-mail :</label>
                     <input
                       type="email"
                       value={editedClient?.email || ''}
                       onChange={(e) => onFieldChange('email', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Statut du client :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Statut du client :</label>
                     <select
                       value={editedClient?.status_id || ''}
                       onChange={(e) => onFieldChange('status_id', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 bg-white font-bold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-bold shadow-sm hover:border-white/30"
                     >
                       <option value="">Aucun statut</option>
                       {statuses.map((status) => (
@@ -227,22 +230,22 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Activité :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Activité :</label>
                     <input
                       type="text"
                       value={editedClient?.activite || ''}
                       onChange={(e) => onFieldChange('activite', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Rendez-vous :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Rendez-vous :</label>
                     <input
                       type="datetime-local"
                       value={editedClient?.rendez_vous ? new Date(editedClient.rendez_vous).toISOString().slice(0, 16) : ''}
                       onChange={(e) => onFieldChange('rendez_vous', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
                 </div>
@@ -250,94 +253,94 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 {/* Colonne Droite */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Nom :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Nom :</label>
                     <input
                       type="text"
                       value={editedClient?.nom || ''}
                       onChange={(e) => onFieldChange('nom', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-bold uppercase shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-bold uppercase shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Portable :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Portable :</label>
                     <input
                       type="text"
                       value={editedClient?.portable || ''}
                       onChange={(e) => onFieldChange('portable', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Ville :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Ville :</label>
                     <input
                       type="text"
                       value={editedClient?.ville || ''}
                       onChange={(e) => onFieldChange('ville', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Code postal :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Code postal :</label>
                     <input
                       type="text"
                       value={editedClient?.code_postal || ''}
                       onChange={(e) => onFieldChange('code_postal', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Date de naissance :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Date de naissance :</label>
                     <input
                       type="text"
                       value={editedClient?.anniversaire || ''}
                       onChange={(e) => onFieldChange('anniversaire', e.target.value)}
                       placeholder="jj/mm/aaaa"
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Autre Courriel :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Autre Courriel :</label>
                     <input
                       type="email"
                       value={editedClient?.autre_courriel || ''}
                       onChange={(e) => onFieldChange('autre_courriel', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">SIRET :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">SIRET :</label>
                     <input
                       type="text"
                       value={editedClient?.siret || ''}
                       onChange={(e) => onFieldChange('siret', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Société :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Société :</label>
                     <input
                       type="text"
                       value={editedClient?.company_name || ''}
                       onChange={(e) => onFieldChange('company_name', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Source :</label>
+                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Source :</label>
                     <input
                       type="text"
                       value={editedClient?.source || ''}
                       onChange={(e) => onFieldChange('source', e.target.value)}
                       placeholder="Source"
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300 bg-white"
+                      className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
                     />
                   </div>
                 </div>
@@ -348,13 +351,13 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 <button
                   onClick={onSave}
                   disabled={saving}
-                  className="w-full sm:w-auto px-8 py-4 text-sm bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed font-bold transform hover:scale-105 active:scale-95"
+                  className="w-full sm:w-auto px-8 py-4 text-sm bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white rounded-xl hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed font-bold transform hover:scale-105 active:scale-95 border border-blue-400/30"
                 >
                   {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
                 </button>
                 <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-8 py-4 text-sm bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 font-bold shadow-md hover:shadow-lg"
+                  className="w-full sm:w-auto px-8 py-4 text-sm bg-white/10 text-white border-2 border-white/20 rounded-xl hover:bg-white/20 hover:border-blue-400/50 transition-all duration-300 font-bold shadow-md hover:shadow-lg"
                 >
                   Annuler
                 </button>
@@ -364,26 +367,26 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
           {/* Onglet Liste commentaire */}
           {modalTab === 'liste-commentaire' && (
-            <div className="bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
-              <h3 className="text-base sm:text-2xl font-extrabold text-blue-900 mb-6">Liste des commentaires</h3>
+            <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6">Liste des commentaires</h3>
 
               {/* Formulaire d'ajout de commentaire */}
-              <div className="mb-6 bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-2xl border-2 border-blue-300 shadow-lg">
-                <label className="block text-xs font-bold text-blue-700 uppercase tracking-widest mb-3">
+              <div className="mb-6 bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 p-5 rounded-2xl border-2 border-white/10 shadow-lg">
+                <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-3">
                   Ajouter un commentaire
                 </label>
                 <textarea
                   value={newComment}
                   onChange={(e) => onCommentChange(e.target.value)}
                   placeholder="Écrivez votre commentaire ici..."
-                  className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 resize-none transition-all duration-300 font-semibold shadow-sm"
+                  className="w-full px-4 py-3 border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 resize-none transition-all duration-300 font-semibold shadow-sm placeholder:text-white/50"
                   rows={3}
                 />
                 <div className="flex justify-end mt-3">
                   <button
                     onClick={onAddComment}
                     disabled={!newComment.trim() || addingComment}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="px-6 py-3 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] text-white rounded-xl hover:from-[#3a5488] hover:to-[#2d4578] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
                   >
                     <MessageSquare className="w-4 h-4" />
                     {addingComment ? 'Ajout...' : 'Ajouter le commentaire'}
@@ -395,28 +398,28 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
               <div className="space-y-4">
                 {loadingComments ? (
                   <div className="text-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="text-sm text-gray-500 mt-2">Chargement des commentaires...</p>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
+                    <p className="text-sm text-blue-200 mt-2">Chargement des commentaires...</p>
                   </div>
                 ) : comments.length === 0 ? (
                   <div className="text-center py-8">
-                    <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">Aucun commentaire pour le moment</p>
-                    <p className="text-xs text-gray-400 mt-1">Ajoutez le premier commentaire ci-dessus</p>
+                    <MessageSquare className="w-12 h-12 text-white/30 mx-auto mb-2" />
+                    <p className="text-sm text-blue-200">Aucun commentaire pour le moment</p>
+                    <p className="text-xs text-blue-300/70 mt-1">Ajoutez le premier commentaire ci-dessus</p>
                   </div>
                 ) : (
                   comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3 sm:gap-4 pb-4 border-b-2 border-blue-200 last:border-b-0 group hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-300 rounded-xl p-4 shadow-sm hover:shadow-md">
+                    <div key={comment.id} className="flex gap-3 sm:gap-4 pb-4 border-b-2 border-white/10 last:border-b-0 group hover:bg-gradient-to-r hover:from-[#2d4578]/30 hover:to-[#1e3a5f]/30 transition-all duration-300 rounded-xl p-4 shadow-sm hover:shadow-md">
                       <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg ring-4 ring-blue-200/50">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#2d4578] to-[#1e3a5f] rounded-xl flex items-center justify-center shadow-lg ring-4 ring-blue-400/20">
                           <MessageSquare className="w-6 h-6 text-white" />
                         </div>
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="text-sm font-semibold text-gray-800">{comment.author_name}</p>
+                          <p className="text-sm font-semibold text-white">{comment.author_name}</p>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-blue-200">
                               {new Date(comment.created_at).toLocaleDateString('fr-FR', {
                                 day: '2-digit',
                                 month: '2-digit',
@@ -428,14 +431,14 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                             <button
                               onClick={() => onDeleteComment(comment.id)}
                               disabled={deletingCommentId === comment.id}
-                              className="p-1 hover:bg-red-100 rounded-full transition-colors group-hover:opacity-100 opacity-0 disabled:opacity-50"
+                              className="p-1 hover:bg-red-500/20 rounded-full transition-colors group-hover:opacity-100 opacity-0 disabled:opacity-50"
                               title="Supprimer le commentaire"
                             >
-                              <X className="w-4 h-4 text-red-600" />
+                              <X className="w-4 h-4 text-red-400" />
                             </button>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 whitespace-pre-wrap">{comment.comment_text}</p>
+                        <p className="text-sm text-blue-100 whitespace-pre-wrap">{comment.comment_text}</p>
                       </div>
                     </div>
                   ))
@@ -446,28 +449,28 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
           {/* Onglet Mail */}
           {modalTab === 'mail' && (
-            <div className="bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
-              <h3 className="text-base sm:text-2xl font-extrabold text-blue-900 mb-6">Envoi d'emails au client</h3>
+            <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6">Envoi d'emails au client</h3>
               <ClientEmailSender client={client} />
             </div>
           )}
 
           {/* Onglet Panel client */}
           {modalTab === 'panel-client' && (
-            <div className="bg-gradient-to-br from-white to-blue-50/30 p-4 sm:p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
-              <h3 className="text-base sm:text-2xl font-extrabold text-blue-900 mb-6 sm:mb-8">Gestion du compte client</h3>
+            <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6 sm:mb-8">Gestion du compte client</h3>
 
               <div className="space-y-4 sm:space-y-6">
                 {/* Identifiants de connexion */}
-                <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 border-3 border-blue-300 rounded-2xl p-4 sm:p-8 shadow-xl">
-                  <h4 className="font-extrabold text-blue-900 mb-6 text-base sm:text-xl flex items-center gap-3">
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-3 border-white/10 rounded-2xl p-4 sm:p-8 shadow-xl">
+                  <h4 className="font-extrabold text-white mb-6 text-base sm:text-xl flex items-center gap-3">
                     <LogIn className="w-6 h-6" />
                     Identifiants de connexion
                   </h4>
 
                   <div className="space-y-5">
-                    <div className="bg-white rounded-2xl p-4 sm:p-5 border-2 border-blue-200 shadow-md hover:shadow-lg transition-all duration-300">
-                      <label className="block text-xs font-bold text-blue-600 mb-3 uppercase tracking-widest">
+                    <div className="bg-[#1a2847]/50 rounded-2xl p-4 sm:p-5 border-2 border-white/20 shadow-md hover:shadow-lg transition-all duration-300">
+                      <label className="block text-xs font-bold text-blue-300 mb-3 uppercase tracking-widest">
                         Email
                       </label>
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -475,11 +478,11 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                           type="text"
                           value={editedClient?.email || ''}
                           readOnly
-                          className="flex-1 px-4 py-3 text-sm bg-blue-50/50 border-2 border-blue-200 rounded-xl font-mono font-bold shadow-sm"
+                          className="flex-1 px-4 py-3 text-sm bg-[#1a2847]/70 border-2 border-white/20 text-white rounded-xl font-mono font-bold shadow-sm"
                         />
                         <button
                           onClick={() => onCopyToClipboard(editedClient?.email || '', 'email')}
-                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                          className="px-6 py-3 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] text-white rounded-xl hover:from-[#3a5488] hover:to-[#2d4578] transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
                         >
                           {copiedEmail ? (
                             <>
@@ -496,8 +499,8 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="bg-white rounded-2xl p-4 sm:p-5 border-2 border-blue-200 shadow-md hover:shadow-lg transition-all duration-300">
-                      <label className="block text-xs font-bold text-blue-600 mb-3 uppercase tracking-widest">
+                    <div className="bg-[#1a2847]/50 rounded-2xl p-4 sm:p-5 border-2 border-white/20 shadow-md hover:shadow-lg transition-all duration-300">
+                      <label className="block text-xs font-bold text-blue-300 mb-3 uppercase tracking-widest">
                         Mot de passe
                       </label>
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -505,11 +508,11 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                           type="text"
                           value={editedClient?.client_password || ''}
                           readOnly
-                          className="flex-1 px-4 py-3 text-sm bg-blue-50/50 border-2 border-blue-200 rounded-xl font-mono font-bold shadow-sm"
+                          className="flex-1 px-4 py-3 text-sm bg-[#1a2847]/70 border-2 border-white/20 text-white rounded-xl font-mono font-bold shadow-sm"
                         />
                         <button
                           onClick={() => onCopyToClipboard(editedClient?.client_password || '', 'password')}
-                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                          className="px-6 py-3 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] text-white rounded-xl hover:from-[#3a5488] hover:to-[#2d4578] transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
                         >
                           {copiedPassword ? (
                             <>
@@ -530,12 +533,12 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
                 {/* Bouton de connexion au panel client */}
                 {onClientLogin && (
-                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-3 border-blue-300 rounded-2xl p-4 sm:p-8 shadow-xl">
-                    <h4 className="font-extrabold mb-3 text-blue-900 flex items-center gap-2 text-lg">
+                  <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-3 border-white/10 rounded-2xl p-4 sm:p-8 shadow-xl">
+                    <h4 className="font-extrabold mb-3 text-white flex items-center gap-2 text-lg">
                       <LogIn className="w-6 h-6" />
                       Accès au panel client
                     </h4>
-                    <p className="text-sm mb-6 text-blue-700 font-semibold">
+                    <p className="text-sm mb-6 text-blue-200 font-semibold">
                       Utilisez ce bouton pour vous connecter directement au panel client avec les identifiants de ce client.
                     </p>
                     <button
@@ -546,15 +549,15 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                       disabled={!editedClient?.siret || !editedClient?.client_password}
                       className={`w-full px-8 py-4 rounded-xl transition-all duration-300 font-extrabold flex items-center justify-center gap-3 shadow-xl transform ${
                         editedClient?.siret && editedClient?.client_password
-                          ? 'bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 hover:shadow-2xl hover:scale-105'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          ? 'bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] hover:shadow-2xl hover:scale-105 border border-blue-400/30'
+                          : 'bg-white/10 text-white/50 cursor-not-allowed border border-white/10'
                       }`}
                     >
                       <LogIn className="w-6 h-6" />
                       Se connecter au panel client
                     </button>
                     {(!editedClient?.siret || !editedClient?.client_password) && (
-                      <p className="text-xs text-red-600 mt-3 font-bold">
+                      <p className="text-xs text-red-400 mt-3 font-bold">
                         Le SIRET et le mot de passe doivent être définis pour se connecter.
                       </p>
                     )}
@@ -562,9 +565,9 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 )}
 
                 {/* Informations */}
-                <div className="bg-gradient-to-r from-blue-100 to-indigo-100 border-2 border-blue-300 rounded-xl p-5 shadow-md">
-                  <p className="text-sm text-blue-900 font-semibold">
-                    <strong className="font-extrabold">Note :</strong> Ces identifiants permettent au client de se connecter à son espace personnel.
+                <div className="bg-gradient-to-r from-[#2d4578]/30 to-[#1e3a5f]/30 border-2 border-white/10 rounded-xl p-5 shadow-md">
+                  <p className="text-sm text-blue-200 font-semibold">
+                    <strong className="font-extrabold text-white">Note :</strong> Ces identifiants permettent au client de se connecter à son espace personnel.
                   </p>
                 </div>
               </div>

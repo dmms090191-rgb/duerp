@@ -82,6 +82,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
   const [filterTelephone, setFilterTelephone] = React.useState('');
   const [filterSiret, setFilterSiret] = React.useState('');
   const [filterStatut, setFilterStatut] = React.useState('');
+  const [selectedClientForChat, setSelectedClientForChat] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     Object.keys(localStorage).forEach(key => {
@@ -110,6 +111,15 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
   const handleTabChange = (tab: typeof activeTab) => {
     setActiveTab(tab);
+    setIsMobileSidebarOpen(false);
+    if (tab !== 'chat') {
+      setSelectedClientForChat(null);
+    }
+  };
+
+  const handleOpenChatWithClient = (clientId: string) => {
+    setSelectedClientForChat(clientId);
+    setActiveTab('chat');
     setIsMobileSidebarOpen(false);
   };
 
@@ -804,7 +814,10 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                                       <Edit className="w-3.5 h-3.5" />
                                       Modifier
                                     </button>
-                                    <button className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95">
+                                    <button
+                                      onClick={() => handleOpenChatWithClient(client.id)}
+                                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-lg hover:from-emerald-700 hover:to-teal-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
+                                    >
                                       <MessageSquare className="w-3.5 h-3.5" />
                                       Chat
                                     </button>
@@ -877,13 +890,14 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                   sellerFullName={sellerData.full_name}
                   supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
                   supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
+                  preselectedClientId={selectedClientForChat}
                 />
               </div>
             )}
 
             {activeTab === 'chat-admin' && (
               <div>
-                <div className="mb-6 md:mb-8">
+                <div className="mb-6 md:mb-8 px-4 md:px-0">
                   <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
                     Chat Admin
                   </h1>
@@ -892,8 +906,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                   </p>
                 </div>
 
-                <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
-                  <div className="p-6 md:p-8">
+                <div className="bg-white rounded-none md:rounded-3xl shadow-2xl border-0 md:border border-gray-200 overflow-hidden">
+                  <div className="p-0 md:p-8">
                     <SellerWorkChat
                       sellerId={sellerData.id}
                       sellerFullName={sellerData.full_name}

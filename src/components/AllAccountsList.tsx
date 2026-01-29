@@ -21,7 +21,11 @@ interface Account {
   rendez_vous?: string;
 }
 
-const AllAccountsList: React.FC = () => {
+interface AllAccountsListProps {
+  onOpenChat?: (clientId: string | number) => void;
+}
+
+const AllAccountsList: React.FC<AllAccountsListProps> = ({ onOpenChat }) => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -356,7 +360,10 @@ const AllAccountsList: React.FC = () => {
                               <Edit className="w-3 h-3" />
                               Modifier
                             </button>
-                            <button className="inline-flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition-colors">
+                            <button
+                              onClick={() => onOpenChat?.(account.id)}
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition-colors"
+                            >
                               <MessageSquare className="w-3 h-3" />
                               Chat
                             </button>

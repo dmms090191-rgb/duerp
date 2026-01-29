@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, User, Send, Search, ShoppingBag, X, Trash2, Paperclip, FileText, Download } from 'lucide-react';
+import { MessageSquare, User, Send, Search, ShoppingBag, X, Trash2, Paperclip, FileText, Download, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Seller {
@@ -50,6 +50,10 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLTextAreaElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrollingRef = useRef(false);
+  const lastMessageCountRef = useRef(0);
+  const isFirstLoadRef = useRef(true);
 
   useEffect(() => {
     loadSellersWithDiscussions();
@@ -57,6 +61,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
 
   useEffect(() => {
     if (selectedSeller) {
+      isFirstLoadRef.current = true;
       loadMessages(selectedSeller.id);
       const interval = setInterval(() => {
         loadMessages(selectedSeller.id);
@@ -76,11 +81,35 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   }, [preselectedSellerId, sellers]);
 
   useEffect(() => {
-    // Scroll uniquement si l'utilisateur n'est pas en train de taper
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 200);
-    return () => clearTimeout(timer);
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
+      isUserScrollingRef.current = !isAtBottom;
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [selectedSeller]);
+
+  useEffect(() => {
+    const messageCountChanged = messages.length !== lastMessageCountRef.current;
+    const isNewMessage = messages.length > lastMessageCountRef.current;
+
+    const shouldScroll = isFirstLoadRef.current || (!isUserScrollingRef.current && isNewMessage);
+
+    if (shouldScroll && messages.length > 0) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+        isFirstLoadRef.current = false;
+      }, 100);
+      lastMessageCountRef.current = messages.length;
+      return () => clearTimeout(timer);
+    }
+
+    lastMessageCountRef.current = messages.length;
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -222,6 +251,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
       if (response.ok) {
         setNewMessage('');
         setSelectedFile(null);
+        isUserScrollingRef.current = false;
         loadMessages(selectedSeller.id);
 
         // Remettre le focus sur l'input pour garder le clavier ouvert sur mobile
@@ -361,18 +391,18 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
       <button
         key={seller.id}
         onClick={() => setSelectedSeller(seller)}
-        className={`w-full text-left p-4 rounded-lg border transition-all ${
+        className={`w-full text-left p-3 rounded-lg border transition-all ${
           selectedSeller?.id === seller.id
             ? 'border-blue-500 bg-blue-600/20'
             : 'border-slate-600 hover:border-blue-500 hover:bg-slate-700/50'
         }`}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-sky-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
             <ShoppingBag className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-white truncate">
+            <p className="text-sm font-semibold text-white truncate">
               {highlightText(fullName, searchQuery)}
             </p>
             <p className="text-xs text-slate-400 truncate">{seller.email}</p>
@@ -385,10 +415,10 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   let lastDate = '';
 
   return (
-    <div className="grid lg:grid-cols-4 gap-6">
-      <div className="lg:col-span-1 space-y-4">
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-6">
-          <div className="flex items-center gap-2 mb-4">
+    <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-4 lg:gap-6">
+      <div className={`lg:col-span-1 space-y-4 h-full ${selectedSeller ? 'hidden lg:block' : 'block'}`}>
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-4 lg:p-6 h-full flex flex-col">
+          <div className="flex items-center gap-2 mb-3 lg:mb-4">
             <MessageSquare className="w-5 h-5 text-green-400" />
             <h3 className="text-lg font-bold text-white">
               Conversations ({sellersWithDiscussions.length})
@@ -403,7 +433,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un vendeur..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
               {searchQuery && (
                 <button
@@ -416,7 +446,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
+          <div className="space-y-2 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
             {sellersWithDiscussions.length === 0 ? (
               <p className="text-sm text-slate-400 text-center py-4">
                 {searchQuery ? 'Aucun résultat' : 'Aucune discussion'}
@@ -428,11 +458,18 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         </div>
       </div>
 
-      <div className="lg:col-span-3">
+      <div className={`lg:col-span-3 flex flex-col h-full ${selectedSeller ? 'fixed inset-0 z-50 lg:static lg:z-auto' : 'hidden lg:flex'}`}>
         {selectedSeller ? (
-          <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-2xl shadow-xl overflow-hidden">
-            <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-blue-500 to-sky-600">
-              <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex flex-col h-full bg-white relative rounded-none lg:rounded-2xl shadow-xl overflow-hidden w-full">
+            <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-slate-700 to-slate-800 flex-shrink-0">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedSeller(null)}
+                  className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 active:scale-95"
+                  title="Retour à la liste"
+                >
+                  <ArrowLeft className="w-5 h-5 text-white" />
+                </button>
                 <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
                   <span className="text-lg sm:text-2xl font-bold text-white">
                     {selectedSeller.prenom.charAt(0).toUpperCase()}
@@ -442,31 +479,31 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                   <h3 className="text-base sm:text-lg font-bold text-white truncate">
                     {selectedSeller.prenom} {selectedSeller.nom}
                   </h3>
-                  <p className="text-blue-100 text-xs sm:text-sm truncate">{selectedSeller.email}</p>
+                  <p className="text-slate-200 text-xs sm:text-sm truncate">{selectedSeller.email}</p>
                 </div>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
+                  className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
                   title="Supprimer la conversation"
                 >
-                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                  <Trash2 className="w-5 h-5 text-white" />
                 </button>
               </div>
             </div>
 
             {showDeleteConfirm && (
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+                <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-5 sm:p-6 transform transition-all mx-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+                    <div className="flex items-center justify-center w-12 h-12 bg-red-100 rounded-full flex-shrink-0">
                       <Trash2 className="w-6 h-6 text-red-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900">Supprimer la conversation</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">Supprimer la conversation</h3>
                   </div>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-sm sm:text-base text-gray-600 mb-6">
                     Êtes-vous sûr de vouloir supprimer tous les messages de cette conversation ? Cette action est irréversible.
                   </p>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
                       className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all duration-200"
@@ -484,12 +521,12 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
               </div>
             )}
 
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30" style={{ maxHeight: '450px' }}>
+            <div ref={chatContainerRef} className="p-4 space-y-3 overflow-y-auto flex-1 bg-gradient-to-b from-blue-50/30 to-sky-50/30">
               {messages.length === 0 ? (
-                <div className="text-center text-gray-500 py-8 sm:py-12">
+                <div className="text-center text-gray-500 py-12">
                   <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-sm sm:text-base">Aucun message pour le moment</p>
-                  <p className="text-xs sm:text-sm mt-2">Commencez la conversation !</p>
+                  <p className="text-base">Aucun message pour le moment</p>
+                  <p className="text-sm mt-2">Commencez la conversation !</p>
                 </div>
               ) : (
                   messages.map((msg) => {
@@ -501,8 +538,8 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                     return (
                       <React.Fragment key={msg.id}>
                         {showDateSeparator && (
-                          <div className="flex items-center justify-center my-2 sm:my-3">
-                            <div className="bg-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-full">
+                          <div className="flex items-center justify-center my-3">
+                            <div className="bg-gray-200 text-gray-600 text-xs px-3 py-1.5 rounded-full font-medium">
                               {messageDate}
                             </div>
                           </div>
@@ -510,20 +547,20 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                         <div
                           className={`flex ${isAdminMessage ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div className="relative group inline-block max-w-[75%] sm:max-w-[70%] md:max-w-md">
+                          <div className="relative group inline-block max-w-[85%] sm:max-w-[75%] md:max-w-md">
                             <div
                               className={`${
                                 isAdminMessage
-                                  ? 'bg-gradient-to-r from-blue-500 to-sky-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                                  ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
                                   : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
-                              } px-3 py-2 sm:px-4 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
+                              } px-4 py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
                             >
                               {!isAdminMessage && (
                                 <p className="text-xs font-bold mb-1.5 text-blue-600">
                                   {msg.sender_name || 'Vendeur'}
                                 </p>
                               )}
-                              <p className="text-sm break-words leading-relaxed">{msg.message}</p>
+                              <p className="text-sm sm:text-base break-words leading-relaxed">{msg.message}</p>
 
                               {msg.attachment_url && (
                                 <div className="mt-2 pt-2 border-t border-white/20">
@@ -561,7 +598,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                             </div>
                             <button
                               onClick={() => deleteMessage(msg.id)}
-                              className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                              className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
                               title="Supprimer ce message"
                             >
                               <X className="w-4 h-4" />
@@ -575,12 +612,12 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+            <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
               {selectedFile && (
-                <div className="mb-2 flex items-center gap-2 p-2 sm:p-2.5 bg-blue-50 border border-blue-200 rounded-lg">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
+                <div className="mb-3 flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-medium text-blue-900 truncate">
+                    <p className="text-sm font-medium text-blue-900 truncate">
                       {selectedFile.name}
                     </p>
                     <p className="text-xs text-blue-600">
@@ -589,10 +626,10 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                   </div>
                   <button
                     onClick={removeSelectedFile}
-                    className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
+                    className="flex-shrink-0 w-6 h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
                     title="Retirer le fichier"
                   >
-                    <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               )}
@@ -609,10 +646,10 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={sending || uploading}
-                  className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex-shrink-0 w-11 h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                   title="Joindre un fichier"
                 >
-                  <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Paperclip className="w-5 h-5" />
                 </button>
                 <div className="flex-1">
                   <textarea
@@ -623,35 +660,35 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                     placeholder="Votre message..."
                     disabled={sending}
                     rows={1}
-                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
-                    style={{ minHeight: '42px', maxHeight: '100px' }}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm sm:text-base bg-gray-50 hover:bg-white transition-colors duration-200"
+                    style={{ minHeight: '44px', maxHeight: '120px' }}
                   />
                 </div>
                 <button
                   type="submit"
                   disabled={(!newMessage.trim() && !selectedFile) || sending}
-                  className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-blue-500 to-sky-600 text-white rounded-full font-bold hover:from-blue-600 hover:to-sky-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+                  className="flex-shrink-0 w-11 h-11 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-full font-bold hover:from-slate-800 hover:to-slate-900 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
                   title="Envoyer le message"
                 >
                   {uploading ? (
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Send className="w-5 h-5" />
                   )}
                 </button>
               </form>
             </div>
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 h-full flex items-center justify-center">
-            <div className="text-center p-12">
-              <div className="w-24 h-24 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-12 h-12 text-blue-400" />
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 flex items-center justify-center h-full">
+            <div className="text-center p-8 sm:p-12 max-w-md mx-auto">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-slate-600/20 to-slate-700/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 text-slate-400" />
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
                 Chat Vendeur
               </h3>
-              <p className="text-slate-300">
+              <p className="text-sm sm:text-base text-slate-300">
                 Sélectionnez un vendeur dans la liste pour démarrer ou continuer une conversation
               </p>
             </div>

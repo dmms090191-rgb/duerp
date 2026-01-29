@@ -28,6 +28,7 @@ interface AdminChatViewerProps {
   supabaseKey: string;
   preselectedClientId?: string | number | null;
   adminEmail: string;
+  clients: Client[];
 }
 
 const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
@@ -35,12 +36,12 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   supabaseKey,
   preselectedClientId,
   adminEmail,
+  clients,
 }) => {
-  const [clients, setClients] = useState<Client[]>([]);
+  console.log('🔄 AdminChatViewer rendu avec preselectedClientId:', preselectedClientId);
   const [clientsWithMessages, setClientsWithMessages] = useState<Set<number>>(new Set());
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,16 +53,16 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const previousMessagesLength = useRef(0);
 
   useEffect(() => {
     loadAdminInfo();
     loadClientsWithDiscussions();
-    loadClients();
 
-    // Rafraîchir la liste toutes les 5 secondes pour détecter les changements d'attribution
+    // Rafraîchir la liste toutes les 5 secondes pour détecter les nouveaux messages
     const interval = setInterval(() => {
       loadClientsWithDiscussions();
-      loadClients();
     }, 5000);
 
     return () => clearInterval(interval);
@@ -99,40 +100,52 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
     if (preselectedClientId && clients.length > 0) {
       const clientId = typeof preselectedClientId === 'string' ? parseInt(preselectedClientId, 10) : preselectedClientId;
       const client = clients.find(c => c.id === clientId);
+
+      console.log('🔍 Recherche client ID:', clientId, 'dans', clients.length, 'clients');
+      console.log('✅ Client trouvé:', client);
+
       if (client) {
         setSelectedClient(client);
+        setShowMobileChat(true);
       }
     }
   }, [preselectedClientId, clients]);
 
-  useEffect(() => {
-    // Scroll uniquement si l'utilisateur n'est pas en train de taper
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [messages]);
+  const isScrolledToBottom = () => {
+    if (!chatContainerRef.current) return true;
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    return scrollHeight - scrollTop - clientHeight < 100;
+  };
 
   useEffect(() => {
-    // Ne montrer que les clients qui ont des messages ET qui n'ont pas de vendeur ou sont assignés à cet admin
-    const allClients = clients.filter(client =>
-      clientsWithMessages.has(client.id) &&
-      (!client.vendeur || client.vendeur === '' || client.vendeur === 'Super Admin' || client.vendeur === adminFullName)
-    );
+    const handleScroll = () => {
+      if (chatContainerRef.current) {
+        setIsUserScrolling(!isScrolledToBottom());
+      }
+    };
 
-    console.log('🔍 Filtrage des clients - Nom admin:', adminFullName);
-    console.log('🔍 Clients avec messages:', Array.from(clientsWithMessages));
-    console.log('🔍 Clients filtrés pour admin:', allClients.map(c => ({ id: c.id, nom: c.full_name, vendeur: c.vendeur })));
+    const container = chatContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, [selectedClient]);
 
-    const filtered = allClients.filter(client => {
-      if (!searchQuery.trim()) return true;
-      const query = searchQuery.toLowerCase();
-      const fullName = client.full_name.toLowerCase();
-      const nameParts = fullName.split(' ');
-      return fullName.includes(query) ||
-             nameParts.some(part => part.startsWith(query));
-    });
+  useEffect(() => {
+    const hasNewMessages = messages.length > previousMessagesLength.current;
+    previousMessagesLength.current = messages.length;
 
+    if (!isUserScrolling || hasNewMessages) {
+      const timer = setTimeout(() => {
+        if (!isUserScrolling) {
+          scrollToBottom();
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [messages, isUserScrolling]);
+
+  useEffect(() => {
     // Si le client sélectionné a maintenant un vendeur assigné (n'est plus pour l'admin), le désélectionner
     if (selectedClient) {
       const currentClient = clients.find(c => c.id === selectedClient.id);
@@ -144,11 +157,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
         setSelectedClient(null);
       }
     }
-
-    if (searchQuery.trim() && filtered.length === 1) {
-      setSelectedClient(filtered[0]);
-    }
-  }, [searchQuery, clients, clientsWithMessages, adminFullName]);
+  }, [clients, adminFullName, selectedClient]);
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -190,30 +199,6 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
     }
   };
 
-  const loadClients = async () => {
-    try {
-      const response = await fetch(
-        `${supabaseUrl}/rest/v1/clients?select=id,full_name,email,vendeur&order=created_at.desc`,
-        {
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log('👥 Tous les clients:', data);
-        setClients(data);
-      }
-    } catch (error) {
-      console.error('Error loading clients:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const loadMessages = async (clientId: number) => {
     try {
@@ -428,13 +413,6 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
 
   if (clients.length === 0) {
     return (
@@ -457,7 +435,12 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   let lastDate = '';
 
   const clientsWithDiscussions = clients
-    .filter(client => clientsWithMessages.has(client.id))
+    .filter(client => {
+      const hasMessages = clientsWithMessages.has(client.id);
+      const isPreselected = preselectedClientId &&
+        (typeof preselectedClientId === 'string' ? parseInt(preselectedClientId, 10) : preselectedClientId) === client.id;
+      return hasMessages || isPreselected;
+    })
     .filter(client => !client.vendeur || client.vendeur.trim() === '' || client.vendeur === 'Super Admin' || client.vendeur === adminFullName)
     .filter(client => {
       if (!searchQuery.trim()) return true;
@@ -504,10 +487,12 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm lg:text-base font-semibold text-white truncate">
-              {highlightText(client.full_name, searchQuery)}
+              {client.full_name && client.full_name.trim()
+                ? highlightText(client.full_name, searchQuery)
+                : highlightText(client.email, searchQuery)}
             </p>
             <p className="text-xs text-slate-400 truncate">
-              {client.vendeur ? `Vendeur: ${client.vendeur}` : 'Sans vendeur'}
+              {client.full_name && client.full_name.trim() ? client.email : 'Client'}
             </p>
           </div>
         </div>

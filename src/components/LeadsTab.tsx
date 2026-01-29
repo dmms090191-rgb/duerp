@@ -567,26 +567,73 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
     if (!onOpenChat) return;
 
     try {
+      console.log('🔍 Recherche du client pour le lead:', lead.email);
+
       const { data: client, error } = await supabase
         .from('clients')
-        .select('id')
+        .select('id, email, full_name')
         .eq('email', lead.email)
         .maybeSingle();
 
       if (error) {
-        console.error('Error finding client:', error);
+        console.error('❌ Erreur lors de la recherche du client:', error);
         alert('Erreur lors de la recherche du client');
         return;
       }
 
       if (!client) {
-        alert('Aucun compte client trouvé pour ce lead. Veuillez d\'abord créer un accès client.');
+        console.log('⚠️ Aucun compte client trouvé pour:', lead.email);
+
+        const createAccount = window.confirm(
+          `Le lead "${lead.nom} ${lead.prenom}" n'a pas encore de compte client.\n\n` +
+          `Voulez-vous créer un compte client maintenant pour pouvoir chatter ?\n\n` +
+          `Un compte sera créé avec l'email: ${lead.email}`
+        );
+
+        if (!createAccount) return;
+
+        try {
+          console.log('🔨 Création du compte client...');
+          const { data: newClient, error: createError } = await supabase
+            .from('clients')
+            .insert({
+              email: lead.email,
+              full_name: `${lead.nom} ${lead.prenom}`,
+              nom: lead.nom,
+              prenom: lead.prenom,
+              telephone: lead.telephone || '',
+              client_password: lead.client_password || Math.floor(100000 + Math.random() * 900000).toString(),
+              created_at: new Date().toISOString()
+            })
+            .select('id')
+            .single();
+
+          if (createError) {
+            console.error('❌ Erreur lors de la création du compte client:', createError);
+            alert(`Erreur lors de la création du compte client: ${createError.message}`);
+            return;
+          }
+
+          if (!newClient) {
+            console.error('❌ Aucune donnée retournée lors de la création du client');
+            alert('Erreur: Aucune donnée retournée lors de la création du compte');
+            return;
+          }
+
+          console.log('✅ Compte client créé avec succès:', newClient);
+          alert('Compte client créé avec succès ! Ouverture du chat...');
+          onOpenChat(newClient.id);
+        } catch (createErr) {
+          console.error('❌ Exception lors de la création du compte:', createErr);
+          alert('Erreur lors de la création du compte client');
+        }
         return;
       }
 
+      console.log('✅ Client trouvé:', client);
       onOpenChat(client.id);
     } catch (error) {
-      console.error('Error opening chat:', error);
+      console.error('❌ Erreur lors de l\'ouverture du chat:', error);
       alert('Erreur lors de l\'ouverture du chat');
     }
   };
@@ -1076,7 +1123,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                         <div className="text-xs text-gray-700">{lead.dateCreation}</div>
                       </td>
                       <td className="py-2 px-3">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <button
                             onClick={() => handleOpenEditModal(lead)}
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white text-xs font-bold rounded-lg hover:from-slate-900 hover:via-slate-800 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
@@ -1117,7 +1164,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
           <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border-2 border-slate-300">
             <div className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between shadow-xl">
               <h2 className="text-lg sm:text-2xl font-extrabold text-white uppercase tracking-wide">
-                {selectedLeadDetails.status?.name || 'CONDUIT'}
+                {selectedLeadDetails.prenom} {selectedLeadDetails.nom}
               </h2>
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
@@ -1183,6 +1230,9 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 >
                   Panel client
                 </button>
+              </div>
+              <div className="px-3 sm:px-6 py-2 bg-white/60">
+                <p className="text-xs text-gray-600 font-medium">{selectedLeadDetails?.prenom} {selectedLeadDetails?.nom}</p>
               </div>
             </div>
 
