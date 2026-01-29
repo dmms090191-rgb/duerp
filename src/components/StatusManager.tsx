@@ -83,9 +83,9 @@ const StatusManager: React.FC = () => {
               <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center ring-4 ring-white/30">
                 <Tag className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-3xl font-extrabold">Liste des Statuts</h2>
+              <h2 className="text-3xl font-extrabold text-white drop-shadow-lg">Liste des Statuts</h2>
             </div>
-            <p className="text-blue-100 font-semibold ml-[72px]">Gérez les statuts pour vos leads et clients</p>
+            <p className="text-blue-200 font-medium ml-[72px]">Gérez les statuts pour vos leads et clients</p>
           </div>
           <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 border-2 border-white/30 shadow-xl">
             <div className="text-4xl font-extrabold">{statuses.length}</div>

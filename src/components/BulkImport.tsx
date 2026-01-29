@@ -425,8 +425,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Import de masse</h1>
-                <p className="text-sm md:text-base text-gray-600">Importez vos leads depuis un fichier CSV</p>
+                <h1 className="text-xl md:text-2xl font-bold text-white drop-shadow-lg">Import de masse</h1>
+                <p className="text-sm md:text-base text-blue-200 font-medium">Importez vos leads depuis un fichier CSV</p>
               </div>
             </div>
           </div>

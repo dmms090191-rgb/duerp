@@ -140,10 +140,10 @@ const AllAccountsList: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-white drop-shadow-lg mb-2">
           {filterType === 'client' ? 'Clients' : 'Tous les comptes'}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-blue-200 font-medium">
           {filterType === 'client'
             ? 'Liste complète de tous les clients'
             : 'Liste complète de tous les utilisateurs du système'}

@@ -413,7 +413,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
           <div className="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/95 via-[#2d4578]/95 to-[#1e3a5f]/95 backdrop-blur-2xl shadow-2xl border-r border-white/10"></div>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.08)_0%,transparent_50%)]"></div>
 
-          <div className="relative flex-1 overflow-y-auto px-4 md:px-5 py-6 md:py-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          <div className="relative flex-1 overflow-y-auto px-4 md:px-5 py-6 md:py-8 scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
             <div className="lg:hidden flex justify-between items-center mb-6 pb-4 border-b border-white/10">
               <h2 className="text-lg font-bold text-white">Menu</h2>
               <button
@@ -601,7 +601,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                       </div>
                     </div>
 
-                    <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-white/10">
+                    <div className="overflow-x-auto w-full scrollbar-thin scrollbar-thumb-slate-500/50 scrollbar-track-white/10 hover:scrollbar-thumb-slate-400/60">
                       <table className="w-full table-auto min-w-max">
                         <thead>
                           <tr className="border-b border-white/20">

@@ -137,7 +137,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100/50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a2847] via-[#2d4578] to-[#1a2847] relative overflow-hidden flex">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.08)_0%,transparent_70%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]"></div>
+
       {/* Mobile Sidebar Overlay */}
       {isMobileSidebarOpen && (
         <div
@@ -148,17 +151,27 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Sidebar Navigation */}
       <aside className={`
-        w-72 flex-shrink-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
-        lg:static lg:block
-        fixed top-0 left-0 h-screen z-50
-        transition-transform duration-300 ease-in-out
+        fixed left-0 top-0 bottom-0 w-64 md:w-72 flex flex-col
+        transition-transform duration-300 z-50
         ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        shadow-2xl
       `}>
-        <div className="flex flex-col h-full p-6">
-          {/* Logo Section */}
-          <div className="mb-8 flex items-center justify-center">
-            <div className="bg-white rounded-2xl p-3 shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1e3a5f]/95 via-[#2d4578]/95 to-[#1e3a5f]/95 backdrop-blur-2xl shadow-2xl border-r border-white/10"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(96,165,250,0.08)_0%,transparent_50%)]"></div>
+
+        <div className="relative flex-1 overflow-y-auto px-4 md:px-5 py-6 md:py-8 scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
+          <div className="lg:hidden flex justify-between items-center mb-6 pb-4 border-b border-white/10">
+            <h2 className="text-lg font-bold text-white">Menu</h2>
+            <button
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="p-2 text-white/60 hover:text-white rounded-lg hover:bg-white/10 transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Logo Section Desktop */}
+          <div className="hidden lg:flex mb-6 items-center justify-center">
+            <div className="bg-white rounded-xl p-2 shadow-lg">
               <img
                 src="/kk copy.png"
                 alt="Cabinet FPE"
@@ -167,203 +180,240 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          {/* Top Icons */}
-          <div className="flex items-center justify-end gap-3 mb-6">
-            <button className="p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200">
-              <Bell className="w-5 h-5" />
-            </button>
+          {/* Logo Section Mobile */}
+          <div className="mb-6 flex items-center justify-center lg:hidden">
+            <div className="bg-white rounded-xl p-2 shadow-lg">
+              <img
+                src="/kk copy.png"
+                alt="Cabinet FPE"
+                className="h-12 w-auto"
+              />
+            </div>
+          </div>
+
+          {/* Profile Section */}
+          <div className="mb-8 p-4 md:p-5 bg-gradient-to-br from-blue-500/20 via-blue-600/15 to-purple-500/20 rounded-2xl border border-white/20 shadow-xl backdrop-blur-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#3a5488] to-[#2d4578] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <Shield className="w-6 h-6 md:w-7 md:h-7 text-white" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-base md:text-lg font-bold text-white truncate">
+                  {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
+                </h2>
+                <p className="text-xs md:text-sm text-blue-200 font-medium">
+                  Espace administrateur
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Menu Navigation */}
-          <nav className="space-y-2 flex-1 overflow-y-auto">
+          <nav className="space-y-2 md:space-y-2.5">
             <button
               onClick={() => handleTabChange('bulk-import')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'bulk-import'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Upload className="w-5 h-5" />
-              <span className="text-left">Import de masse</span>
+              <Upload className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Import de masse</span>
             </button>
             <button
               onClick={() => handleTabChange('leads-tab')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'leads-tab'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Users className="w-5 h-5" />
-              <span className="text-left">Clients</span>
+              <Users className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Clients</span>
             </button>
             <button
               onClick={() => handleTabChange('leads')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'leads'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Users className="w-5 h-5" />
-              <span className="text-left">Gestionnaire de leads</span>
+              <Users className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Gestionnaire de leads</span>
             </button>
             <button
               onClick={() => handleTabChange('sellers')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'sellers'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <ShoppingBag className="w-5 h-5" />
-              <span className="text-left">Gestionnaire vendeur</span>
+              <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Gestionnaire vendeur</span>
             </button>
             <button
               onClick={() => handleTabChange('admins')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'admins'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Shield className="w-5 h-5" />
-              <span className="text-left">Info Admin</span>
+              <Shield className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Info Admin</span>
             </button>
             <button
               onClick={() => handleTabChange('users-monitor')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'users-monitor'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Monitor className="w-5 h-5" />
-              <span className="text-left">Suivi connexions</span>
+              <Monitor className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Suivi connexions</span>
             </button>
             <button
               onClick={() => handleTabChange('all-accounts')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'all-accounts'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Users className="w-5 h-5" />
-              <span className="text-left">Tous les comptes</span>
+              <Users className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Tous les comptes</span>
             </button>
             <button
               onClick={() => handleTabChange('chat')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'chat'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <MessageSquare className="w-5 h-5" />
-              <span className="text-left">Messagerie</span>
+              <MessageSquare className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Messagerie</span>
             </button>
             <button
               onClick={() => handleTabChange('chat-vendeur')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'chat-vendeur'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <ShoppingBag className="w-5 h-5" />
-              <span className="text-left">Chat Vendeur</span>
+              <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Chat Vendeur</span>
             </button>
             <button
               onClick={() => handleTabChange('statuses')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'statuses'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Tag className="w-5 h-5" />
-              <span className="text-left">Statuts</span>
+              <Tag className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Statuts</span>
             </button>
             <button
               onClick={() => handleTabChange('argumentaire')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'argumentaire'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <FileText className="w-5 h-5" />
-              <span className="text-left">Argumentaire</span>
+              <FileText className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Argumentaire</span>
             </button>
             <button
               onClick={() => handleTabChange('email-config')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'email-config'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <Settings className="w-5 h-5" />
-              <span className="text-left">Config Emails</span>
+              <Settings className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Config Emails</span>
             </button>
             <button
               onClick={() => handleTabChange('signature')}
-              className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === 'signature'
-                  ? 'bg-white text-slate-900 shadow-lg'
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
               }`}
             >
-              <FileSignature className="w-5 h-5" />
-              <span className="text-left">Signature Email</span>
+              <FileSignature className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Signature Email</span>
             </button>
           </nav>
+        </div>
 
-          {/* Logout Button at Bottom */}
-          <div className="mt-auto pt-6 space-y-3">
-            <button
-              onClick={onLogout}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Déconnexion</span>
-            </button>
-          </div>
+        {/* Logout Button at Bottom */}
+        <div className="relative px-4 md:px-5 py-6 md:py-8 border-t border-white/10 bg-gradient-to-b from-transparent to-black/20">
+          <button
+            onClick={onLogout}
+            className="w-full flex items-center justify-center gap-3 px-4 md:px-5 py-3.5 md:py-4 bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 rounded-2xl transition-all duration-300 font-bold shadow-lg hover:shadow-2xl transform hover:scale-105 text-xs md:text-sm border border-red-400/50"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Déconnexion</span>
+          </button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-x-hidden bg-gradient-to-br from-gray-50 to-gray-100/50">
+      <div className="flex-1 lg:ml-64 xl:ml-72 min-h-screen relative">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-            >
-              {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-          <div className="flex items-center gap-4">
-            <NotificationSystem
-              adminEmail={user?.email || ''}
-              onNotificationClick={handleNotificationClick}
-            />
-            <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 rounded-xl">
-              <div className="w-8 h-8 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center">
-                <UserIcon className="w-4 h-4 text-white" />
+        <header className="fixed top-0 left-0 lg:left-64 xl:left-72 right-0 z-30 overflow-visible border-b border-white/5">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#1a2847]/98 via-[#2d4578]/98 to-[#1a2847]/98"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(96,165,250,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 backdrop-blur-2xl"></div>
+
+          <div className="relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div className="relative flex items-center h-20 md:h-24">
+              <div className="flex-1 flex items-center gap-3 md:gap-4">
+                <button
+                  onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                  className="lg:hidden p-2.5 md:p-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+                >
+                  {isMobileSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
               </div>
-              <span className="text-sm font-medium text-gray-800">
-                {user?.prenom && user?.nom ? `${user.prenom} ${user.nom}` : user?.email.split('@')[0]}
-              </span>
+
+              <div className="absolute top-3 md:top-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center lg:hidden">
+                <div className="bg-white rounded-lg md:rounded-xl shadow-2xl p-1.5 md:p-2 border-2 border-white/50 backdrop-blur-xl hover:scale-105 transition-transform duration-300">
+                  <img
+                    src="/kk copy.png"
+                    alt="Cabinet FPE"
+                    className="h-10 md:h-12 w-auto"
+                  />
+                </div>
+              </div>
+
+              <div className="flex-1 flex flex-col md:flex-row items-end md:items-center justify-end gap-2 md:gap-3">
+                <NotificationSystem
+                  adminEmail={user?.email || ''}
+                  onNotificationClick={handleNotificationClick}
+                />
+              </div>
             </div>
           </div>
+
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"></div>
         </header>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="pt-24 md:pt-28 pb-8 md:pb-16">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-blue-500/5 to-white/5 backdrop-blur-sm"></div>
+            <div className="relative p-6 md:p-8 lg:p-10">
             {activeTab === 'bulk-import' && (
               <BulkImport
                 leads={bulkLeads}
@@ -481,6 +531,8 @@ const Dashboard: React.FC<DashboardProps> = ({
             {activeTab === 'signature' && (
               <EmailSignatureEditor />
             )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

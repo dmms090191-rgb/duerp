@@ -306,47 +306,49 @@ const Argumentaire: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100 -m-6 p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl blur-lg opacity-50"></div>
-              <div className="relative w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl flex items-center justify-center shadow-xl">
-                <FileText className="w-8 h-8 text-white" />
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl blur-lg opacity-50"></div>
+                <div className="relative w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl flex items-center justify-center shadow-xl">
+                  <FileText className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 drop-shadow-sm">
+                  Argumentaire
+                </h2>
+                <p className="text-sm md:text-base text-gray-700 font-medium mt-1">
+                  {viewMode === 'document' ? 'Créez et gérez vos documents commerciaux' : 'Organisez vos arguments de vente'}
+                </p>
               </div>
             </div>
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-900 bg-clip-text text-transparent">
-                Argumentaire de Vente
-              </h2>
-              <p className="text-sm md:text-base text-gray-600 mt-1">
-                {viewMode === 'document' ? 'Créez et gérez vos documents commerciaux' : 'Organisez vos arguments de vente'}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex bg-white rounded-xl p-1.5 shadow-lg border border-gray-200">
-              <button
-                onClick={() => setViewMode('document')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-                  viewMode === 'document'
-                    ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md scale-105'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                <File className="w-4 h-4" />
-                Document
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-                  viewMode === 'list'
-                    ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md scale-105'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-              >
-                <List className="w-4 h-4" />
-                Liste
-              </button>
+            <div className="flex items-center gap-3">
+              <div className="flex bg-white rounded-xl p-1.5 shadow-lg border border-gray-200">
+                <button
+                  onClick={() => setViewMode('document')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                    viewMode === 'document'
+                      ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md scale-105'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <File className="w-4 h-4" />
+                  Document
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
+                    viewMode === 'list'
+                      ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md scale-105'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                  Liste
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -355,14 +357,14 @@ const Argumentaire: React.FC = () => {
         showDocumentList ? (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-6">
-              <div className="flex justify-between items-center">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900">Mes Documents</h3>
                   <p className="text-sm text-gray-500 mt-1">{documents.length} document{documents.length > 1 ? 's' : ''} au total</p>
                 </div>
                 <button
                   onClick={createNewDocument}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold whitespace-nowrap"
                 >
                   <Plus className="w-5 h-5" />
                   Nouveau document
@@ -371,22 +373,22 @@ const Argumentaire: React.FC = () => {
             </div>
 
             {documents.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-xl border border-gray-200 text-center py-20">
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-200 text-center py-12 sm:py-20 px-4">
                 <div className="relative inline-block mb-6">
                   <div className="absolute inset-0 bg-blue-500 rounded-full blur-2xl opacity-20"></div>
-                  <div className="relative w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto">
-                    <FileText className="w-12 h-12 text-blue-600" />
+                  <div className="relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto">
+                    <FileText className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Aucun document</h3>
-                <p className="text-gray-500 mb-8 max-w-md mx-auto">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Aucun document</h3>
+                <p className="text-sm sm:text-base text-gray-500 mb-8 max-w-md mx-auto px-4">
                   Créez votre premier document argumentaire pour organiser vos stratégies de vente
                 </p>
                 <button
                   onClick={createNewDocument}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-lg"
+                  className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-base sm:text-lg"
                 >
-                  <Plus className="w-6 h-6" />
+                  <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
                   Créer mon premier document
                 </button>
               </div>
@@ -422,14 +424,14 @@ const Argumentaire: React.FC = () => {
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-gray-200">
                         <span className="text-xs text-gray-500 font-medium">
                           {doc.contenu.split('\n').filter(p => p.trim()).length} paragraphes
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                           <button
                             onClick={() => openDocument(doc)}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-semibold"
+                            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-semibold"
                           >
                             <Edit className="w-4 h-4" />
                             Éditer
@@ -454,7 +456,7 @@ const Argumentaire: React.FC = () => {
         ) : (
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <button
                   onClick={() => setShowDocumentList(true)}
                   className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-xl transition-all hover:scale-105 font-medium"
@@ -474,74 +476,74 @@ const Argumentaire: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-slate-700 to-slate-800 p-6">
+              <div className="bg-gradient-to-r from-slate-700 to-slate-800 p-4 sm:p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                    <Type className="w-5 h-5 text-white" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Type className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <h3 className="text-white font-semibold text-lg">Titre du document</h3>
+                  <h3 className="text-white font-semibold text-base sm:text-lg">Titre du document</h3>
                 </div>
                 <input
                   type="text"
                   placeholder="Entrez un titre accrocheur..."
                   value={documentTitle}
                   onChange={(e) => setDocumentTitle(e.target.value)}
-                  className="w-full px-6 py-4 text-2xl md:text-3xl font-bold border-2 border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent bg-white/10 text-white placeholder-white/60 backdrop-blur-sm"
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 text-xl sm:text-2xl md:text-3xl font-bold border-2 border-white/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent bg-white/10 text-white placeholder-white/60 backdrop-blur-sm"
                 />
               </div>
 
-              <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
-                <div className="flex items-center gap-4">
+              <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 overflow-x-auto">
+                <div className="flex items-center gap-2 sm:gap-4 min-w-max">
                   <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm">
                     <button
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Gras"
                       onClick={() => document.execCommand('bold', false)}
                     >
-                      <Bold className="w-4 h-4 text-gray-700" />
+                      <Bold className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                     </button>
                     <button
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Italique"
                       onClick={() => document.execCommand('italic', false)}
                     >
-                      <Italic className="w-4 h-4 text-gray-700" />
+                      <Italic className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                     </button>
                     <button
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Souligné"
                       onClick={() => document.execCommand('underline', false)}
                     >
-                      <Underline className="w-4 h-4 text-gray-700" />
+                      <Underline className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                     </button>
                   </div>
                   <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm">
                     <button
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Aligner à gauche"
                       onClick={() => document.execCommand('justifyLeft', false)}
                     >
-                      <AlignLeft className="w-4 h-4 text-gray-700" />
+                      <AlignLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                     </button>
                     <button
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Centrer"
                       onClick={() => document.execCommand('justifyCenter', false)}
                     >
-                      <AlignCenter className="w-4 h-4 text-gray-700" />
+                      <AlignCenter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                     </button>
                     <button
-                      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Aligner à droite"
                       onClick={() => document.execCommand('justifyRight', false)}
                     >
-                      <AlignRight className="w-4 h-4 text-gray-700" />
+                      <AlignRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-700" />
                     </button>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white p-8 md:p-12" style={{ minHeight: '600px' }}>
+              <div className="bg-white p-4 sm:p-8 md:p-12" style={{ minHeight: '600px' }}>
                 <textarea
                   placeholder="✨ Commencez à écrire votre argumentaire ici...
 
@@ -556,12 +558,11 @@ const Argumentaire: React.FC = () => {
 💡 Conseil : Soyez clair, concis et convaincant. Votre équipe s'appuiera sur ce document pour réussir ses ventes."
                   value={documentContent}
                   onChange={(e) => setDocumentContent(e.target.value)}
-                  className="w-full h-full border-none focus:outline-none resize-none text-base text-gray-800"
+                  className="w-full h-full border-none focus:outline-none resize-none text-sm sm:text-base text-gray-800"
                   style={{
-                    minHeight: '500px',
+                    minHeight: '400px',
                     fontFamily: 'Georgia, serif',
-                    lineHeight: '1.9',
-                    fontSize: '17px'
+                    lineHeight: '1.9'
                   }}
                 />
               </div>
@@ -571,7 +572,7 @@ const Argumentaire: React.FC = () => {
               <button
                 onClick={saveDocument}
                 disabled={isSavingDocument}
-                className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-bold text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 <Save className="w-5 h-5" />
                 {isSavingDocument ? 'Enregistrement...' : 'Enregistrer le document'}
@@ -584,7 +585,7 @@ const Argumentaire: React.FC = () => {
           <div className="mb-4">
             <button
               onClick={() => setAddingNew(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
             >
               <Plus className="w-4 h-4" />
               Nouvel argument

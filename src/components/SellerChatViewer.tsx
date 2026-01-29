@@ -346,7 +346,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
       <>
         {parts.map((part, index) =>
           regex.test(part) ? (
-            <mark key={index} className="bg-yellow-200 px-1 rounded">
+            <mark key={index} className="bg-yellow-400/30 px-1 rounded">
               {part}
             </mark>
           ) : (
@@ -365,8 +365,8 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         onClick={() => setSelectedSeller(seller)}
         className={`w-full text-left p-4 rounded-lg border transition-all ${
           selectedSeller?.id === seller.id
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+            ? 'border-blue-500 bg-blue-600/20'
+            : 'border-slate-600 hover:border-blue-500 hover:bg-slate-700/50'
         }`}
       >
         <div className="flex items-center gap-3">
@@ -374,10 +374,10 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             <ShoppingBag className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-gray-900 truncate">
+            <p className="font-semibold text-white truncate">
               {highlightText(fullName, searchQuery)}
             </p>
-            <p className="text-xs text-gray-500 truncate">{seller.email}</p>
+            <p className="text-xs text-slate-400 truncate">{seller.email}</p>
           </div>
         </div>
       </button>
@@ -389,28 +389,28 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   return (
     <div className="grid lg:grid-cols-4 gap-6">
       <div className="lg:col-span-1 space-y-4">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <MessageSquare className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-bold text-gray-900">
+            <MessageSquare className="w-5 h-5 text-green-400" />
+            <h3 className="text-lg font-bold text-white">
               Avec discussions ({sellersWithDiscussions.length})
             </h3>
           </div>
 
           <div className="mb-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un vendeur..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -418,9 +418,9 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+          <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
             {sellersWithDiscussions.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">
+              <p className="text-sm text-slate-400 text-center py-4">
                 {searchQuery ? 'Aucun résultat' : 'Aucune discussion'}
               </p>
             ) : (
@@ -429,16 +429,16 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-6">
           <div className="flex items-center gap-2 mb-4">
-            <ShoppingBag className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-bold text-gray-900">
+            <ShoppingBag className="w-5 h-5 text-slate-400" />
+            <h3 className="text-lg font-bold text-white">
               Sans discussion ({sellersWithoutDiscussions.length})
             </h3>
           </div>
-          <div className="space-y-3 max-h-[400px] overflow-y-auto">
+          <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
             {sellersWithoutDiscussions.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">Tous les vendeurs ont des discussions</p>
+              <p className="text-sm text-slate-400 text-center py-4">Tous les vendeurs ont des discussions</p>
             ) : (
               sellersWithoutDiscussions.map((seller) => <SellerCard key={seller.id} seller={seller} />)
             )}
@@ -661,15 +661,15 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg h-full flex items-center justify-center">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 h-full flex items-center justify-center">
             <div className="text-center p-12">
-              <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-sky-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-12 h-12 text-blue-600" />
+              <div className="w-24 h-24 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <MessageSquare className="w-12 h-12 text-blue-400" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-2xl font-bold text-white mb-4">
                 Chat Vendeur
               </h3>
-              <p className="text-gray-600">
+              <p className="text-slate-300">
                 Sélectionnez un vendeur dans la liste pour démarrer ou continuer une conversation
               </p>
             </div>

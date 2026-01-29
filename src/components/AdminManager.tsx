@@ -193,9 +193,9 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
             <div className="w-14 h-14 bg-gradient-to-br from-slate-800 via-slate-800 to-slate-900 rounded-2xl flex items-center justify-center shadow-xl ring-4 ring-slate-300/50">
               <Shield className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-slate-800 via-slate-800 to-slate-900 bg-clip-text text-transparent">Info Admin</h1>
+            <h1 className="text-4xl font-extrabold text-white drop-shadow-lg">Info Admin</h1>
           </div>
-          <p className="text-slate-700 font-semibold ml-[72px]">Gérez vos informations de connexion</p>
+          <p className="text-blue-200 font-medium ml-[72px]">Gérez vos informations de connexion</p>
         </div>
 
         <div className="bg-gradient-to-br from-white via-slate-50/30 to-slate-100/20 rounded-3xl shadow-2xl border-2 border-slate-300 p-8 backdrop-blur-xl">

@@ -441,10 +441,10 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
               <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
                 <Users className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <h1 className="text-xl md:text-3xl font-bold text-gray-900">Gestionnaire de leads</h1>
+              <h1 className="text-xl md:text-3xl font-bold text-white drop-shadow-lg">Gestionnaire de leads</h1>
               <span className="px-2 py-1 md:px-3 md:py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">v2.1</span>
             </div>
-            <p className="text-sm md:text-base text-gray-600">Gérez vos prospects et suivez vos opportunités commerciales</p>
+            <p className="text-sm md:text-base text-blue-200 font-medium">Gérez vos prospects et suivez vos opportunités commerciales</p>
           </div>
 
           {/* Bulk Import */}

@@ -438,15 +438,15 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
 
   if (clients.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
+      <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-12">
         <div className="text-center">
-          <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <MessageSquare className="w-12 h-12 text-blue-600" />
+          <div className="w-24 h-24 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <MessageSquare className="w-12 h-12 text-blue-400" />
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+          <h3 className="text-2xl font-bold text-white mb-4">
             Aucune conversation
           </h3>
-          <p className="text-gray-600">
+          <p className="text-slate-300">
             Les conversations entre clients et sellers apparaîtront ici
           </p>
         </div>
@@ -480,7 +480,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
         <>
           {parts.map((part, index) =>
             regex.test(part) ? (
-              <mark key={index} className="bg-yellow-200 px-1 rounded">
+              <mark key={index} className="bg-yellow-400/30 px-1 rounded">
                 {part}
               </mark>
             ) : (
@@ -497,8 +497,8 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
         onClick={() => handleClientSelect(client)}
         className={`w-full text-left p-3 lg:p-4 rounded-lg border transition-all ${
           selectedClient?.id === client.id
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+            ? 'border-blue-500 bg-blue-600/20'
+            : 'border-slate-600 hover:border-blue-500 hover:bg-slate-700/50'
         }`}
       >
         <div className="flex items-center gap-2 lg:gap-3">
@@ -506,10 +506,10 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             <User className="w-4 h-4 lg:w-5 lg:h-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm lg:text-base font-semibold text-gray-900 truncate">
+            <p className="text-sm lg:text-base font-semibold text-white truncate">
               {highlightText(client.full_name, searchQuery)}
             </p>
-            <p className="text-xs text-gray-500 truncate">
+            <p className="text-xs text-slate-400 truncate">
               {client.vendeur ? `Vendeur: ${client.vendeur}` : 'Sans vendeur'}
             </p>
           </div>
@@ -521,28 +521,28 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
   return (
     <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-4 lg:gap-6">
       <div className={`lg:col-span-1 space-y-4 h-full ${showMobileChat ? 'hidden lg:block' : 'block'}`}>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 h-full flex flex-col">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-4 lg:p-6 h-full flex flex-col">
           <div className="flex items-center gap-2 mb-3 lg:mb-4">
-            <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5 text-green-600" />
-            <h3 className="text-base lg:text-lg font-bold text-gray-900">
+            <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5 text-green-400" />
+            <h3 className="text-base lg:text-lg font-bold text-white">
               Avec discussions ({clientsWithDiscussions.length})
             </h3>
           </div>
 
           <div className="mb-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Rechercher un client..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -550,9 +550,9 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 flex-1 overflow-y-auto mb-4">
+          <div className="space-y-3 flex-1 overflow-y-auto mb-4 scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
             {clientsWithDiscussions.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">
+              <p className="text-sm text-slate-400 text-center py-4">
                 {searchQuery ? 'Aucun résultat' : 'Aucune discussion'}
               </p>
             ) : (
@@ -560,16 +560,16 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             )}
           </div>
 
-          <div className="border-t border-gray-200 pt-4">
+          <div className="border-t border-slate-700 pt-4">
             <div className="flex items-center gap-2 mb-3">
-              <User className="w-4 h-4 lg:w-5 lg:h-5 text-gray-600" />
-              <h3 className="text-base lg:text-lg font-bold text-gray-900">
+              <User className="w-4 h-4 lg:w-5 lg:h-5 text-slate-400" />
+              <h3 className="text-base lg:text-lg font-bold text-white">
                 Sans discussion ({clientsWithoutDiscussions.length})
               </h3>
             </div>
-            <div className="space-y-3 max-h-[200px] overflow-y-auto">
+            <div className="space-y-3 max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
               {clientsWithoutDiscussions.length === 0 ? (
-                <p className="text-sm text-gray-500 text-center py-4">Tous les clients ont des discussions</p>
+                <p className="text-sm text-slate-400 text-center py-4">Tous les clients ont des discussions</p>
               ) : (
                 clientsWithoutDiscussions.map((client) => <ClientCard key={client.id} client={client} />)
               )}
@@ -778,10 +778,10 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-12">
             <div className="text-center">
-              <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-600">Sélectionnez une conversation pour la visualiser</p>
+              <MessageSquare className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+              <p className="text-slate-300">Sélectionnez une conversation pour la visualiser</p>
             </div>
           </div>
         )}
