@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageSquare, User } from 'lucide-react';
 import ChatWindow from './ChatWindow';
+import { supabase } from '../lib/supabase';
 
 interface Client {
   id: string;
@@ -29,7 +30,6 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
   useEffect(() => {
     loadClients();
 
-    // Rafraîchir la liste toutes les 5 secondes pour détecter les changements d'attribution
     const interval = setInterval(() => {
       loadClients();
     }, 5000);
@@ -39,24 +39,38 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
 
   const loadClients = async () => {
     try {
-      const response = await fetch(
-        `${supabaseUrl}/rest/v1/clients?vendeur=eq.${encodeURIComponent(sellerFullName)}&select=id,full_name,email,vendeur`,
-        {
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const { data: messages, error } = await supabase
+        .from('chat_messages')
+        .select('client_id')
+        .eq('sender_type', 'seller')
+        .eq('sender_id', sellerId);
 
-      if (response.ok) {
-        const data = await response.json();
-        setClients(data);
+      if (error) {
+        console.error('Error loading messages:', error);
+        setLoading(false);
+        return;
+      }
 
-        // Si le client sélectionné n'est plus assigné à ce vendeur, le désélectionner
-        if (selectedClient && !data.some((c: Client) => c.id === selectedClient.id)) {
-          console.log(`🔄 Client ${selectedClient.full_name} n'est plus assigné à ${sellerFullName}`);
+      const uniqueClientIds = [...new Set(messages?.map(m => m.client_id) || [])];
+
+      if (uniqueClientIds.length === 0) {
+        setClients([]);
+        setLoading(false);
+        return;
+      }
+
+      const { data: clientsData, error: clientsError } = await supabase
+        .from('clients')
+        .select('id, full_name, email, vendeur')
+        .in('id', uniqueClientIds)
+        .ilike('vendeur', sellerFullName);
+
+      if (clientsError) {
+        console.error('Error loading clients:', clientsError);
+      } else {
+        setClients(clientsData || []);
+
+        if (selectedClient && !clientsData?.some((c: Client) => c.id === selectedClient.id)) {
           setSelectedClient(null);
         }
       }
@@ -83,10 +97,10 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
             <MessageSquare className="w-12 h-12 text-[#2d4578]" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-4">
-            Aucun client assigné
+            Aucune conversation
           </h3>
           <p className="text-gray-600">
-            Les clients qui vous sont assignés apparaîtront ici
+            Les conversations avec vos clients apparaîtront ici
           </p>
         </div>
       </div>
@@ -96,7 +110,7 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
   return (
     <div className="grid lg:grid-cols-3 gap-6">
       <div className="lg:col-span-1 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-lg font-bold text-gray-900 mb-4">Mes Clients ({clients.length})</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Conversations ({clients.length})</h3>
         <div className="space-y-3 max-h-[600px] overflow-y-auto">
           {clients.map((client) => (
             <button

@@ -336,8 +336,6 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
       return fullName.includes(query) || nameParts.some(part => part.startsWith(query));
     });
 
-  const sellersWithoutDiscussions = sellers.filter(seller => !sellersWithMessages.has(seller.id));
-
   const highlightText = (text: string, query: string) => {
     if (!query.trim()) return <>{text}</>;
     const regex = new RegExp(`(${query})`, 'gi');
@@ -393,7 +391,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
           <div className="flex items-center gap-2 mb-4">
             <MessageSquare className="w-5 h-5 text-green-400" />
             <h3 className="text-lg font-bold text-white">
-              Avec discussions ({sellersWithDiscussions.length})
+              Conversations ({sellersWithDiscussions.length})
             </h3>
           </div>
 
@@ -425,22 +423,6 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
               </p>
             ) : (
               sellersWithDiscussions.map((seller) => <SellerCard key={seller.id} seller={seller} />)
-            )}
-          </div>
-        </div>
-
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <ShoppingBag className="w-5 h-5 text-slate-400" />
-            <h3 className="text-lg font-bold text-white">
-              Sans discussion ({sellersWithoutDiscussions.length})
-            </h3>
-          </div>
-          <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
-            {sellersWithoutDiscussions.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-4">Tous les vendeurs ont des discussions</p>
-            ) : (
-              sellersWithoutDiscussions.map((seller) => <SellerCard key={seller.id} seller={seller} />)
             )}
           </div>
         </div>

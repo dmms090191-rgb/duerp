@@ -57,7 +57,7 @@ interface Client {
 const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout, onReturnToAdmin, onClientLogin }) => {
   useOnlineStatus(sellerData.id, 'seller');
 
-  const [activeTab, setActiveTab] = React.useState<'clients' | 'chat' | 'chat-travail' | 'argumentaire'>('clients');
+  const [activeTab, setActiveTab] = React.useState<'clients' | 'chat' | 'chat-admin' | 'argumentaire'>('clients');
   const [clients, setClients] = React.useState<Client[]>([]);
   const [loadingClients, setLoadingClients] = React.useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
@@ -385,7 +385,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                   if (type === 'client') {
                     setActiveTab('chat');
                   } else {
-                    setActiveTab('chat-travail');
+                    setActiveTab('chat-admin');
                   }
                 }}
               />
@@ -464,15 +464,15 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 <span className="truncate">Chat Client</span>
               </button>
               <button
-                onClick={() => handleTabChange('chat-travail')}
+                onClick={() => handleTabChange('chat-admin')}
                 className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
-                  activeTab === 'chat-travail'
+                  activeTab === 'chat-admin'
                     ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
                     : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
-                <Briefcase className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
-                <span className="truncate">Chat Travail</span>
+                <Shield className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+                <span className="truncate">Chat Admin</span>
               </button>
               <button
                 onClick={() => handleTabChange('argumentaire')}
@@ -863,8 +863,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
             {activeTab === 'chat' && (
               <div>
-                <div className="mb-8 md:mb-10">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+                <div className="mb-6 md:mb-8">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
                     Chat Client
                   </h1>
                   <p className="text-sm md:text-base text-blue-200 font-medium">
@@ -881,29 +881,25 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
               </div>
             )}
 
-            {activeTab === 'chat-travail' && (
-              <div className="fixed inset-0 lg:left-64 xl:left-72 top-24 md:top-28 lg:top-32 bg-white z-30 overflow-auto">
-                <div className="h-full flex flex-col">
-                  <div className="bg-gradient-to-r from-[#2d4578] to-[#1a2847] p-6 md:p-8 shadow-lg">
-                    <div className="max-w-7xl mx-auto">
-                      <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                        Chat Vendeur
-                      </h1>
-                      <p className="text-sm md:text-base text-blue-200">
-                        Espace de communication interne avec les vendeurs
-                      </p>
-                    </div>
-                  </div>
+            {activeTab === 'chat-admin' && (
+              <div>
+                <div className="mb-6 md:mb-8">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                    Chat Admin
+                  </h1>
+                  <p className="text-sm md:text-base text-blue-200 font-medium">
+                    Espace de communication avec les administrateurs
+                  </p>
+                </div>
 
-                  <div className="flex-1 bg-gray-50 p-6 md:p-8 overflow-auto">
-                    <div className="max-w-5xl mx-auto">
-                      <SellerWorkChat
-                        sellerId={sellerData.id}
-                        sellerFullName={sellerData.full_name}
-                        supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
-                        supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
-                      />
-                    </div>
+                <div className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden">
+                  <div className="p-6 md:p-8">
+                    <SellerWorkChat
+                      sellerId={sellerData.id}
+                      sellerFullName={sellerData.full_name}
+                      supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
+                      supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
+                    />
                   </div>
                 </div>
               </div>

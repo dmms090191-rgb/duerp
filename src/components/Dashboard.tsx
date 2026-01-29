@@ -241,7 +241,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               }`}
             >
               <Users className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
-              <span className="truncate">Gestionnaire de leads</span>
+              <span className="truncate md:hidden">Gestion Lead</span>
+              <span className="truncate hidden md:inline">Gestionnaire de leads</span>
             </button>
             <button
               onClick={() => handleTabChange('sellers')}
@@ -252,7 +253,8 @@ const Dashboard: React.FC<DashboardProps> = ({
               }`}
             >
               <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
-              <span className="truncate">Gestionnaire vendeur</span>
+              <span className="truncate md:hidden">Gestion vendeur</span>
+              <span className="truncate hidden md:inline">Gestionnaire vendeur</span>
             </button>
             <button
               onClick={() => handleTabChange('admins')}
@@ -296,7 +298,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               }`}
             >
               <MessageSquare className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
-              <span className="truncate">Messagerie</span>
+              <span className="truncate">Chat Client</span>
             </button>
             <button
               onClick={() => handleTabChange('chat-vendeur')}
@@ -482,28 +484,35 @@ const Dashboard: React.FC<DashboardProps> = ({
 
 
             {activeTab === 'chat' && (
-              <div className="flex flex-col h-[calc(100vh-200px)]">
-                <AdminChatViewer
-                  supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
-                  supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
-                  preselectedClientId={selectedClientForChat}
-                  adminEmail={user?.email || 'admin@system'}
-                />
+              <div>
+                <div className="mb-6 md:mb-8">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                    Chat Client
+                  </h1>
+                  <p className="text-sm md:text-base text-blue-200 font-medium">
+                    Communiquez avec vos clients en temps réel
+                  </p>
+                </div>
+                <div className="flex flex-col h-[calc(100vh-300px)]">
+                  <AdminChatViewer
+                    supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
+                    supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
+                    preselectedClientId={selectedClientForChat}
+                    adminEmail={user?.email || 'admin@system'}
+                  />
+                </div>
               </div>
             )}
 
             {activeTab === 'chat-vendeur' && (
-              <div className="space-y-6">
-                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h2 className="text-2xl font-bold mb-2">Chat Vendeur</h2>
-                      <p className="text-slate-300">Espace de communication interne avec les vendeurs</p>
-                    </div>
-                    <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
-                      <ShoppingBag className="w-12 h-12" />
-                    </div>
-                  </div>
+              <div>
+                <div className="mb-6 md:mb-8">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
+                    Chat Vendeur
+                  </h1>
+                  <p className="text-sm md:text-base text-blue-200 font-medium">
+                    Espace de communication avec les vendeurs
+                  </p>
                 </div>
 
                 <SellerChatViewer

@@ -467,9 +467,6 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
       return fullName.includes(query) ||
              nameParts.some(part => part.startsWith(query));
     });
-  const clientsWithoutDiscussions = clients
-    .filter(client => !clientsWithMessages.has(client.id))
-    .filter(client => !client.vendeur || client.vendeur.trim() === '' || client.vendeur === 'Super Admin' || client.vendeur === adminFullName);
 
   const ClientCard = ({ client }: { client: Client }) => {
     const highlightText = (text: string, query: string) => {
@@ -525,7 +522,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
           <div className="flex items-center gap-2 mb-3 lg:mb-4">
             <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5 text-green-400" />
             <h3 className="text-base lg:text-lg font-bold text-white">
-              Avec discussions ({clientsWithDiscussions.length})
+              Conversations ({clientsWithDiscussions.length})
             </h3>
           </div>
 
@@ -550,7 +547,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             </div>
           </div>
 
-          <div className="space-y-3 flex-1 overflow-y-auto mb-4 scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
+          <div className="space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
             {clientsWithDiscussions.length === 0 ? (
               <p className="text-sm text-slate-400 text-center py-4">
                 {searchQuery ? 'Aucun résultat' : 'Aucune discussion'}
@@ -558,22 +555,6 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
             ) : (
               clientsWithDiscussions.map((client) => <ClientCard key={client.id} client={client} />)
             )}
-          </div>
-
-          <div className="border-t border-slate-700 pt-4">
-            <div className="flex items-center gap-2 mb-3">
-              <User className="w-4 h-4 lg:w-5 lg:h-5 text-slate-400" />
-              <h3 className="text-base lg:text-lg font-bold text-white">
-                Sans discussion ({clientsWithoutDiscussions.length})
-              </h3>
-            </div>
-            <div className="space-y-3 max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
-              {clientsWithoutDiscussions.length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-4">Tous les clients ont des discussions</p>
-              ) : (
-                clientsWithoutDiscussions.map((client) => <ClientCard key={client.id} client={client} />)
-              )}
-            </div>
           </div>
         </div>
       </div>

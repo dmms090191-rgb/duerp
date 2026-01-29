@@ -770,27 +770,35 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
         </div>
 
         {selectedLeads.length > 0 && (
-          <div className="mb-4 flex items-center justify-between bg-blue-50 border border-slate-300 rounded-lg p-4">
-            <span className="text-sm font-medium text-slate-900">
-              {selectedLeads.length} lead(s) sélectionné(s)
-            </span>
-            <div className="flex items-center gap-3">
+          <>
+            <div className="mb-4 bg-blue-50 border border-slate-300 rounded-lg p-3 md:p-4">
+              <span className="text-sm font-medium text-slate-900">
+                {selectedLeads.length} lead(s) sélectionné(s)
+              </span>
+            </div>
+            <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
               <button
                 onClick={handleTransferSelected}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                className="w-12 h-12 md:w-14 md:h-14 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group relative"
+                title="Transférer"
               >
-                <UserPlus className="w-4 h-4" />
-                Transférer
+                <UserPlus className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Transférer
+                </span>
               </button>
               <button
                 onClick={handleDeleteSelected}
-                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="w-12 h-12 md:w-14 md:h-14 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group relative"
+                title="Supprimer"
               >
-                <Trash2 className="w-4 h-4" />
-                Supprimer
+                <Trash2 className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                  Supprimer
+                </span>
               </button>
             </div>
-          </div>
+          </>
         )}
 
         {filteredLeads.length === 0 ? (
@@ -1730,15 +1738,15 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
       {showTransferModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
-            <div className="bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 px-8 py-6">
+            <div className="bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 px-8 py-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center ring-2 ring-white/50">
+                  <div className="w-14 h-14 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center ring-2 ring-white/20">
                     <UserPlus className="w-8 h-8 text-white" />
                   </div>
                   <div>
                     <h2 className="text-3xl font-bold text-white mb-1">Transférer le Lead</h2>
-                    <p className="text-emerald-50 text-sm">Assigner à un seller</p>
+                    <p className="text-slate-200 text-sm">Assigner à un seller</p>
                   </div>
                 </div>
                 <button
@@ -1752,7 +1760,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
             </div>
 
             <div className="p-8 space-y-6">
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-200">
+              <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-2xl p-6 border border-slate-200">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
                   {leadToTransfer ? 'Lead à transférer' : `${selectedLeads.length} lead(s) à transférer`}
                 </p>
@@ -1772,14 +1780,14 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
               <div className="space-y-3">
                 <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-600" />
+                  <Users className="w-4 h-4 text-blue-600" />
                   Sélectionner un Seller
                 </label>
                 <select
                   value={selectedSellerId}
                   onChange={(e) => setSelectedSellerId(e.target.value)}
                   disabled={transferring}
-                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition-all duration-200 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-5 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition-all duration-200 text-base font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="">-- Choisir un seller --</option>
                   {superAdmin && (
@@ -1800,7 +1808,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               <button
                 onClick={confirmTransfer}
                 disabled={!selectedSellerId || transferring}
-                className="flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="flex items-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {transferring ? (
                   <>

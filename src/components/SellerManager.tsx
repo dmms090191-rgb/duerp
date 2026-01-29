@@ -266,7 +266,10 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
               <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg flex items-center justify-center">
                 <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <h1 className="text-xl md:text-3xl font-bold text-white drop-shadow-lg">Gestionnaire de Vendeurs</h1>
+              <h1 className="text-xl md:text-3xl font-bold text-white drop-shadow-lg">
+                <span className="md:hidden">Gestion vendeur</span>
+                <span className="hidden md:inline">Gestionnaire de Vendeurs</span>
+              </h1>
             </div>
             <p className="text-sm md:text-base text-blue-200 font-medium">Gérez vos vendeurs et leurs accès</p>
           </div>
