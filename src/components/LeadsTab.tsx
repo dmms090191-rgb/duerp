@@ -776,24 +776,24 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 {selectedLeads.length} lead(s) sélectionné(s)
               </span>
             </div>
-            <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+            <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
               <button
                 onClick={handleTransferSelected}
-                className="w-12 h-12 md:w-14 md:h-14 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group relative"
+                className="w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group relative"
                 title="Transférer"
               >
-                <UserPlus className="w-5 h-5 md:w-6 md:h-6" />
-                <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                <UserPlus className="w-6 h-6" />
+                <span className="absolute right-16 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   Transférer
                 </span>
               </button>
               <button
                 onClick={handleDeleteSelected}
-                className="w-12 h-12 md:w-14 md:h-14 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all shadow-lg hover:shadow-xl flex items-center justify-center group relative"
+                className="w-14 h-14 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group relative"
                 title="Supprimer"
               >
-                <Trash2 className="w-5 h-5 md:w-6 md:h-6" />
-                <span className="absolute right-full mr-3 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                <Trash2 className="w-6 h-6" />
+                <span className="absolute right-16 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   Supprimer
                 </span>
               </button>

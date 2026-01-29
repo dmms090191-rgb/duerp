@@ -684,41 +684,50 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
 
           {/* List Tab */}
           {activeTab === 'list' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-4 md:p-6 border-b border-gray-200">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <List className="w-5 h-5 md:w-6 md:h-6 text-slate-800" />
-                    <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Liste des leads masse</h2>
-                    <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
-                      {leads.length}
+            <>
+              {selectedLeads.length > 0 && (
+                <>
+                  <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full px-4 py-2 z-40 border-2 border-blue-500">
+                    <span className="text-sm font-medium text-slate-900">
+                      {selectedLeads.length} lead(s) sélectionné(s)
                     </span>
                   </div>
-                  
-                  {selectedLeads.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="text-sm text-gray-600">
-                        {selectedLeads.length} sélectionné{selectedLeads.length > 1 ? 's' : ''}
+                  <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
+                    <button
+                      onClick={handleTransferSelected}
+                      className="w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group relative"
+                      title="Transférer"
+                    >
+                      <ArrowRight className="w-6 h-6" />
+                      <span className="absolute right-16 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        Transférer
                       </span>
-                      <button
-                        onClick={handleTransferSelected}
-                        className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg hover:bg-slate-900 transition-colors"
-                      >
-                        <ArrowRight className="w-4 h-4" />
-                        <span className="hidden sm:inline">Transférer vers Clients</span>
-                        <span className="sm:hidden">Transférer</span>
-                      </button>
-                      <button
-                        onClick={handleDeleteSelected}
-                        className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={handleDeleteSelected}
+                      className="w-14 h-14 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group relative"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="w-6 h-6" />
+                      <span className="absolute right-16 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         Supprimer
-                      </button>
+                      </span>
+                    </button>
+                  </div>
+                </>
+              )}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="p-4 md:p-6 border-b border-gray-200">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <List className="w-5 h-5 md:w-6 md:h-6 text-slate-800" />
+                      <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Liste des leads masse</h2>
+                      <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                        {leads.length}
+                      </span>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
 
               {leads.length === 0 ? (
                 <div className="p-12 text-center">
@@ -835,7 +844,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                   </table>
                 </div>
               )}
-            </div>
+              </div>
+            </>
           )}
         </div>
       </div>

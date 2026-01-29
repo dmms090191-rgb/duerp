@@ -403,18 +403,9 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                     </h2>
                   </div>
                   {selectedSellers.length > 0 && (
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-600">
-                        {selectedSellers.length} sélectionné(s)
-                      </span>
-                      <button
-                        onClick={handleDeleteSelected}
-                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        Supprimer
-                      </button>
-                    </div>
+                    <span className="text-sm text-gray-600">
+                      {selectedSellers.length} sélectionné(s)
+                    </span>
                   )}
                 </div>
               </div>
@@ -688,6 +679,22 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Floating Delete Button */}
+      {selectedSellers.length > 0 && (
+        <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
+          <button
+            onClick={handleDeleteSelected}
+            className="w-14 h-14 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group relative"
+            title="Supprimer"
+          >
+            <Trash2 className="w-6 h-6" />
+            <span className="absolute right-16 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              Supprimer
+            </span>
+          </button>
         </div>
       )}
     </div>
