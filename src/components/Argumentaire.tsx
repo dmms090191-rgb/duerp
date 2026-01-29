@@ -309,13 +309,13 @@ const Argumentaire: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl blur-lg opacity-50"></div>
-              <div className="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center shadow-xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl blur-lg opacity-50"></div>
+              <div className="relative w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl flex items-center justify-center shadow-xl">
                 <FileText className="w-8 h-8 text-white" />
               </div>
             </div>
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+              <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-900 bg-clip-text text-transparent">
                 Argumentaire de Vente
               </h2>
               <p className="text-sm md:text-base text-gray-600 mt-1">
@@ -329,7 +329,7 @@ const Argumentaire: React.FC = () => {
                 onClick={() => setViewMode('document')}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                   viewMode === 'document'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md scale-105'
+                    ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md scale-105'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -340,7 +340,7 @@ const Argumentaire: React.FC = () => {
                 onClick={() => setViewMode('list')}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
                   viewMode === 'list'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md scale-105'
+                    ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md scale-105'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
@@ -362,7 +362,7 @@ const Argumentaire: React.FC = () => {
                 </div>
                 <button
                   onClick={createNewDocument}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold"
                 >
                   <Plus className="w-5 h-5" />
                   Nouveau document
@@ -374,7 +374,7 @@ const Argumentaire: React.FC = () => {
               <div className="bg-white rounded-2xl shadow-xl border border-gray-200 text-center py-20">
                 <div className="relative inline-block mb-6">
                   <div className="absolute inset-0 bg-blue-500 rounded-full blur-2xl opacity-20"></div>
-                  <div className="relative w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto">
+                  <div className="relative w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto">
                     <FileText className="w-12 h-12 text-blue-600" />
                   </div>
                 </div>
@@ -384,7 +384,7 @@ const Argumentaire: React.FC = () => {
                 </p>
                 <button
                   onClick={createNewDocument}
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-lg"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-xl hover:from-slate-800 hover:to-slate-900 transition-all shadow-lg hover:shadow-xl hover:scale-105 font-semibold text-lg"
                 >
                   <Plus className="w-6 h-6" />
                   Créer mon premier document
@@ -397,7 +397,7 @@ const Argumentaire: React.FC = () => {
                     key={doc.id}
                     className="bg-white border border-gray-200 rounded-2xl overflow-hidden hover:border-blue-400 hover:shadow-2xl transition-all duration-300 group cursor-pointer transform hover:-translate-y-1"
                   >
-                    <div className="relative h-32 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 overflow-hidden">
+                    <div className="relative h-32 bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 overflow-hidden">
                       <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
                       <div className="absolute inset-0 flex items-center justify-center">
                         <FileText className="w-16 h-16 text-white opacity-20" />
@@ -474,7 +474,7 @@ const Argumentaire: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6">
+              <div className="bg-gradient-to-r from-slate-700 to-slate-800 p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
                     <Type className="w-5 h-5 text-white" />

@@ -341,7 +341,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.08)_0%,transparent_70%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]"></div>
       <div className="relative z-0">
-      <header className="fixed top-0 left-0 right-0 z-40 overflow-hidden border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-40 overflow-visible border-b border-white/5">
         <div className="absolute inset-0 bg-gradient-to-r from-[#1a2847]/98 via-[#2d4578]/98 to-[#1a2847]/98"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(96,165,250,0.1),transparent_50%)]"></div>
         <div className="absolute inset-0 backdrop-blur-2xl"></div>
@@ -426,7 +426,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
 
             <div className="mb-8 p-4 md:p-5 bg-gradient-to-br from-blue-500/20 via-blue-600/15 to-purple-500/20 rounded-2xl border border-white/20 shadow-xl backdrop-blur-sm">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#3a5488] to-[#2d4578] rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
                   <User className="w-6 h-6 md:w-7 md:h-7 text-white" />
                 </div>
                 <div className="min-w-0">
@@ -445,7 +445,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 onClick={() => handleTabChange('clients')}
                 className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'clients'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
                     : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
@@ -456,7 +456,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 onClick={() => handleTabChange('chat')}
                 className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'chat'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
                     : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
@@ -467,7 +467,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 onClick={() => handleTabChange('chat-travail')}
                 className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'chat-travail'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
                     : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
@@ -478,7 +478,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                 onClick={() => handleTabChange('argumentaire')}
                 className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
                   activeTab === 'argumentaire'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                    ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
                     : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
                 }`}
               >
@@ -517,7 +517,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                   <button
                     onClick={fetchClients}
                     disabled={loadingClients}
-                    className="flex items-center gap-2 px-5 md:px-6 py-3 md:py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base border border-blue-400/50"
+                    className="flex items-center gap-2 px-5 md:px-6 py-3 md:py-3.5 bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white rounded-xl font-bold hover:from-[#3a5488] hover:to-[#223761] transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base border border-blue-400/50"
                   >
                     <RefreshCw className={`w-5 h-5 ${loadingClients ? 'animate-spin' : ''}`} />
                     <span className="hidden sm:inline">Rafraîchir</span>
@@ -799,7 +799,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                                   <div className="flex items-center gap-2">
                                     <button
                                       onClick={() => handleOpenClientModal(client)}
-                                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white text-xs font-bold rounded-lg hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
+                                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#2d4578] via-[#223761] to-[#1a2847] text-white text-xs font-bold rounded-lg hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#223761] transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
                                     >
                                       <Edit className="w-3.5 h-3.5" />
                                       Modifier
@@ -818,7 +818,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                     </div>
 
 
-                    <div className="mt-4 sm:mt-6 px-3 sm:px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200/50">
+                    <div className="mt-4 sm:mt-6 px-3 sm:px-4 py-3 bg-gradient-to-r from-[#e8edf5] to-[#dde4f0] rounded-xl border border-blue-200/50">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <UserCheck className="w-5 h-5 text-blue-400" />
@@ -882,22 +882,30 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
             )}
 
             {activeTab === 'chat-travail' && (
-              <div>
-                <div className="mb-8 md:mb-10">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-                    Chat Travail
-                  </h1>
-                  <p className="text-sm md:text-base text-blue-200 font-medium">
-                    Communication interne avec l'équipe et les administrateurs
-                  </p>
-                </div>
+              <div className="fixed inset-0 lg:left-64 xl:left-72 top-24 md:top-28 lg:top-32 bg-white z-30 overflow-auto">
+                <div className="h-full flex flex-col">
+                  <div className="bg-gradient-to-r from-[#2d4578] to-[#1a2847] p-6 md:p-8 shadow-lg">
+                    <div className="max-w-7xl mx-auto">
+                      <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                        Chat Vendeur
+                      </h1>
+                      <p className="text-sm md:text-base text-blue-200">
+                        Espace de communication interne avec les vendeurs
+                      </p>
+                    </div>
+                  </div>
 
-                <SellerWorkChat
-                  sellerId={sellerData.id}
-                  sellerFullName={sellerData.full_name}
-                  supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
-                  supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
-                />
+                  <div className="flex-1 bg-gray-50 p-6 md:p-8 overflow-auto">
+                    <div className="max-w-5xl mx-auto">
+                      <SellerWorkChat
+                        sellerId={sellerData.id}
+                        sellerFullName={sellerData.full_name}
+                        supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
+                        supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 

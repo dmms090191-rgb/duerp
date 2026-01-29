@@ -10,6 +10,9 @@ interface Notification {
   messageId?: string;
   type: 'admin' | 'client';
   clientName?: string;
+  clientSiret?: string;
+  clientPrenom?: string;
+  clientNom?: string;
 }
 
 interface SellerNotificationSystemProps {
@@ -162,20 +165,25 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
                 if (!notifiedMessageIds.current.has(notifId)) {
                   const { data: clientData } = await supabase
                     .from('clients')
-                    .select('full_name, prenom, nom')
+                    .select('full_name, prenom, nom, siret')
                     .eq('id', clientId)
                     .maybeSingle();
 
                   const clientName = clientData?.full_name || `${clientData?.prenom || ''} ${clientData?.nom || ''}`.trim() || 'Client';
+                  const siret = clientData?.siret || '';
+                  const messageText = msg.message || 'Nouveau message';
 
                   const notification: Notification = {
                     id: notifId,
-                    message: `${clientName} vous a envoyé un message`,
+                    message: messageText,
                     timestamp: new Date(msg.created_at).toLocaleString('fr-FR'),
                     read: false,
                     messageId: msg.id,
                     type: 'client',
-                    clientName: clientName
+                    clientName: clientName,
+                    clientSiret: siret,
+                    clientPrenom: clientData?.prenom || '',
+                    clientNom: clientData?.nom || ''
                   };
                   newNotifications.push(notification);
                   notifiedMessageIds.current.add(notifId);
@@ -203,8 +211,25 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
           if ('Notification' in window && Notification.permission === 'granted') {
             console.log('🔔 [SELLER] Envoi de', newNotifications.length, 'notifications de bureau');
             newNotifications.forEach(notif => {
-              new Notification(notif.type === 'admin' ? 'Message de l\'administration' : 'Message client', {
-                body: notif.message,
+              let title = 'Message de l\'administration';
+              let body = notif.message;
+
+              if (notif.type === 'client') {
+                title = notif.clientName || 'Message client';
+                const details: string[] = [];
+                if (notif.clientPrenom && notif.clientNom) {
+                  details.push(`${notif.clientPrenom} ${notif.clientNom}`);
+                }
+                if (notif.clientSiret) {
+                  details.push(`SIRET: ${notif.clientSiret}`);
+                }
+                if (details.length > 0) {
+                  body = `${details.join(' - ')}\n${notif.message}`;
+                }
+              }
+
+              new Notification(title, {
+                body: body,
                 icon: '/kk copy.png',
                 badge: '/kk copy.png',
                 tag: notif.id
@@ -399,11 +424,11 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
       {showPanel && (
         <>
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[60]"
             onClick={() => setShowPanel(false)}
           />
-          <div className="absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 flex items-center justify-between">
+          <div className="absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-2xl border border-gray-200 z-[70] overflow-hidden">
+            <div className="bg-gradient-to-r from-[#2d4578] to-[#1a2847] p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bell className="w-5 h-5 text-white" />
                 <h3 className="text-white font-bold text-lg">Notifications</h3>
@@ -443,7 +468,7 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                           notification.type === 'client'
                             ? 'bg-gradient-to-r from-emerald-500 to-teal-600'
-                            : 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                            : 'bg-gradient-to-r from-[#2d4578] to-[#1a2847]'
                         }`}>
                           {notification.type === 'client' ? (
                             <User className="w-5 h-5 text-white" />
@@ -454,12 +479,28 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
                             <p className="text-sm font-semibold text-gray-900">
-                              {notification.type === 'admin' ? 'Message de l\'administration' : 'Message client'}
+                              {notification.type === 'admin'
+                                ? 'Message de l\'administration'
+                                : notification.clientName || 'Message client'}
                             </p>
                             {!notification.read && (
                               <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
                             )}
                           </div>
+                          {notification.type === 'client' && (
+                            <div className="mb-1.5">
+                              {notification.clientPrenom && notification.clientNom && (
+                                <p className="text-xs font-medium text-gray-700">
+                                  {notification.clientPrenom} {notification.clientNom}
+                                </p>
+                              )}
+                              {notification.clientSiret && (
+                                <p className="text-xs text-gray-500">
+                                  SIRET: {notification.clientSiret}
+                                </p>
+                              )}
+                            </div>
+                          )}
                           <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                             {notification.message}
                           </p>

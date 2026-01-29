@@ -186,35 +186,35 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
   const displayName = currentAdmin ? `${currentAdmin.prenom} ${currentAdmin.nom}` : currentAdminEmail?.split('@')[0];
 
   return (
-    <div className="flex justify-center items-start min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 p-6">
+    <div className="flex justify-center items-start min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 p-6">
       <div className="w-full max-w-4xl">
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-3">
-            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl ring-4 ring-blue-200/50">
+            <div className="w-14 h-14 bg-gradient-to-br from-slate-800 via-slate-800 to-slate-900 rounded-2xl flex items-center justify-center shadow-xl ring-4 ring-slate-300/50">
               <Shield className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 bg-clip-text text-transparent">Info Admin</h1>
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-slate-800 via-slate-800 to-slate-900 bg-clip-text text-transparent">Info Admin</h1>
           </div>
-          <p className="text-blue-700 font-semibold ml-[72px]">Gérez vos informations de connexion</p>
+          <p className="text-slate-700 font-semibold ml-[72px]">Gérez vos informations de connexion</p>
         </div>
 
-        <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl border-2 border-blue-200 p-8 backdrop-blur-xl">
+        <div className="bg-gradient-to-br from-white via-slate-50/30 to-slate-100/20 rounded-3xl shadow-2xl border-2 border-slate-300 p-8 backdrop-blur-xl">
           <div className="flex items-center gap-3 mb-8">
-            <User className="w-7 h-7 text-blue-600" />
-            <h2 className="text-3xl font-extrabold text-blue-900">Mes informations</h2>
+            <User className="w-7 h-7 text-slate-600" />
+            <h2 className="text-3xl font-extrabold text-slate-900">Mes informations</h2>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100 p-6 rounded-2xl border-2 border-blue-300 shadow-xl">
+            <div className="bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 p-6 rounded-2xl border-2 border-slate-400 shadow-xl">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-blue-200/50">
+                <div className="w-14 h-14 bg-gradient-to-br from-slate-800 via-slate-800 to-slate-900 rounded-2xl flex items-center justify-center shadow-lg ring-4 ring-slate-300/50">
                   <Shield className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs text-blue-700 font-bold uppercase tracking-widest mb-1">
+                  <p className="text-xs text-slate-700 font-bold uppercase tracking-widest mb-1">
                     {isSuperAdmin ? 'Super Administrateur' : 'Administrateur connecté'}
                   </p>
-                  <p className="text-xl font-extrabold text-blue-900">
+                  <p className="text-xl font-extrabold text-slate-900">
                     {displayName}
                   </p>
                 </div>
@@ -238,37 +238,37 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
             {editMode && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">
                     Prénom
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-blue-400" />
+                      <User className="h-5 w-5 text-slate-400" />
                     </div>
                     <input
                       type="text"
                       value={editedPrenom}
                       onChange={(e) => setEditedPrenom(e.target.value)}
                       placeholder="Prénom"
-                      className="block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm bg-white text-gray-900 border-blue-200 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 font-bold"
+                      className="block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm bg-white text-gray-900 border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400 focus:border-slate-500 font-bold"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+                  <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">
                     Nom
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <User className="h-5 w-5 text-blue-400" />
+                      <User className="h-5 w-5 text-slate-400" />
                     </div>
                     <input
                       type="text"
                       value={editedNom}
                       onChange={(e) => setEditedNom(e.target.value)}
                       placeholder="Nom"
-                      className="block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm bg-white text-gray-900 border-blue-200 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 font-bold"
+                      className="block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm bg-white text-gray-900 border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400 focus:border-slate-500 font-bold"
                     />
                   </div>
                 </div>
@@ -276,12 +276,12 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
             )}
 
             <div>
-              <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">
                 Email de connexion
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-blue-400" />
+                  <Mail className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   type="email"
@@ -290,20 +290,20 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
                   readOnly={!editMode}
                   className={`block w-full pl-12 pr-4 py-4 border-2 rounded-xl transition-all duration-300 shadow-sm ${
                     editMode
-                      ? 'bg-white text-gray-900 border-blue-200 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 font-bold'
-                      : 'bg-blue-50/50 text-gray-900 cursor-not-allowed border-blue-200 font-bold'
+                      ? 'bg-white text-gray-900 border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400 focus:border-slate-500 font-bold'
+                      : 'bg-blue-50/50 text-gray-900 cursor-not-allowed border-slate-300 font-bold'
                   }`}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+              <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">
                 Mot de passe
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-blue-400" />
+                  <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   type={editMode ? (showPassword ? "text" : "password") : "text"}
@@ -312,15 +312,15 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
                   readOnly={!editMode}
                   className={`block w-full pl-12 ${editMode ? 'pr-14' : 'pr-4'} py-4 border-2 rounded-xl transition-all duration-300 shadow-sm ${
                     editMode
-                      ? 'bg-white text-gray-900 border-blue-200 hover:border-blue-300 focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 font-mono font-bold'
-                      : 'bg-blue-50/50 text-gray-900 cursor-not-allowed border-blue-200 font-mono font-bold'
+                      ? 'bg-white text-gray-900 border-slate-300 hover:border-slate-400 focus:outline-none focus:ring-4 focus:ring-slate-400 focus:border-slate-500 font-mono font-bold'
+                      : 'bg-blue-50/50 text-gray-900 cursor-not-allowed border-slate-300 font-mono font-bold'
                   }`}
                 />
                 {editMode && (
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-blue-400 hover:text-blue-600 transition-all duration-300"
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 transition-all duration-300"
                   >
                     {showPassword ? (
                       <EyeOff className="h-6 w-6" />
@@ -336,7 +336,7 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
               <div className="pt-4">
                 <button
                   onClick={handleStartEdit}
-                  className="w-full px-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 font-extrabold shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95"
+                  className="w-full px-8 py-4 bg-gradient-to-r from-slate-800 via-slate-800 to-slate-900 text-white rounded-xl hover:from-slate-700 hover:via-slate-800 hover:to-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-400 transition-all duration-300 font-extrabold shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95"
                 >
                   Modifier
                 </button>
@@ -353,7 +353,7 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
                 </button>
                 <button
                   onClick={handleCancelEdit}
-                  className="flex-1 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-300 font-extrabold shadow-md hover:shadow-lg"
+                  className="flex-1 px-8 py-4 bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-slate-400 hover:text-slate-600 focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-300 font-extrabold shadow-md hover:shadow-lg"
                 >
                   Annuler
                 </button>
@@ -362,18 +362,18 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
 
             {currentAdmin && !editMode && (
               <div>
-                <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">
                   Date de création du compte
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Calendar className="h-5 w-5 text-blue-400" />
+                    <Calendar className="h-5 w-5 text-slate-400" />
                   </div>
                   <input
                     type="text"
                     value={currentAdmin.dateCreation}
                     readOnly
-                    className="block w-full pl-12 pr-4 py-4 border-2 border-blue-200 rounded-xl bg-blue-50/50 text-gray-900 font-bold cursor-not-allowed shadow-sm"
+                    className="block w-full pl-12 pr-4 py-4 border-2 border-slate-300 rounded-xl bg-blue-50/50 text-gray-900 font-bold cursor-not-allowed shadow-sm"
                   />
                 </div>
               </div>
@@ -396,8 +396,8 @@ const AdminManager: React.FC<AdminManagerProps> = ({ admins, currentAdminEmail, 
             )}
 
             {!editMode && (
-              <div className="mt-6 p-5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-2xl border-2 border-blue-300 shadow-md">
-                <p className="text-sm text-blue-900 font-semibold">
+              <div className="mt-6 p-5 bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl border-2 border-slate-400 shadow-md">
+                <p className="text-sm text-slate-900 font-semibold">
                   <strong className="font-extrabold">Note de sécurité :</strong> Ces informations sont confidentielles. Ne les partagez avec personne.
                 </p>
               </div>

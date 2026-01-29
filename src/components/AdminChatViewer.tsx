@@ -581,7 +581,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
       <div className={`lg:col-span-3 flex flex-col h-full ${showMobileChat ? 'block' : 'hidden lg:block'} ${showMobileChat ? 'fixed inset-0 z-50 lg:relative lg:z-auto' : ''}`}>
         {selectedClient ? (
           <div className="flex flex-col h-full bg-white relative rounded-2xl shadow-xl overflow-hidden w-full">
-            <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] flex-shrink-0">
+            <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-slate-700 to-slate-800 flex-shrink-0">
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={handleBackToList}
@@ -646,9 +646,9 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
                           <div
                             className={`${
                               msg.sender_type === 'seller'
-                                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                                ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
                                 : msg.sender_type === 'admin'
-                                ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                                ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
                                 : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
                             } px-3 py-2 sm:px-4 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
                           >
@@ -765,7 +765,7 @@ const AdminChatViewer: React.FC<AdminChatViewerProps> = ({
                 <button
                   type="submit"
                   disabled={(!newMessage.trim() && !selectedFile) || sending}
-                  className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+                  className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-full font-bold hover:from-slate-800 hover:to-slate-900 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
                   title="Envoyer le message"
                 >
                   {uploading ? (

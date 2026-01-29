@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare, RefreshCw } from 'lucide-react';
+import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { sellerService } from '../services/sellerService';
 
@@ -19,7 +19,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const [showPassword, setShowPassword] = useState(false);
   const [isEditingPassword, setIsEditingPassword] = useState(false);
   const [editedPassword, setEditedPassword] = useState('');
-  const [syncingPasswordId, setSyncingPasswordId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -222,48 +221,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
     setEditedPassword('');
   };
 
-  const handleSyncPassword = async (seller: Seller) => {
-    if (!seller.motDePasse) {
-      alert('❌ Aucun mot de passe enregistré pour ce vendeur');
-      return;
-    }
-
-    if (!confirm(`Voulez-vous synchroniser le mot de passe pour ${seller.prenom} ${seller.nom}?\n\nCela mettra à jour le mot de passe d'authentification avec le mot de passe enregistré: ${seller.motDePasse}`)) {
-      return;
-    }
-
-    setSyncingPasswordId(seller.id);
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/update-seller-password`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sellerId: seller.id,
-            newPassword: seller.motDePasse
-          })
-        }
-      );
-
-      if (response.ok) {
-        alert(`✅ Mot de passe synchronisé avec succès pour ${seller.prenom} ${seller.nom}\n\nLe vendeur peut maintenant se connecter avec le mot de passe: ${seller.motDePasse}`);
-      } else {
-        const errorData = await response.json();
-        console.error('Erreur lors de la synchronisation:', errorData);
-        alert('❌ Erreur lors de la synchronisation du mot de passe');
-      }
-    } catch (error: any) {
-      console.error('Erreur lors de la synchronisation:', error);
-      alert('❌ Erreur lors de la synchronisation du mot de passe');
-    } finally {
-      setSyncingPasswordId(null);
-    }
-  };
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-gray-50">
@@ -306,7 +263,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
         <div className="w-full">
           <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg flex items-center justify-center">
                 <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <h1 className="text-xl md:text-3xl font-bold text-gray-900">Gestionnaire de Vendeurs</h1>
@@ -317,7 +274,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           {activeTab === 'add' && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
               <div className="flex items-center gap-3 mb-6">
-                <Plus className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
+                <Plus className="w-5 h-5 md:w-6 md:h-6 text-slate-600" />
                 <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Ajouter un vendeur</h2>
               </div>
 
@@ -337,7 +294,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                         name="nom"
                         value={formData.nom}
                         onChange={handleInputChange}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                         placeholder="Dupont"
                         required
                       />
@@ -358,7 +315,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                         name="prenom"
                         value={formData.prenom}
                         onChange={handleInputChange}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                         placeholder="Jean"
                         required
                       />
@@ -380,7 +337,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                       placeholder="jean.dupont@example.com"
                       required
                     />
@@ -401,7 +358,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                       name="motDePasse"
                       value={formData.motDePasse}
                       onChange={handleInputChange}
-                      className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                      className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                       placeholder="••••••••"
                       required
                     />
@@ -422,7 +379,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                 <div className="pt-4">
                   <button
                     type="submit"
-                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-8 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white py-3 px-8 rounded-lg font-medium hover:from-slate-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Plus className="w-4 h-4" />
                     Valider
@@ -466,7 +423,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   <p className="text-gray-500 mb-6">Commencez par ajouter votre premier vendeur</p>
                   <button
                     onClick={() => setActiveTab('add')}
-                    className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    className="inline-flex items-center gap-2 bg-[#2d4578] text-white px-4 py-2 rounded-lg hover:bg-[#1a2847] transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter un vendeur
@@ -525,10 +482,10 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                           <td className="px-6 py-4 whitespace-nowrap">
                             <button
                               onClick={() => handleSelectSeller(seller.id)}
-                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-green-600 transition-colors"
+                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-slate-600 transition-colors"
                             >
                               {selectedSellers.includes(seller.id) ? (
-                                <CheckSquare className="w-5 h-5 text-green-600" />
+                                <CheckSquare className="w-5 h-5 text-slate-600" />
                               ) : (
                                 <Square className="w-5 h-5" />
                               )}
@@ -556,19 +513,10 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                                 <Eye className="w-4 h-4" />
                                 Détails
                               </button>
-                              <button
-                                onClick={() => handleSyncPassword(seller)}
-                                disabled={syncingPasswordId === seller.id}
-                                className="flex items-center gap-2 bg-orange-600 text-white px-3 py-1.5 rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Synchroniser le mot de passe"
-                              >
-                                <RefreshCw className={`w-4 h-4 ${syncingPasswordId === seller.id ? 'animate-spin' : ''}`} />
-                                Sync MDP
-                              </button>
                               {onOpenChat && (
                                 <button
                                   onClick={() => onOpenChat(seller.id)}
-                                  className="flex items-center gap-2 bg-emerald-600 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition-colors"
+                                  className="flex items-center gap-2 bg-teal-600 text-white px-3 py-1.5 rounded-lg hover:bg-teal-700 transition-colors"
                                   title="Ouvrir le chat"
                                 >
                                   <MessageSquare className="w-4 h-4" />
@@ -627,14 +575,14 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                     <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight break-words">
                       {selectedSellerDetails.prenom} {selectedSellerDetails.nom}
                     </h3>
-                    <p className="text-sm sm:text-base font-semibold text-blue-600 mt-0.5 sm:mt-1">Vendeur</p>
+                    <p className="text-sm sm:text-base font-semibold text-slate-600 mt-0.5 sm:mt-1">Vendeur</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="group">
-                  <label className="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                     <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                     Adresse Email
                   </label>
@@ -645,7 +593,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                 </div>
 
                 <div className="group">
-                  <label className="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                     <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                     Date de Création
                   </label>
@@ -656,7 +604,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                 </div>
 
                 <div className="group md:col-span-2">
-                  <label className="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                  <label className="text-[10px] sm:text-xs font-bold text-slate-600 uppercase tracking-widest flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                     <Lock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                     Mot de Passe
                   </label>
@@ -700,7 +648,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                       )}
                       <button
                         onClick={handleEditPassword}
-                        className="relative flex items-center gap-1.5 sm:gap-2 bg-white text-blue-600 px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl hover:bg-blue-50 transition-all duration-300 border-2 border-blue-300 shadow-md hover:shadow-lg font-bold text-sm sm:text-base flex-shrink-0"
+                        className="relative flex items-center gap-1.5 sm:gap-2 bg-white text-slate-600 px-4 py-2.5 sm:px-5 sm:py-3 rounded-lg sm:rounded-xl hover:bg-blue-50 transition-all duration-300 border-2 border-blue-300 shadow-md hover:shadow-lg font-bold text-sm sm:text-base flex-shrink-0"
                       >
                         <Edit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         Modifier
@@ -731,7 +679,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   setIsEditingPassword(false);
                   setEditedPassword('');
                 }}
-                className="px-4 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-lg sm:rounded-xl font-bold hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 shadow-md hover:shadow-lg text-sm sm:text-base"
+                className="px-4 py-3 sm:px-6 sm:py-3.5 md:px-8 md:py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-lg sm:rounded-xl font-bold hover:bg-gray-50 hover:border-blue-300 hover:text-slate-600 transition-all duration-300 shadow-md hover:shadow-lg text-sm sm:text-base"
               >
                 Fermer
               </button>

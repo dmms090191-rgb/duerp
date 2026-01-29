@@ -301,19 +301,19 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
   let lastDate = '';
 
   return (
-    <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-2xl shadow-xl overflow-hidden">
-      <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8]">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
+    <div className="flex flex-col h-full max-h-[600px] max-w-2xl mx-auto bg-white relative rounded-xl shadow-lg overflow-hidden">
+      <div className="p-4 sm:p-5 bg-gradient-to-r from-slate-800 to-slate-900">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-lg shadow-md">
             <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-base sm:text-lg font-bold text-white">Chat Travail</h3>
-            <p className="text-blue-100 text-xs sm:text-sm">Communication avec l'équipe admin</p>
+            <p className="text-blue-200 text-xs sm:text-sm">Communication avec l'équipe admin</p>
           </div>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
+            className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg transition-all duration-200"
             title="Supprimer la conversation"
           >
             <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
@@ -336,13 +336,13 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
             <div className="flex gap-2 md:gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 px-3 py-2 md:px-4 md:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all duration-200 text-sm md:text-base"
+                className="flex-1 px-3 py-2 md:px-4 md:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-colors text-sm md:text-base"
               >
                 Annuler
               </button>
               <button
                 onClick={deleteAllMessages}
-                className="flex-1 px-3 py-2 md:px-4 md:py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl text-sm md:text-base"
+                className="flex-1 px-3 py-2 md:px-4 md:py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-colors text-sm md:text-base"
               >
                 Supprimer
               </button>
@@ -351,12 +351,12 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30" style={{ maxHeight: '450px' }}>
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 bg-gray-50" style={{ maxHeight: '450px' }}>
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 sm:py-12">
+          <div className="text-center text-gray-400 py-8 sm:py-12">
             <MessageSquare className="w-12 h-12 md:w-16 md:h-16 text-gray-300 mx-auto mb-3 md:mb-4" />
-            <p className="text-sm md:text-base">Aucun message pour le moment</p>
-            <p className="text-xs sm:text-sm mt-2">Commencez la conversation !</p>
+            <p className="text-sm md:text-base text-gray-500 font-medium">Aucun message pour le moment</p>
+            <p className="text-xs sm:text-sm mt-2 text-gray-400">Commencez la conversation !</p>
           </div>
         ) : (
           messages.map((msg) => {
@@ -371,7 +371,7 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
                 <React.Fragment key={msg.id}>
                   {showDateSeparator && (
                     <div className="flex items-center justify-center my-2 sm:my-3">
-                      <div className="bg-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-full">
+                      <div className="bg-gray-200 text-gray-600 text-xs px-3 py-1 rounded-full font-medium">
                         {messageDate}
                       </div>
                     </div>
@@ -383,33 +383,34 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
                       <div
                         className={`${
                           isOwnMessage
-                            ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                            ? 'bg-blue-500 text-white rounded-2xl rounded-br-md shadow-md'
                             : isAdminMessage
-                            ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl'
-                            : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
-                        } px-3 py-2 sm:px-4 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
+                            ? 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-md border border-gray-200'
+                            : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-md border border-gray-200'
+                        } px-3 py-2 sm:px-4 sm:py-3 transition-shadow duration-200 hover:shadow-lg`}
                       >
                         {!isOwnMessage && (
-                          <p className={`text-xs font-bold mb-1.5 ${isAdminMessage ? 'text-blue-100' : 'text-blue-600'}`}>
+                          <p className={`text-xs font-semibold mb-1.5 ${isAdminMessage ? 'text-gray-700' : 'text-blue-600'} flex items-center gap-1`}>
+                            <Shield className="w-3 h-3" />
                             {msg.sender_name || 'Admin'}
                           </p>
                         )}
                         <p className="text-sm break-words leading-relaxed">{msg.message}</p>
 
                         {msg.attachment_url && (
-                          <div className="mt-2 pt-2 border-t border-white/20">
+                          <div className="mt-2 pt-2 border-t border-gray-200/50">
                             <a
                               href={msg.attachment_url}
                               download={msg.attachment_name}
                               target="_blank"
                               rel="noopener noreferrer"
                               className={`flex items-center gap-2 p-2 rounded-lg ${
-                                isOwnMessage || isAdminMessage
-                                  ? 'bg-white/10 hover:bg-white/20'
+                                isOwnMessage
+                                  ? 'bg-white/20 hover:bg-white/30'
                                   : 'bg-gray-100 hover:bg-gray-200'
                               } transition-colors`}
                             >
-                              <FileText className="w-5 h-5 flex-shrink-0" />
+                              <FileText className="w-4 h-4 flex-shrink-0" />
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs font-medium truncate">
                                   {msg.attachment_name || 'Fichier'}
@@ -420,10 +421,10 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
                           </div>
                         )}
 
-                        <div className="flex items-center gap-1.5 justify-end mt-2">
+                        <div className="flex items-center gap-1 justify-end mt-2">
                           <span
-                            className={`text-xs font-medium ${
-                              isOwnMessage || isAdminMessage ? 'text-white/70' : 'text-gray-500'
+                            className={`text-xs ${
+                              isOwnMessage ? 'text-white/80' : 'text-gray-500'
                             }`}
                           >
                             {formatTime(msg.created_at)}
@@ -480,7 +481,7 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={sending || uploading}
-            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             title="Joindre un fichier"
           >
             <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -494,14 +495,14 @@ const SellerWorkChat: React.FC<SellerWorkChatProps> = ({
               placeholder="Votre message..."
               disabled={sending}
               rows={1}
-              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-gray-50 hover:bg-white transition-colors duration-200"
+              className="w-full px-3 py-2.5 sm:px-4 sm:py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-sm bg-white transition-colors"
               style={{ minHeight: '42px', maxHeight: '100px' }}
             />
           </div>
           <button
             type="submit"
             disabled={(!newMessage.trim() && !selectedFile) || sending}
-            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+            className="flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-bold disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
             title="Envoyer le message"
           >
             {uploading ? (

@@ -91,7 +91,7 @@ const AllAccountsList: React.FC = () => {
       case 'admin':
         return <Shield className="w-5 h-5 text-red-500" />;
       case 'seller':
-        return <ShoppingBag className="w-5 h-5 text-blue-500" />;
+        return <ShoppingBag className="w-5 h-5 text-slate-600" />;
       case 'client':
         return <User className="w-5 h-5 text-green-500" />;
       default:
@@ -102,7 +102,7 @@ const AllAccountsList: React.FC = () => {
   const getTypeBadge = (type: string) => {
     const colors = {
       admin: 'bg-red-100 text-red-700',
-      seller: 'bg-blue-100 text-blue-700',
+      seller: 'bg-slate-100 text-slate-700',
       client: 'bg-green-100 text-green-700',
     };
     return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-700';

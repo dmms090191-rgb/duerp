@@ -17,7 +17,7 @@ const EmailManagerV2: React.FC = () => {
         <div className="bg-white border-b sticky top-0 z-10 -mx-6 -mt-6 px-6 pt-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-12 h-12 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl flex items-center justify-center shadow-lg">
                 <Mail className="w-6 h-6 text-white" />
               </div>
               <div>

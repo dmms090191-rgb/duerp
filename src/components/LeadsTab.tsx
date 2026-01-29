@@ -290,14 +290,12 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
       if (isSuperAdmin) {
         updateData.vendeur = superAdmin.full_name;
         updateData.assigned_agent = superAdmin.id;
-        console.log('✅ Attribution au super admin:', superAdmin.full_name);
+        console.log('✅ [ATTRIBUTION] Au super admin:', superAdmin.full_name);
       } else if (selectedSeller) {
         updateData.vendeur = selectedSeller.full_name;
-        // Si le super admin existe, l'assigner aussi automatiquement
-        if (superAdmin) {
-          updateData.assigned_agent = superAdmin.id;
-          console.log('✅ Vendeur:', selectedSeller.full_name, '+ Super admin:', superAdmin.full_name);
-        }
+        console.log('✅ [ATTRIBUTION] Vendeur:', selectedSeller.full_name);
+        console.log('✅ [ATTRIBUTION] Champ vendeur mis à jour avec:', selectedSeller.full_name);
+        console.log('✅ [ATTRIBUTION] Leads à attribuer:', leadsToTransfer);
       }
 
       const response = await fetch(
@@ -700,7 +698,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
           </div>
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-4">
+        <div className="bg-blue-50 border border-slate-300 rounded p-4 mb-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-700 mb-1">Prénom</label>
@@ -709,7 +707,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 placeholder="Rechercher..."
                 value={searchPrenom}
                 onChange={(e) => setSearchPrenom(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
               />
             </div>
             <div>
@@ -719,7 +717,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 placeholder="Rechercher..."
                 value={searchNom}
                 onChange={(e) => setSearchNom(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
               />
             </div>
             <div>
@@ -729,7 +727,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 placeholder="Rechercher..."
                 value={searchEmail}
                 onChange={(e) => setSearchEmail(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
               />
             </div>
             <div>
@@ -739,7 +737,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 placeholder="Rechercher..."
                 value={searchPhone}
                 onChange={(e) => setSearchPhone(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
               />
             </div>
             <div>
@@ -749,7 +747,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 placeholder="Rechercher..."
                 value={searchSiret}
                 onChange={(e) => setSearchSiret(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
               />
             </div>
             <div>
@@ -757,7 +755,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500 bg-white"
               >
                 <option value="all">Tous les statuts</option>
                 <option value="none">Sans statut</option>
@@ -772,8 +770,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
         </div>
 
         {selectedLeads.length > 0 && (
-          <div className="mb-4 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <span className="text-sm font-medium text-blue-900">
+          <div className="mb-4 flex items-center justify-between bg-blue-50 border border-slate-300 rounded-lg p-4">
+            <span className="text-sm font-medium text-slate-900">
               {selectedLeads.length} lead(s) sélectionné(s)
             </span>
             <div className="flex items-center gap-3">
@@ -813,22 +811,22 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                       type="checkbox"
                       checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
                       onChange={handleSelectAll}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-slate-600 border-gray-300 rounded focus:ring-slate-500"
                     />
                   </th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300 min-w-[140px]">Rendez-vous</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300 min-w-[180px]">Statut du client</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Prénom</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Nom</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Téléphone</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Portable</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">E-mail</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Activité</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Société</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">SIRET</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Vendeur</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900 border-r border-gray-300">Créé le</th>
-                  <th className="text-left py-2 px-3 text-xs font-bold text-blue-900">Actions</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300 min-w-[140px]">Rendez-vous</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300 min-w-[180px]">Statut du client</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Prénom</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Nom</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Téléphone</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Portable</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">E-mail</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Activité</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Société</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">SIRET</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Vendeur</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900 border-r border-gray-300">Créé le</th>
+                  <th className="text-left py-2 px-3 text-xs font-bold text-slate-900">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white">
@@ -845,7 +843,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                           type="checkbox"
                           checked={selectedLeads.includes(lead.id)}
                           onChange={() => handleSelectLead(lead.id)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 text-slate-600 border-gray-300 rounded focus:ring-slate-500"
                         />
                       </td>
                       <td className="py-2 px-3 border-r border-gray-200 min-w-[200px]">
@@ -865,7 +863,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                                 value: e.target.value
                               });
                             }}
-                            className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
                           />
                           {editingRendezVous?.leadId === lead.id && (
                             <button
@@ -888,7 +886,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                           value={lead.status_id || ''}
                           onChange={(e) => handleStatusChange(lead.id, e.target.value)}
                           disabled={updatingStatus === lead.id.toString()}
-                          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                          className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                           style={lead.status ? { color: lead.status.color } : {}}
                         >
                           <option value="">TOUS</option>
@@ -936,7 +934,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                       <td className="py-2 px-3 border-r border-gray-200">
                         {lead.vendeur ? (
                           <div className="flex items-center justify-between gap-1 group">
-                            <span className="text-xs font-medium text-blue-900 bg-blue-50 px-2 py-1 rounded border border-blue-200 flex-1">
+                            <span className="text-xs font-medium text-slate-900 bg-blue-50 px-2 py-1 rounded border border-slate-300 flex-1">
                               {lead.vendeur}
                             </span>
                             <select
@@ -990,7 +988,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                                   alert('❌ Erreur lors de la mise à jour');
                                 }
                               }}
-                              className="opacity-0 group-hover:opacity-100 px-1 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer transition-opacity"
+                              className="opacity-0 group-hover:opacity-100 px-1 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500 bg-white cursor-pointer transition-opacity"
                               title="Cliquez pour changer de vendeur"
                             >
                               <option value="">-- Désassigner --</option>
@@ -1054,7 +1052,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                                 alert('❌ Erreur lors de la mise à jour');
                               }
                             }}
-                            className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500 bg-white"
                           >
                             <option value="">-- Sélectionner --</option>
                             <option value="Super Admin">Super Admin</option>
@@ -1073,7 +1071,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleOpenEditModal(lead)}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white text-xs font-bold rounded-lg hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white text-xs font-bold rounded-lg hover:from-slate-900 hover:via-slate-800 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                             title="Voir les détails"
                           >
                             <Eye className="w-3 h-3" />
@@ -1108,8 +1106,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
       {selectedLeadDetails && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-2 sm:p-4">
-          <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border-2 border-blue-200">
-            <div className="bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between shadow-xl">
+          <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/20 rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border-2 border-slate-300">
+            <div className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between shadow-xl">
               <h2 className="text-lg sm:text-2xl font-extrabold text-white uppercase tracking-wide">
                 {selectedLeadDetails.status?.name || 'CONDUIT'}
               </h2>
@@ -1135,7 +1133,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
             </div>
 
-            <div className="border-b-2 border-blue-200 overflow-x-auto bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="border-b-2 border-slate-300 overflow-x-auto bg-gradient-to-r from-slate-50 to-slate-100">
               <div className="flex gap-1 px-3 sm:px-6 min-w-max">
                 <button
                   onClick={() => setActiveTab('information')}
@@ -1180,84 +1178,84 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
             </div>
 
-            <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/20">
+            <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gradient-to-br from-slate-50/30 via-white to-slate-100/20">
               {/* Onglet Information */}
               {activeTab === 'information' && (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/10 p-6 sm:p-8 rounded-2xl border-2 border-blue-200 shadow-xl">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/10 p-6 sm:p-8 rounded-2xl border-2 border-slate-300 shadow-xl">
 
                 {/* Colonne Gauche */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Prénom :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Prénom :</label>
                     <input
                       type="text"
                       value={editedLead?.prenom || ''}
                       onChange={(e) => handleFieldChange('prenom', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Téléphone :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Téléphone :</label>
                     <div className="flex gap-2">
-                      <input type="text" value="+" className="w-10 px-2 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold" readOnly />
-                      <input type="text" className="w-20 px-2 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold" readOnly />
+                      <input type="text" value="+" className="w-10 px-2 py-3 text-sm border-2 border-slate-300 rounded-xl bg-blue-50/50 font-semibold" readOnly />
+                      <input type="text" className="w-20 px-2 py-3 text-sm border-2 border-slate-300 rounded-xl bg-blue-50/50 font-semibold" readOnly />
                       <input
                         type="text"
                         value={editedLead?.telephone || ''}
                         onChange={(e) => handleFieldChange('telephone', e.target.value)}
-                        className="flex-1 px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                        className="flex-1 px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Pays :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Pays :</label>
                     <input
                       type="text"
                       value={editedLead?.pays || 'France'}
                       onChange={(e) => handleFieldChange('pays', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl bg-white focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl bg-white focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Adresse :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Adresse :</label>
                     <input
                       type="text"
                       value={editedLead?.address || ''}
                       onChange={(e) => handleFieldChange('address', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Date :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Date :</label>
                     <input
                       type="text"
                       value={editedLead?.dateCreation || ''}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold shadow-sm cursor-not-allowed"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl bg-blue-50/50 font-semibold shadow-sm cursor-not-allowed"
                       readOnly
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">E-mail :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">E-mail :</label>
                     <input
                       type="email"
                       value={editedLead?.email || ''}
                       onChange={(e) => handleFieldChange('email', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Statut du client :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Statut du client :</label>
                     <select
                       value={editedLead?.status_id || ''}
                       onChange={(e) => handleFieldChange('status_id', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl bg-white font-bold focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl bg-white font-bold focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 shadow-sm hover:border-blue-300"
                     >
                       <option value="">Aucun statut</option>
                       {statuses.map((status) => (
@@ -1269,22 +1267,22 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Activité :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Activité :</label>
                     <input
                       type="text"
                       value={editedLead?.activite || 'GARAGE'}
                       onChange={(e) => handleFieldChange('activite', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Rendez-vous :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Rendez-vous :</label>
                     <input
                       type="datetime-local"
                       value={editedLead?.rendez_vous ? new Date(editedLead.rendez_vous).toISOString().slice(0, 16) : ''}
                       onChange={(e) => handleFieldChange('rendez_vous', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
                 </div>
@@ -1292,98 +1290,98 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                 {/* Colonne Droite */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Nom :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Nom :</label>
                     <input
                       type="text"
                       value={editedLead?.nom || ''}
                       onChange={(e) => handleFieldChange('nom', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl font-bold uppercase focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl font-bold uppercase focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Portable :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Portable :</label>
                     <div className="flex gap-2">
-                      <input type="text" value="+" className="w-10 px-2 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold" readOnly />
-                      <input type="text" className="w-20 px-2 py-3 text-sm border-2 border-blue-200 rounded-xl bg-blue-50/50 font-semibold" readOnly />
+                      <input type="text" value="+" className="w-10 px-2 py-3 text-sm border-2 border-slate-300 rounded-xl bg-blue-50/50 font-semibold" readOnly />
+                      <input type="text" className="w-20 px-2 py-3 text-sm border-2 border-slate-300 rounded-xl bg-blue-50/50 font-semibold" readOnly />
                       <input
                         type="text"
                         value={editedLead?.portable || ''}
                         onChange={(e) => handleFieldChange('portable', e.target.value)}
-                        className="flex-1 px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                        className="flex-1 px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Ville :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Ville :</label>
                     <input
                       type="text"
                       value={editedLead?.ville || ''}
                       onChange={(e) => handleFieldChange('ville', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Code postal :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Code postal :</label>
                     <input
                       type="text"
                       value={editedLead?.code_postal || ''}
                       onChange={(e) => handleFieldChange('code_postal', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Date de naissance :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Date de naissance :</label>
                     <input
                       type="text"
                       value={editedLead?.anniversaire || ''}
                       onChange={(e) => handleFieldChange('anniversaire', e.target.value)}
                       placeholder="jj/mm/aaaa"
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Autre Courriel :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Autre Courriel :</label>
                     <input
                       type="email"
                       value={editedLead?.autre_courriel || ''}
                       onChange={(e) => handleFieldChange('autre_courriel', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">SIRET :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">SIRET :</label>
                     <input
                       type="text"
                       value={editedLead?.siret || ''}
                       onChange={(e) => handleFieldChange('siret', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Société :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Société :</label>
                     <input
                       type="text"
                       value={editedLead?.societe || ''}
                       onChange={(e) => handleFieldChange('societe', e.target.value)}
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-2">Source :</label>
+                    <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-2">Source :</label>
                     <input
                       type="text"
                       value={editedLead?.source || ''}
                       onChange={(e) => handleFieldChange('source', e.target.value)}
                       placeholder="Source"
-                      className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl bg-white focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
+                      className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl bg-white focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 font-semibold shadow-sm hover:border-blue-300"
                     />
                   </div>
                 </div>
@@ -1391,12 +1389,12 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
 
               {/* Zone vendeur */}
-              <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/10 p-6 rounded-2xl border-2 border-blue-200 shadow-xl">
-                <label className="block text-xs font-bold text-blue-600 uppercase tracking-widest mb-3">Vendeur assigné :</label>
+              <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/10 p-6 rounded-2xl border-2 border-slate-300 shadow-xl">
+                <label className="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">Vendeur assigné :</label>
                 <select
                   value={editedLead?.vendeur || ''}
                   onChange={(e) => handleFieldChange('vendeur', e.target.value)}
-                  className="w-full px-4 py-3 text-sm border-2 border-blue-200 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 bg-white transition-all duration-300 font-bold shadow-sm hover:border-blue-300"
+                  className="w-full px-4 py-3 text-sm border-2 border-slate-300 rounded-xl focus:ring-4 focus:ring-blue-300 focus:border-blue-500 bg-white transition-all duration-300 font-bold shadow-sm hover:border-blue-300"
                 >
                   <option value="">-- Sélectionner un vendeur --</option>
                   <option value="Super Admin">Super Admin</option>
@@ -1423,7 +1421,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                     setEditedLead(null);
                     setActiveTab('information');
                   }}
-                  className="w-full sm:w-auto px-8 py-3 text-sm bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-blue-300 hover:text-blue-600 transition-all duration-300 font-extrabold shadow-md hover:shadow-lg"
+                  className="w-full sm:w-auto px-8 py-3 text-sm bg-white text-gray-700 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-blue-300 hover:text-slate-600 transition-all duration-300 font-extrabold shadow-md hover:shadow-lg"
                 >
                   Annuler
                 </button>
@@ -1456,7 +1454,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
                       placeholder="Écrivez votre commentaire ici..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-blue-500 resize-none"
                       rows={3}
                     />
                     <div className="flex justify-end mt-2">
@@ -1489,7 +1487,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                         <div key={comment.id} className="flex gap-3 sm:gap-4 pb-4 border-b border-gray-200 last:border-b-0 group hover:bg-gray-50 transition-colors rounded-lg p-2">
                           <div className="flex-shrink-0">
                             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                              <MessageSquare className="w-5 h-5 text-blue-600" />
+                              <MessageSquare className="w-5 h-5 text-slate-600" />
                             </div>
                           </div>
                           <div className="flex-1">
@@ -1532,13 +1530,13 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                   <div className="space-y-4 sm:space-y-6">
                     {/* Identifiants de connexion */}
                     <div className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300 rounded-lg p-4 sm:p-6">
-                      <h4 className="font-bold text-blue-900 mb-4 text-base sm:text-lg flex items-center gap-2">
+                      <h4 className="font-bold text-slate-900 mb-4 text-base sm:text-lg flex items-center gap-2">
                         <LogIn className="w-5 h-5" />
                         Identifiants de connexion
                       </h4>
 
                       <div className="space-y-4">
-                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-slate-300">
                           <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
                             Email
                           </label>
@@ -1547,7 +1545,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                               type="email"
                               value={editedLead?.email || ''}
                               onChange={(e) => handleFieldChange('email', e.target.value)}
-                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-blue-500"
                               placeholder="email@exemple.com"
                             />
                             <button
@@ -1567,7 +1565,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                           </div>
                         </div>
 
-                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-slate-300">
                           <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
                             Identifiant (SIRET)
                           </label>
@@ -1576,7 +1574,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                               type="text"
                               value={editedLead?.siret || ''}
                               onChange={(e) => handleFieldChange('siret', e.target.value)}
-                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-blue-500"
                               placeholder="Numéro SIRET"
                             />
                             <button
@@ -1596,7 +1594,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                           </div>
                         </div>
 
-                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-blue-200">
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-slate-300">
                           <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">
                             Mot de passe (Code à 6 chiffres)
                           </label>
@@ -1605,7 +1603,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                               type="text"
                               value={editedLead?.client_password || ''}
                               onChange={(e) => handleFieldChange('client_password', e.target.value)}
-                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg tracking-wider focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              className="flex-1 px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-gray-900 bg-white border border-gray-300 rounded-lg tracking-wider focus:ring-2 focus:ring-slate-500 focus:border-blue-500"
                               placeholder="Code 6 chiffres"
                               maxLength={6}
                             />
@@ -1641,7 +1639,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                       </div>
 
                       {/* Bouton Enregistrer */}
-                      <div className="mt-6 pt-4 border-t border-blue-200">
+                      <div className="mt-6 pt-4 border-t border-slate-300">
                         <button
                           onClick={async () => {
                             if (!editedLead) return;
@@ -1685,8 +1683,8 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
 
                     {/* Bouton de connexion au panel client */}
                     {onClientLogin && (
-                      <div className="border rounded-lg p-4 bg-blue-50 border-blue-200">
-                        <h4 className="font-semibold mb-2 text-blue-900">
+                      <div className="border rounded-lg p-4 bg-blue-50 border-slate-300">
+                        <h4 className="font-semibold mb-2 text-slate-900">
                           Accès au panel client
                         </h4>
                         <p className="text-sm mb-4 text-blue-700">

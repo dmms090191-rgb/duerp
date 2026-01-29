@@ -79,8 +79,8 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
         <div className="text-center">
-          <div className="w-24 h-24 bg-gradient-to-r from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <MessageSquare className="w-12 h-12 text-emerald-600" />
+          <div className="w-24 h-24 bg-gradient-to-r from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-6">
+            <MessageSquare className="w-12 h-12 text-[#2d4578]" />
           </div>
           <h3 className="text-2xl font-bold text-gray-900 mb-4">
             Aucun client assigné
@@ -104,12 +104,12 @@ const SellerChatList: React.FC<SellerChatListProps> = ({
               onClick={() => setSelectedClient(client)}
               className={`w-full text-left p-4 rounded-lg border transition-all ${
                 selectedClient?.id === client.id
-                  ? 'border-emerald-500 bg-emerald-50'
-                  : 'border-gray-200 hover:border-emerald-300 hover:bg-gray-50'
+                  ? 'border-[#2d4578] bg-blue-50'
+                  : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-gradient-to-r from-slate-800 to-slate-900 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">

@@ -230,7 +230,7 @@ export default function SimpleEmailConfigurator() {
   const getEmailColor = (key: string) => {
     switch (key) {
       case 'identifiants':
-        return 'from-blue-500 to-blue-600';
+        return 'from-slate-700 to-slate-800';
       case 'relance':
         return 'from-orange-500 to-orange-600';
       case 'procedure_prise_en_charge':
@@ -250,7 +250,7 @@ export default function SimpleEmailConfigurator() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white shadow-xl">
+      <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white shadow-xl">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">Configuration des Emails</h1>
@@ -398,7 +398,7 @@ export default function SimpleEmailConfigurator() {
                     <div className="pt-2 space-y-2">
                       <button
                         onClick={() => startEdit(template)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors font-semibold"
                       >
                         <Edit2 className="w-4 h-4" />
                         Modifier

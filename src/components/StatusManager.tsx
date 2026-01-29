@@ -76,7 +76,7 @@ const StatusManager: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-600 rounded-2xl p-8 text-white shadow-2xl">
+      <div className="bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 rounded-2xl p-8 text-white shadow-2xl">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-4 mb-3">
@@ -102,7 +102,7 @@ const StatusManager: React.FC = () => {
               className={`flex items-center gap-2 px-6 py-4 font-bold transition-all text-sm ${
                 activeTab === 'create'
                   ? 'text-blue-700 border-b-4 border-blue-600 bg-gradient-to-b from-blue-50 to-blue-100/50'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
+                  : 'text-gray-600 hover:text-slate-600 hover:bg-slate-50/50'
               }`}
             >
               <Plus className="w-5 h-5" />
@@ -113,7 +113,7 @@ const StatusManager: React.FC = () => {
               className={`flex items-center gap-2 px-6 py-4 font-bold transition-all text-sm ${
                 activeTab === 'list'
                   ? 'text-blue-700 border-b-4 border-blue-600 bg-gradient-to-b from-blue-50 to-blue-100/50'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50/50'
+                  : 'text-gray-600 hover:text-slate-600 hover:bg-slate-50/50'
               }`}
             >
               <List className="w-5 h-5" />
@@ -217,7 +217,7 @@ const StatusManager: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading || !newStatusName.trim()}
-                  className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 text-white rounded-xl font-extrabold hover:from-blue-700 hover:via-blue-600 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white rounded-xl font-extrabold hover:from-slate-900 hover:via-slate-800 hover:to-black transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
                   {loading ? (
                     <>
@@ -248,7 +248,7 @@ const StatusManager: React.FC = () => {
                   </p>
                   <button
                     onClick={() => setActiveTab('create')}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-600 text-white rounded-xl hover:from-blue-700 hover:via-blue-600 hover:to-cyan-700 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 font-extrabold"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white rounded-xl hover:from-slate-900 hover:via-slate-800 hover:to-black transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 font-extrabold"
                   >
                     <Plus className="w-5 h-5" />
                     Créer un statut

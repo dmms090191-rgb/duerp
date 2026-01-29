@@ -148,7 +148,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Sidebar Navigation */}
       <aside className={`
-        w-72 flex-shrink-0 bg-gradient-to-b from-[#1e3a5f] via-[#2c4a6f] to-[#1e3a5f]
+        w-72 flex-shrink-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
         lg:static lg:block
         fixed top-0 left-0 h-screen z-50
         transition-transform duration-300 ease-in-out
@@ -180,7 +180,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('bulk-import')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'bulk-import'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -191,7 +191,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('leads-tab')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'leads-tab'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -202,7 +202,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('leads')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'leads'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -213,7 +213,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('sellers')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'sellers'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -224,7 +224,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('admins')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'admins'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -235,7 +235,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('users-monitor')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'users-monitor'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -246,7 +246,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('all-accounts')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'all-accounts'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -257,7 +257,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('chat')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'chat'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -268,7 +268,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('chat-vendeur')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'chat-vendeur'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -279,7 +279,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('statuses')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'statuses'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -290,7 +290,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('argumentaire')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'argumentaire'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -301,7 +301,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('email-config')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'email-config'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -312,7 +312,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onClick={() => handleTabChange('signature')}
               className={`group w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-200 ${
                 activeTab === 'signature'
-                  ? 'bg-white text-[#2c4a6f] shadow-lg'
+                  ? 'bg-white text-slate-900 shadow-lg'
                   : 'text-white/80 hover:bg-white/10 hover:text-white'
               }`}
             >
@@ -352,7 +352,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onNotificationClick={handleNotificationClick}
             />
             <div className="flex items-center gap-3 px-4 py-2 bg-gray-100 rounded-xl">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#2c4a6f] to-[#3d5a9e] rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center">
                 <UserIcon className="w-4 h-4 text-white" />
               </div>
               <span className="text-sm font-medium text-gray-800">
@@ -444,11 +444,11 @@ const Dashboard: React.FC<DashboardProps> = ({
 
             {activeTab === 'chat-vendeur' && (
               <div className="space-y-6">
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl p-6 text-white">
+                <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl p-6 text-white">
                   <div className="flex items-center justify-between">
                     <div>
                       <h2 className="text-2xl font-bold mb-2">Chat Vendeur</h2>
-                      <p className="text-emerald-100">Espace de communication interne avec les vendeurs</p>
+                      <p className="text-slate-300">Espace de communication interne avec les vendeurs</p>
                     </div>
                     <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4">
                       <ShoppingBag className="w-12 h-12" />

@@ -361,7 +361,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
               onClick={() => setActiveTab('import')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 activeTab === 'import'
-                  ? 'bg-green-50 text-green-700 border border-green-200'
+                  ? 'bg-slate-100 text-slate-800 border border-slate-200'
                   : 'text-gray-700 hover:bg-gray-50 border border-transparent'
               }`}
             >
@@ -376,7 +376,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
               onClick={() => setActiveTab('list')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 activeTab === 'list'
-                  ? 'bg-green-50 text-green-700 border border-green-200'
+                  ? 'bg-slate-100 text-slate-800 border border-slate-200'
                   : 'text-gray-700 hover:bg-gray-50 border border-transparent'
               }`}
             >
@@ -385,7 +385,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 <div className="font-medium text-sm flex items-center justify-between">
                   Liste des leads masse
                   {leads.length > 0 && (
-                    <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                    <span className="bg-slate-200 text-slate-900 text-xs font-medium px-2 py-0.5 rounded-full">
                       {leads.length}
                     </span>
                   )}
@@ -421,7 +421,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
         <div className="w-full">
           <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center">
                 <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <div>
@@ -438,7 +438,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 {/* Format Configuration */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
                   <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Upload className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+                    <Upload className="w-4 h-4 md:w-5 md:h-5 text-slate-800" />
                     Format des colonnes
                   </h3>
 
@@ -460,7 +460,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                                 handleFileSelect(csvFile, 'UTF-8');
                               }
                             }}
-                            className="w-4 h-4 text-green-600 focus:ring-green-500"
+                            className="w-4 h-4 text-slate-800 focus:ring-blue-500"
                           />
                           <span className="text-sm text-gray-700">UTF-8 (recommandé)</span>
                         </label>
@@ -476,7 +476,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                                 handleFileSelect(csvFile, 'ISO-8859-1');
                               }
                             }}
-                            className="w-4 h-4 text-green-600 focus:ring-green-500"
+                            className="w-4 h-4 text-slate-800 focus:ring-blue-500"
                           />
                           <span className="text-sm text-gray-700">ISO-8859-1 (Excel Windows)</span>
                         </label>
@@ -494,7 +494,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                         type="text"
                         value={csvFormat}
                         onChange={(e) => setCsvFormat(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                         placeholder="nom,prenom,email,motDePasse,telephone"
                       />
                       <p className="text-xs text-gray-500 mt-1">
@@ -503,17 +503,17 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                     </div>
 
                     {csvFile && csvFormat && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h4 className="text-sm font-semibold text-green-900 mb-2 flex items-center gap-2">
-                          <div className="w-5 h-5 bg-green-600 rounded-full flex items-center justify-center">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                          <div className="w-5 h-5 bg-[#2d4578] rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">✓</span>
                           </div>
                           Colonnes détectées
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {csvFormat.split(',').map((col, index) => (
-                            <span key={index} className="inline-flex items-center gap-1 bg-white px-3 py-1.5 rounded-full text-sm font-medium text-green-700 border border-green-200">
-                              <span className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center text-xs font-bold text-green-700">
+                            <span key={index} className="inline-flex items-center gap-1 bg-white px-3 py-1.5 rounded-full text-sm font-medium text-blue-700 border border-blue-200">
+                              <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700">
                                 {index + 1}
                               </span>
                               {col.trim()}
@@ -534,15 +534,15 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 {/* File Upload */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
                   <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Plus className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+                    <Plus className="w-4 h-4 md:w-5 md:h-5 text-slate-800" />
                     Sélectionner le fichier
                   </h3>
 
                   <div
                     className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
                       isDragging
-                        ? 'border-green-400 bg-green-50'
-                        : 'border-gray-300 hover:border-green-400 hover:bg-green-50'
+                        ? 'border-blue-400 bg-blue-50'
+                        : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -555,7 +555,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                     <p className="text-gray-500 mb-4">ou</p>
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                      className="bg-[#2d4578] text-white px-6 py-2 rounded-lg hover:bg-[#1a2847] transition-colors font-medium"
                     >
                       Parcourir les fichiers
                     </button>
@@ -572,8 +572,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                     <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <Upload className="w-5 h-5 text-green-600" />
+                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <Upload className="w-5 h-5 text-slate-800" />
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">{csvFile.name}</p>
@@ -603,8 +603,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                         </div>
                       ) : csvPreview.length > 0 ? (
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-green-600">
-                            <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                          <div className="flex items-center gap-2 text-slate-800">
+                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                               <span className="text-xs font-bold">{csvPreview.length - 1}</span>
                             </div>
                             <span className="text-sm font-medium">
@@ -616,7 +616,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                           </p>
                           <button
                             onClick={handleImportCsv}
-                            className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center gap-2"
+                            className="w-full bg-[#2d4578] text-white py-3 px-4 rounded-lg hover:bg-[#1a2847] transition-colors font-medium flex items-center justify-center gap-2"
                           >
                             <Upload className="w-4 h-4" />
                             Importer {csvPreview.length - 1} leads
@@ -664,9 +664,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                         </ul>
                       </div>
 
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h4 className="font-medium text-green-900 mb-2">Processus d'import</h4>
-                        <ol className="text-sm text-green-800 space-y-1">
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h4 className="font-medium text-blue-900 mb-2">Processus d'import</h4>
+                        <ol className="text-sm text-blue-800 space-y-1">
                           <li>1. Choisissez l'encodage correct (UTF-8 ou ISO-8859-1)</li>
                           <li>2. Sélectionnez votre fichier CSV</li>
                           <li>3. Les colonnes seront automatiquement détectées et affichées</li>
@@ -688,9 +688,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
               <div className="p-4 md:p-6 border-b border-gray-200">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <List className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
+                    <List className="w-5 h-5 md:w-6 md:h-6 text-slate-800" />
                     <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Liste des leads masse</h2>
-                    <span className="bg-green-100 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                    <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
                       {leads.length}
                     </span>
                   </div>
@@ -702,7 +702,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                       </span>
                       <button
                         onClick={handleTransferSelected}
-                        className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg hover:bg-slate-900 transition-colors"
                       >
                         <ArrowRight className="w-4 h-4" />
                         <span className="hidden sm:inline">Transférer vers Clients</span>
@@ -727,7 +727,7 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                   <p className="text-gray-500 mb-6">Commencez par importer votre premier fichier CSV</p>
                   <button
                     onClick={() => setActiveTab('import')}
-                    className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                    className="inline-flex items-center gap-2 bg-[#2d4578] text-white px-4 py-2 rounded-lg hover:bg-[#1a2847] transition-colors"
                   >
                     <Upload className="w-4 h-4" />
                     Importer des leads
@@ -771,10 +771,10 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                           <td className="px-2 py-2 border-r border-gray-200 text-center w-8">
                             <button
                               onClick={() => handleSelectLead(lead.id)}
-                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-green-600 transition-colors"
+                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-slate-800 transition-colors"
                             >
                               {selectedLeads.includes(lead.id) ? (
-                                <CheckSquare className="w-5 h-5 text-green-600" />
+                                <CheckSquare className="w-5 h-5 text-slate-800" />
                               ) : (
                                 <Square className="w-5 h-5" />
                               )}

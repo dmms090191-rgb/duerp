@@ -533,7 +533,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(96,165,250,0.08)_0%,transparent_70%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.05)_0%,transparent_50%)]"></div>
       <div className="relative z-0">
-      <header className="fixed top-0 left-0 right-0 z-40 overflow-hidden border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-40 overflow-visible border-b border-white/5">
         <div className="absolute inset-0 bg-gradient-to-r from-[#1a2847]/98 via-[#2d4578]/98 to-[#1a2847]/98"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(96,165,250,0.1),transparent_50%)]"></div>
         <div className="absolute inset-0 backdrop-blur-2xl"></div>
@@ -956,7 +956,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                         <ClipboardCheck className="w-5 h-5 md:w-7 md:h-7 text-white" />
                       </div>
                       <div>
-                        <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Diagnostic DUERP</h2>
+                        <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-[#2d4578] to-[#1a2847] bg-clip-text text-transparent">Diagnostic DUERP</h2>
                         <p className="text-xs text-gray-600 font-medium mt-1">Article L4121-1</p>
                       </div>
                     </div>
@@ -4341,13 +4341,13 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           {activeTab === 'opco' && (
             <div className="max-w-4xl mx-auto py-4 md:py-8">
               <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl overflow-hidden border border-blue-100">
-                <div className="bg-gradient-to-r from-blue-50 to-sky-100 px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
+                <div className="bg-gradient-to-r from-[#e8edf5] to-[#dde4f0] px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
                       <Building2 className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
+                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-[#2d4578] to-[#1a2847] bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
                       <p className="text-xs md:text-sm text-gray-700 font-semibold">OPCO opérateur de compétences</p>
                     </div>
                   </div>
@@ -4508,7 +4508,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       <p className="text-xs md:text-sm font-semibold text-blue-900 mb-3 md:mb-4">
                         Merci de fournir les informations concernant le(s) salarié(s)
                       </p>
-                      <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm md:text-base">
+                      <button className="bg-gradient-to-r from-[#2d4578] to-[#1a2847] hover:from-[#3a5488] hover:to-[#223761] text-white font-bold py-2.5 md:py-3 px-4 md:px-6 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 flex items-center gap-2 text-sm md:text-base">
                         <span className="text-lg md:text-xl">+</span> AJOUTER
                       </button>
                     </div>
@@ -4517,7 +4517,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       <button
                         onClick={handleSubmit}
                         disabled={isGeneratingPDF}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm md:text-base">
+                        className="w-full bg-gradient-to-r from-[#2d4578] to-[#1a2847] hover:from-[#3a5488] hover:to-[#223761] text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm md:text-base">
                         {isGeneratingPDF ? 'Génération du PDF en cours...' : 'Valider'}
                       </button>
                     </div>
@@ -4530,13 +4530,13 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           {activeTab === 'reglement' && (
             <div className="max-w-4xl mx-auto py-4 md:py-8">
               <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl overflow-hidden border border-blue-100">
-                <div className="bg-gradient-to-r from-blue-50 to-sky-100 px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
+                <div className="bg-gradient-to-r from-[#e8edf5] to-[#dde4f0] px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
                       <FileCheck className="w-5 h-5 md:w-6 md:h-6 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
+                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-[#2d4578] to-[#1a2847] bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
                       <p className="text-xs md:text-sm text-gray-700 font-semibold">Dossier de prise en charge</p>
                     </div>
                   </div>
@@ -4604,7 +4604,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     </div>
 
                     <div className="pt-3 md:pt-4">
-                      <button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base">
+                      <button className="w-full bg-gradient-to-r from-[#2d4578] to-[#1a2847] hover:from-[#3a5488] hover:to-[#223761] text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base">
                         <FileCheck className="w-4 h-4 md:w-5 md:h-5" />
                         Valider le règlement de prise en charge
                       </button>

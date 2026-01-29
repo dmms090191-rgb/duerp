@@ -476,11 +476,11 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
       {showPanel && (
         <>
           <div
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[60]"
             onClick={() => setShowPanel(false)}
           />
-          <div className="absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4 flex items-center justify-between">
+          <div className="absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-2xl border border-gray-200 z-[70] overflow-hidden">
+            <div className="bg-gradient-to-r from-[#2d4578] to-[#1a2847] p-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Bell className="w-5 h-5 text-white" />
                 <h3 className="text-white font-bold text-lg">Notifications</h3>
@@ -519,7 +519,7 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
                       <div className="flex items-start gap-3">
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                           notification.chatType === 'client'
-                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600'
+                            ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847]'
                             : 'bg-gradient-to-r from-emerald-500 to-teal-600'
                         }`}>
                           {notification.chatType === 'client' ? (

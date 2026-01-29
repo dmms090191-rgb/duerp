@@ -438,7 +438,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
         <div className="w-full">
           <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-slate-700 to-slate-800 rounded-lg flex items-center justify-center">
                 <Users className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
               <h1 className="text-xl md:text-3xl font-bold text-gray-900">Gestionnaire de leads</h1>
@@ -452,7 +452,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
           {activeTab === 'add' && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
               <div className="flex items-center gap-3 mb-6">
-                <Plus className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
+                <Plus className="w-5 h-5 md:w-6 md:h-6 text-slate-600" />
                 <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Ajouter un lead</h2>
               </div>
 
@@ -475,7 +475,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           name="prenom"
                           value={formData.prenom}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                           placeholder="Prénom"
                           required
                         />
@@ -496,7 +496,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           name="nom"
                           value={formData.nom}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                           placeholder="Nom de famille"
                           required
                         />
@@ -523,7 +523,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                           placeholder="email@exemple.com"
                           required
                         />
@@ -545,7 +545,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                             name="telephone"
                             value={formData.telephone}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                             placeholder="+33 1 23 45 67 89"
                             required
                           />
@@ -566,7 +566,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                             name="portable"
                             value={formData.portable}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                             placeholder="+33 6 12 34 56 78"
                           />
                         </div>
@@ -593,7 +593,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           name="societe"
                           value={formData.societe}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                           placeholder="Nom de la société"
                         />
                       </div>
@@ -614,7 +614,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                             name="siret"
                             value={formData.siret}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                             placeholder="123 456 789 00012"
                           />
                         </div>
@@ -634,7 +634,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                             name="activite"
                             value={formData.activite}
                             onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                             placeholder="Secteur d'activité"
                           />
                         </div>
@@ -661,7 +661,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           name="rendezVous"
                           value={formData.rendezVous}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                         />
                       </div>
                     </div>
@@ -676,7 +676,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           name="statusId"
                           value={formData.statusId}
                           onChange={handleInputChange}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
                         >
                           <option value="">Sélectionner un statut</option>
                           {statuses.map((status) => (
@@ -704,7 +704,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                       name="vendeur"
                       value={formData.vendeur}
                       onChange={handleInputChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 bg-white"
                     >
                       <option value="">-- Sélectionner un vendeur --</option>
                       <option value="Super Admin">Super Admin</option>
@@ -720,7 +720,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                 {/* Info mot de passe automatique */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                   <div className="flex items-start gap-3">
-                    <Lock className="h-5 w-5 text-blue-600 mt-0.5" />
+                    <Lock className="h-5 w-5 text-slate-600 mt-0.5" />
                     <div>
                       <h4 className="text-sm font-semibold text-blue-900 mb-1">Mot de passe automatique</h4>
                       <p className="text-sm text-blue-800">
@@ -734,7 +734,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                 <div className="pt-4">
                   <button
                     type="submit"
-                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-8 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white py-3 px-8 rounded-lg font-medium hover:from-slate-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
                   >
                     <Plus className="w-4 h-4" />
                     Valider
@@ -755,7 +755,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                  <List className="w-6 h-6 text-blue-600" />
+                  <List className="w-6 h-6 text-slate-600" />
                   <h2 className="text-2xl font-semibold text-gray-900">Leads créés</h2>
                   <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
                     {leads.length}
@@ -769,7 +769,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                       </span>
                       <button
                         onClick={handleOpenAssignSellerModal}
-                        className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 bg-slate-800 text-white text-sm rounded-lg hover:bg-slate-900 transition-colors"
                       >
                         <UserCheck className="w-4 h-4" />
                         Attribuer à un vendeur
@@ -802,7 +802,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                   <p className="text-gray-500 mb-6">Commencez par ajouter votre premier lead</p>
                   <button
                     onClick={() => setActiveTab('add')}
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center gap-2 bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-slate-900 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter un lead
@@ -906,10 +906,10 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                           <td className="px-6 py-4 whitespace-nowrap">
                             <button
                               onClick={() => handleSelectLead(lead.id)}
-                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-blue-600 transition-colors"
+                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-slate-600 transition-colors"
                             >
                               {selectedLeads.includes(lead.id) ? (
-                                <CheckSquare className="w-5 h-5 text-blue-600" />
+                                <CheckSquare className="w-5 h-5 text-slate-600" />
                               ) : (
                                 <Square className="w-5 h-5" />
                               )}
@@ -934,7 +934,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                                   }
                                 }
                               }}
-                              className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-slate-500"
                             />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -988,7 +988,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 rounded-t-xl flex items-center justify-between">
+            <div className="sticky top-0 bg-gradient-to-r from-slate-800 to-slate-900 text-white p-6 rounded-t-xl flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <User className="w-6 h-6" />
                 <h3 className="text-xl font-bold">Détails du Lead</h3>
@@ -1144,7 +1144,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                   value={selectedSellerForAssignment}
                   onChange={(e) => setSelectedSellerForAssignment(e.target.value)}
                   disabled={assigning}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
                   <option value="">-- Sélectionner un vendeur --</option>
                   {superAdmin && (
@@ -1171,7 +1171,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                 <button
                   onClick={handleAssignSeller}
                   disabled={!selectedSellerForAssignment || assigning}
-                  className="flex-1 px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-3 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {assigning ? (
                     <>
