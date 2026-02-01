@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send, Trash2, AlertCircle } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import ClientNotificationSystem from './ClientNotificationSystem';
+import PaymentSection from './PaymentSection';
 import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../services/pdfService';
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
 import { supabase } from '../lib/supabase';
@@ -4528,109 +4529,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'reglement' && (
-            <div className="max-w-4xl mx-auto py-4 md:py-8">
-              <div className="bg-white/95 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-xl overflow-hidden border border-blue-100">
-                <div className="bg-gradient-to-r from-[#e8edf5] to-[#dde4f0] px-4 md:px-8 py-4 md:py-6 border-b border-blue-200">
-                  <div className="flex items-center gap-3 md:gap-4">
-                    <div className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl md:rounded-2xl shadow-lg">
-                      <FileCheck className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                    </div>
-                    <div>
-                      <h2 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-[#2d4578] to-[#1a2847] bg-clip-text text-transparent">{client.siret || 'JLJC 85342031300019'}</h2>
-                      <p className="text-xs md:text-sm text-gray-700 font-semibold">Dossier de prise en charge</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="relative bg-gradient-to-br from-blue-600 via-sky-600 to-cyan-700 h-32 md:h-48 overflow-hidden">
-                  <div className="absolute inset-0 bg-black opacity-10"></div>
-                  <div className="absolute inset-0 flex items-center justify-center px-4 md:px-8">
-                    <div className="text-center">
-                      <div className="inline-flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-white/20 backdrop-blur-sm rounded-full mb-2 md:mb-4">
-                        <Building2 className="w-6 h-6 md:w-8 md:h-8 text-white" />
-                      </div>
-                      <h3 className="text-lg md:text-2xl font-bold text-white mb-1 md:mb-2">Procédure de règlement</h3>
-                      <p className="text-blue-50 text-sm md:text-lg font-medium max-w-2xl">
-                        Veuillez compléter les informations ci-dessous pour finaliser votre prise en charge
-                      </p>
-                    </div>
-                  </div>
-                  <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-white/5 rounded-full -mr-24 md:-mr-32 -mt-24 md:-mt-32"></div>
-                  <div className="absolute bottom-0 left-0 w-36 h-36 md:w-48 md:h-48 bg-white/5 rounded-full -ml-18 md:-ml-24 -mb-18 md:-mb-24"></div>
-                </div>
-
-                <div className="px-4 md:px-8 py-6 md:py-10">
-                  <div className="mb-6 md:mb-8">
-                    <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-6">
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
-                      <h3 className="text-blue-700 font-bold text-sm md:text-lg tracking-wide uppercase">
-                        Procédure de prise en charge
-                      </h3>
-                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
-                    </div>
-                  </div>
-
-                  <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
-                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
-                      <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
-                        <User className="w-3 h-3 md:w-4 md:h-4 text-blue-600" />
-                        Nombre de salariés
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-xs md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
-                        <option value="" className="text-gray-500">Sélectionnez le nombre de salariés</option>
-                        <option value="5">Jusqu'à 5 salariés (Rapport DUERP + Attestation de conformité) 830 € HT</option>
-                        <option value="10">Jusqu'à 10 salariés (Rapport DUERP + Attestation de conformité) 1000 € HT</option>
-                        <option value="15">Jusqu'à 15 salariés (Rapport DUERP + Attestation de conformité) 1230 € HT</option>
-                        <option value="25">Jusqu'à 25 salariés (Rapport DUERP + Attestation de conformité) 1625 € HT</option>
-                        <option value="50">Jusqu'à 50 salariés (Rapport DUERP + Attestation de conformité) 2150 € HT</option>
-                        <option value="update">Mise à jour Attestation de conformité 2026 (adhérents existants) 290 € HT</option>
-                      </select>
-                    </div>
-
-                    <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
-                      <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
-                        <svg className="w-3 h-3 md:w-4 md:h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
-                        Méthode de règlement
-                        <span className="text-red-500">*</span>
-                      </label>
-                      <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer">
-                        <option value="" className="text-gray-500">Choisissez votre mode de paiement</option>
-                        <option value="cb-1fois">Règlement CB en 1 fois</option>
-                        <option value="cb-3fois">Règlement CB en 3 fois sans frais</option>
-                      </select>
-                    </div>
-
-                    <div className="pt-3 md:pt-4">
-                      <button className="w-full bg-gradient-to-r from-[#2d4578] to-[#1a2847] hover:from-[#3a5488] hover:to-[#223761] text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base">
-                        <FileCheck className="w-4 h-4 md:w-5 md:h-5" />
-                        Valider le règlement de prise en charge
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 md:mt-10 pt-6 md:pt-8 border-t border-gray-200">
-                    <div className="max-w-2xl mx-auto bg-blue-50 border-l-4 border-blue-500 p-4 md:p-6 rounded-r-lg">
-                      <div className="flex gap-3 md:gap-4">
-                        <div className="flex-shrink-0">
-                          <svg className="w-5 h-5 md:w-6 md:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                        </div>
-                        <div>
-                          <h4 className="text-blue-900 font-bold mb-1 md:mb-2 text-sm md:text-base">Informations importantes</h4>
-                          <p className="text-xs md:text-sm text-blue-800 leading-relaxed">
-                            Une fois le règlement de la prise en charge effectué, vous recevrez <strong>l'attestation</strong> à présenter lors d'un contrôle, ainsi qu'un <strong>rendez-vous téléphonique</strong> avec le service expertise pour remplir le rapport conforme, suivi du <strong>formulaire de remboursement</strong>.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <PaymentSection client={client} />
           )}
 
           {activeTab === 'password' && (
@@ -5068,8 +4967,8 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'chat' && (
-            <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-4 lg:gap-6" style={{ height: 'calc(100vh - 16rem)' }}>
-              <div className="lg:col-span-1 space-y-4 h-full">
+            <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-0 lg:gap-6" style={{ height: 'calc(100vh - 10rem)' }}>
+              <div className="hidden lg:block lg:col-span-1 space-y-4 h-full">
                 <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-4 lg:p-6 h-full flex flex-col">
                   <div className="flex items-center gap-2 mb-3 lg:mb-4">
                     <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5 text-green-400" />
@@ -5081,7 +4980,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   <div className="space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
                     <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
                       <div className="flex items-start gap-3">
-                        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full shadow-lg flex-shrink-0">
+                        <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full shadow-lg flex-shrink-0">
                           <User className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1">
@@ -5133,8 +5032,8 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 </div>
               </div>
 
-              <div className="lg:col-span-3 flex flex-col h-full">
-                <div className="flex flex-col h-full bg-white relative rounded-2xl shadow-xl overflow-hidden w-full">
+              <div className="flex-1 lg:col-span-3 flex flex-col h-full">
+                <div className="flex flex-col h-full bg-white relative rounded-none lg:rounded-2xl shadow-xl overflow-hidden w-full">
                   <ChatWindow
                     clientId={client.id}
                     currentUserId={client.id}
