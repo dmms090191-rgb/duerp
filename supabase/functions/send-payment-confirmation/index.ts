@@ -647,6 +647,25 @@ Deno.serve(async (req: Request) => {
       console.log('✅ Attestation sauvegardée dans les documents du client');
     }
 
+    const { data: factureUrlData } = supabase.storage
+      .from('documents')
+      .getPublicUrl(factureFilePath);
+
+    const { data: attestationUrlData } = supabase.storage
+      .from('documents')
+      .getPublicUrl(attestationFilePath);
+
+    const { data: emailTemplate, error: templateError } = await supabase
+      .from('email_templates')
+      .select('*')
+      .eq('key', 'procedure')
+      .maybeSingle();
+
+    if (templateError || !emailTemplate) {
+      console.error('❌ Template email non trouvé:', templateError);
+      throw new Error('Template email "Procédure de prise en charge" non trouvé');
+    }
+
     const transporter = nodemailer.createTransport({
       host: 'smtp.hostinger.com',
       port: 465,
@@ -661,173 +680,46 @@ Deno.serve(async (req: Request) => {
       }
     });
 
-    const emailBody = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
-            margin: 0;
-            padding: 0;
-          }
-          .container {
-            max-width: 600px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          }
-          .header {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-          }
-          .header h1 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 600;
-          }
-          .content {
-            padding: 30px 20px;
-          }
-          .success-badge {
-            background: #10b981;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 20px;
-          }
-          .info-box {
-            background: #eff6ff;
-            border-left: 4px solid #2563eb;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-          }
-          .info-box strong {
-            color: #1e40af;
-          }
-          .document-section {
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-          }
-          .document-section h2 {
-            color: #1e40af;
-            margin-top: 0;
-            font-size: 18px;
-          }
-          .document-link {
-            display: inline-block;
-            background: #2563eb;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
-            margin: 10px 10px 10px 0;
-            font-weight: 600;
-          }
-          .document-link:hover {
-            background: #1e40af;
-          }
-          .next-steps {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
-          }
-          .next-steps h3 {
-            color: #92400e;
-            margin-top: 0;
-          }
-          .next-steps ul {
-            margin: 10px 0;
-            padding-left: 20px;
-          }
-          .next-steps li {
-            margin: 8px 0;
-            color: #78350f;
-          }
-          .footer {
-            background: #f3f4f6;
-            padding: 20px;
-            text-align: center;
-            font-size: 14px;
-            color: #6b7280;
-          }
-          .footer a {
-            color: #2563eb;
-            text-decoration: none;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>✓ Paiement confirmé</h1>
-            <p style="margin: 10px 0 0 0;">Votre prise en charge DUERP est validée</p>
-          </div>
+    let emailBody = emailTemplate.body_html || emailTemplate.body || '';
+    let emailSubject = emailTemplate.subject || 'Procédure de prise en charge de votre dossier';
 
-          <div class="content">
-            <div class="success-badge">
-              Votre règlement a été traité avec succès
-            </div>
+    const replacements: Record<string, string> = {
+      '{{societe}}': client.company_name || '',
+      '{{prenom}}': client.prenom || '',
+      '{{nom}}': client.nom || '',
+      '{{email}}': client.email || '',
+      '{{adresse}}': adresseComplete,
+      '{{siret}}': client.siret || '',
+      '{{montant_ht}}': priceHT.toFixed(2),
+      '{{montant_ttc}}': priceTTC.toFixed(2),
+      '{{prestation}}': product.name,
+      '{{nombre_salaries}}': employeeRange
+    };
 
-            <p>Bonjour ${client.prenom || ''} ${client.nom || ''},</p>
+    for (const [key, value] of Object.entries(replacements)) {
+      emailBody = emailBody.replace(new RegExp(key, 'g'), value);
+      emailSubject = emailSubject.replace(new RegExp(key, 'g'), value);
+    }
 
-            <p>Nous vous confirmons la bonne réception de votre paiement pour la prise en charge de votre <strong>Document Unique d'Évaluation des Risques Professionnels (DUERP)</strong>.</p>
-
-            <div class="info-box">
-              <strong>Prestation souscrite :</strong> ${product.name}<br>
-              <strong>Nombre de salariés :</strong> ${employeeRange}<br>
-              <strong>Montant HT :</strong> ${priceHT.toFixed(2)} €<br>
-              <strong>Montant TTC :</strong> ${priceTTC.toFixed(2)} €
-            </div>
-
-            <div class="document-section">
-              <h2>📄 Vos documents sont disponibles</h2>
-              <p>Vous trouverez ci-joints :</p>
-              <a href="${invoiceUrl}" class="document-link" target="_blank">📄 Télécharger la facture</a>
-              <a href="${certificateUrl}" class="document-link" target="_blank">🏆 Télécharger l'attestation</a>
-            </div>
-
-            <div class="next-steps">
-              <h3>📋 Prochaines étapes</h3>
-              <ul>
-                <li>Un conseiller vous contactera pour planifier un rendez-vous téléphonique</li>
-                <li>Vous remplirez ensemble le rapport conforme avec notre expertise</li>
-                <li>Vous recevrez ensuite le formulaire de remboursement</li>
-                <li>Conservez votre attestation pour la présenter en cas de contrôle</li>
-              </ul>
-            </div>
-
-            <p style="margin-top: 30px;">Pour toute question, notre équipe reste à votre disposition.</p>
-
-            <p style="margin-bottom: 0;">Cordialement,<br><strong>L'équipe Cabinet FPE</strong></p>
-          </div>
-
-          <div class="footer">
-            <p>
-              <strong>Cabinet FPE - Sécurité Professionnelle</strong><br>
-              <a href="mailto:administration@securiteprofessionnelle.fr">administration@securiteprofessionnelle.fr</a><br>
-              <a href="https://www.securiteprofessionnelle.fr" target="_blank">www.securiteprofessionnelle.fr</a>
-            </p>
-          </div>
+    emailBody += `
+      <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 30px 0; border: 2px solid #3b82f6;">
+        <h2 style="color: #1e40af; margin-top: 0; font-size: 18px; text-align: center;">📄 Vos documents sont disponibles</h2>
+        <p style="text-align: center; margin-bottom: 20px;">Veuillez trouver ci-joints :</p>
+        <div style="text-align: center;">
+          <a href="${factureUrlData.publicUrl}" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px; font-weight: 600;">📄 Télécharger la facture</a>
+          <a href="${attestationUrlData.publicUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px; font-weight: 600;">🏆 Télécharger l'attestation</a>
         </div>
-      </body>
-      </html>
+      </div>
+
+      <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+        <h3 style="color: #92400e; margin-top: 0;">📋 Prochaines étapes</h3>
+        <ul style="margin: 10px 0; padding-left: 20px; color: #78350f;">
+          <li style="margin: 8px 0;">Un conseiller vous contactera pour planifier un rendez-vous téléphonique</li>
+          <li style="margin: 8px 0;">Vous remplirez ensemble le rapport conforme avec notre expertise</li>
+          <li style="margin: 8px 0;">Vous recevrez ensuite le formulaire de remboursement</li>
+          <li style="margin: 8px 0;">Conservez votre attestation pour la présenter en cas de contrôle</li>
+        </ul>
+      </div>
     `;
 
     const mailOptions = {
@@ -837,8 +729,20 @@ Deno.serve(async (req: Request) => {
       },
       replyTo: 'administration@securiteprofessionnelle.fr',
       to: client.email,
-      subject: `✓ Confirmation de paiement - Prise en charge DUERP - ${product.name}`,
+      subject: emailSubject,
       html: emailBody,
+      attachments: [
+        {
+          filename: factureFilename,
+          content: facturePDF,
+          contentType: 'application/pdf'
+        },
+        {
+          filename: attestationFilename,
+          content: attestationPDF,
+          contentType: 'application/pdf'
+        }
+      ],
       headers: {
         'X-Mailer': 'Nodemailer',
         'X-Priority': '3',

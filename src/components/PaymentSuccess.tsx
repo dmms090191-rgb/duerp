@@ -62,7 +62,7 @@ const PaymentSuccess: React.FC = () => {
 
   const handleGoToDocuments = () => {
     setNavigating(true);
-    navigate('/client-dashboard?tab=documents');
+    navigate('/client/dashboard?tab=documents');
   };
 
   if (loading) {
