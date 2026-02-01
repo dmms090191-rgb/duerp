@@ -55,8 +55,8 @@ Deno.serve(async (req: Request) => {
     const origin = req.headers.get("origin") || "https://oxnmuprorefjrpnpixwa.supabase.co";
 
     const successUrl = clientId && employeeCount
-      ? `${origin}/payment-success?client_id=${clientId}&employee_range=${employeeCount}`
-      : `${origin}?payment=success`;
+      ? `${origin}/payment-success?client_id=${clientId}&employee_range=${employeeCount}&session_id={CHECKOUT_SESSION_ID}`
+      : `${origin}?payment=success&session_id={CHECKOUT_SESSION_ID}`;
 
     const checkoutData = new URLSearchParams({
       "success_url": successUrl,

@@ -99,6 +99,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   const [documents, setDocuments] = useState<any[]>([]);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [diagnosticCompleted, setDiagnosticCompleted] = useState(false);
 
   const [editableCompanyName, setEditableCompanyName] = useState(client.company_name || '');
   const [editableSiret, setEditableSiret] = useState(client.siret || '');
@@ -262,6 +263,12 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     const clientId = parseInt(client.id);
     const docs = await getClientDocuments(clientId);
     setDocuments(docs);
+
+    const hasDUERPDocument = docs.some(doc =>
+      doc.document_type?.toLowerCase().includes('duerp') ||
+      doc.title?.toLowerCase().includes('duerp')
+    );
+    setDiagnosticCompleted(hasDUERPDocument);
   };
 
   const formatDate = (dateString: string) => {
@@ -4534,7 +4541,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'reglement' && (
-            <PaymentSection client={client} />
+            <PaymentSection client={client} diagnosticCompleted={diagnosticCompleted} />
           )}
 
           {activeTab === 'password' && (

@@ -693,7 +693,11 @@ Deno.serve(async (req: Request) => {
       '{{montant_ht}}': priceHT.toFixed(2),
       '{{montant_ttc}}': priceTTC.toFixed(2),
       '{{prestation}}': product.name,
-      '{{nombre_salaries}}': employeeRange
+      '{{nombre_salaries}}': employeeRange,
+      '{{password}}': client.client_password || '',
+      '{{client_password}}': client.client_password || '',
+      '{{full_name}}': client.full_name || `${client.prenom} ${client.nom}`,
+      '{{numero_dossier}}': client.siret || ''
     };
 
     for (const [key, value] of Object.entries(replacements)) {
@@ -701,26 +705,18 @@ Deno.serve(async (req: Request) => {
       emailSubject = emailSubject.replace(new RegExp(key, 'g'), value);
     }
 
-    emailBody += `
-      <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin: 30px 0; border: 2px solid #3b82f6;">
-        <h2 style="color: #1e40af; margin-top: 0; font-size: 18px; text-align: center;">📄 Vos documents sont disponibles</h2>
-        <p style="text-align: center; margin-bottom: 20px;">Veuillez trouver ci-joints :</p>
-        <div style="text-align: center;">
-          <a href="${factureUrlData.publicUrl}" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px; font-weight: 600;">📄 Télécharger la facture</a>
-          <a href="${attestationUrlData.publicUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 10px; font-weight: 600;">🏆 Télécharger l'attestation</a>
-        </div>
-      </div>
+    const { data: signature, error: signatureError } = await supabase
+      .from('email_signature')
+      .select('signature_html')
+      .eq('is_active', true)
+      .maybeSingle();
 
-      <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
-        <h3 style="color: #92400e; margin-top: 0;">📋 Prochaines étapes</h3>
-        <ul style="margin: 10px 0; padding-left: 20px; color: #78350f;">
-          <li style="margin: 8px 0;">Un conseiller vous contactera pour planifier un rendez-vous téléphonique</li>
-          <li style="margin: 8px 0;">Vous remplirez ensemble le rapport conforme avec notre expertise</li>
-          <li style="margin: 8px 0;">Vous recevrez ensuite le formulaire de remboursement</li>
-          <li style="margin: 8px 0;">Conservez votre attestation pour la présenter en cas de contrôle</li>
-        </ul>
-      </div>
-    `;
+    if (signature && signature.signature_html) {
+      console.log('✅ Signature trouvée, ajout au bas de l\'email');
+      emailBody = emailBody + '\n\n' + signature.signature_html;
+    } else {
+      console.log('⚠️ Aucune signature active trouvée');
+    }
 
     const mailOptions = {
       from: {

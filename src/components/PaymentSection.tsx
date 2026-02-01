@@ -8,9 +8,10 @@ interface PaymentSectionProps {
     siret?: string;
     email?: string;
   };
+  diagnosticCompleted?: boolean;
 }
 
-const PaymentSection: React.FC<PaymentSectionProps> = ({ client }) => {
+const PaymentSection: React.FC<PaymentSectionProps> = ({ client, diagnosticCompleted = false }) => {
   const [products, setProducts] = useState<StripeProduct[]>([]);
   const [selectedEmployeeRange, setSelectedEmployeeRange] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
@@ -164,6 +165,23 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ client }) => {
             </div>
           )}
 
+          {!diagnosticCompleted && (
+            <div className="max-w-2xl mx-auto mb-6 bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
+              <div className="flex items-start gap-4">
+                <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-amber-900 font-bold mb-2 text-base">Diagnostic DUERP requis</h4>
+                  <p className="text-sm text-amber-800 mb-3 leading-relaxed">
+                    Vous devez d'abord compléter le <strong>Diagnostic DUERP Article L4121-1</strong> avant de pouvoir effectuer le règlement de votre prise en charge.
+                  </p>
+                  <p className="text-sm text-amber-800">
+                    Veuillez vous rendre dans l'onglet <strong>"Diagnostic DUERP Article L4121-1"</strong> pour remplir et valider le formulaire.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
             <div className="bg-white/50 backdrop-blur-sm p-4 md:p-6 rounded-lg md:rounded-xl border border-gray-200/50 shadow-sm">
               <label className="flex items-center gap-2 text-xs md:text-sm font-semibold text-blue-900 mb-2 md:mb-3">
@@ -177,7 +195,8 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ client }) => {
                   setSelectedEmployeeRange(e.target.value);
                   setError(null);
                 }}
-                className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-xs md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                disabled={!diagnosticCompleted}
+                className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-xs md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100"
               >
                 <option value="" className="text-gray-500">Sélectionnez le nombre de salariés</option>
                 {products.map((product) => (
@@ -209,7 +228,8 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ client }) => {
                   setSelectedPaymentMethod(e.target.value);
                   setError(null);
                 }}
-                className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer"
+                disabled={!diagnosticCompleted}
+                className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border border-gray-200/60 rounded-xl bg-white text-gray-800 text-sm md:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-blue-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100"
               >
                 <option value="" className="text-gray-500">Choisissez votre mode de paiement</option>
                 <option value="cb-1fois">Règlement CB en 1 fois</option>
@@ -220,7 +240,7 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ client }) => {
             <div className="pt-3 md:pt-4">
               <button
                 onClick={handlePayment}
-                disabled={processing || !selectedEmployeeRange || !selectedPaymentMethod}
+                disabled={!diagnosticCompleted || processing || !selectedEmployeeRange || !selectedPaymentMethod}
                 className="w-full bg-gradient-to-r from-[#2d4578] to-[#1a2847] hover:from-[#3a5488] hover:to-[#223761] text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-lg md:rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 md:gap-3 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {processing ? (

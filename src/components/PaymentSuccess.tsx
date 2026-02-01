@@ -20,15 +20,43 @@ const PaymentSuccess: React.FC = () => {
 
       const clientId = searchParams.get('client_id');
       const employeeRange = searchParams.get('employee_range');
+      const sessionId = searchParams.get('session_id');
 
       if (!clientId || !employeeRange) {
         throw new Error('Informations de paiement manquantes');
       }
 
+      if (!sessionId) {
+        throw new Error('Session de paiement non trouvée');
+      }
+
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-      console.log('Envoi de la demande de génération des documents...');
+      console.log('Vérification du statut du paiement...');
+
+      const verifyResponse = await fetch(`${supabaseUrl}/functions/v1/verify-payment-status`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'apikey': supabaseAnonKey,
+        },
+        body: JSON.stringify({ sessionId })
+      });
+
+      const verifyResult = await verifyResponse.json();
+
+      if (!verifyResult.success) {
+        throw new Error(verifyResult.error || 'Erreur lors de la vérification du paiement');
+      }
+
+      if (!verifyResult.isPaid || !verifyResult.isComplete) {
+        throw new Error('Le paiement n\'a pas été validé par Stripe. Veuillez contacter le support si vous avez été débité.');
+      }
+
+      console.log('✅ Paiement confirmé par Stripe');
+      console.log('📧 Envoi de la demande de génération des documents...');
 
       const response = await fetch(`${supabaseUrl}/functions/v1/send-payment-confirmation`, {
         method: 'POST',
@@ -51,9 +79,9 @@ const PaymentSuccess: React.FC = () => {
         throw new Error(result.error || 'Erreur lors de la génération des documents');
       }
 
-      console.log('Documents générés et email envoyé avec succès');
+      console.log('✅ Documents générés et email envoyé avec succès');
     } catch (err: any) {
-      console.error('Error processing payment:', err);
+      console.error('❌ Error processing payment:', err);
       setError(err.message || 'Erreur lors du traitement de la confirmation de paiement');
     } finally {
       setLoading(false);
