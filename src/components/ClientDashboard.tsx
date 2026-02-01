@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send, Trash2, AlertCircle } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import ClientNotificationSystem from './ClientNotificationSystem';
@@ -42,10 +43,14 @@ interface ClientDashboardProps {
 
 const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout, isAdminViewing, onReturnToAdmin, isSellerViewing, onReturnToSeller }) => {
   const { client } = clientData;
+  const [searchParams] = useSearchParams();
 
   useOnlineStatus(client.id, 'client');
 
-  const [activeTab, setActiveTab] = useState('info-juridiques');
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabParam = searchParams.get('tab');
+    return tabParam || 'info-juridiques';
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [secteurActivite, setSecteurActivite] = useState('');
   const [sellerOnlineStatus, setSellerOnlineStatus] = useState<{isOnline: boolean, lastConnection: string | null}>({ isOnline: false, lastConnection: null });
