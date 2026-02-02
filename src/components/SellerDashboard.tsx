@@ -254,7 +254,8 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
         company_name: editedClient.company_name,
         source: editedClient.source,
         status_id: editedClient.status_id,
-        vendeur: editedClient.vendeur
+        vendeur: editedClient.vendeur,
+        client_password: editedClient.client_password
       };
 
       await clientService.updateClient(editedClient.id.toString(), updates);
@@ -406,7 +407,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-blue-400/30 to-transparent"></div>
       </header>
 
-      <div className="pt-32 md:pt-40 lg:pt-48 pb-8 md:pb-16 flex">
+      <div className={`flex ${activeTab === 'chat-admin' ? 'h-screen pt-32 md:pt-40 lg:pt-48' : 'pt-32 md:pt-40 lg:pt-48 pb-8 md:pb-16'}`}>
         {/* Mobile Sidebar Overlay */}
         {isMobileSidebarOpen && (
           <div
@@ -509,10 +510,10 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
           </div>
         </aside>
 
-        <main className="flex-1 lg:ml-64 xl:ml-72 min-h-screen">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-blue-500/5 to-white/5 backdrop-blur-sm"></div>
-            <div className="relative p-6 md:p-8 lg:p-10">
+        <main className={`flex-1 lg:ml-64 xl:ml-72 ${activeTab === 'chat-admin' ? 'h-full overflow-hidden' : 'min-h-screen'}`}>
+          <div className={`relative ${activeTab === 'chat-admin' ? 'h-full' : ''}`}>
+            <div className={`absolute inset-0 bg-gradient-to-br from-white/5 via-blue-500/5 to-white/5 backdrop-blur-sm ${activeTab === 'chat-admin' ? '' : ''}`}></div>
+            <div className={`relative ${activeTab === 'chat-admin' ? 'p-0 h-full' : 'p-6 md:p-8 lg:p-10'}`}>
             {activeTab === 'clients' && (
               <div>
                 <div className="mb-8 md:mb-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -896,27 +897,12 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
             )}
 
             {activeTab === 'chat-admin' && (
-              <div>
-                <div className="mb-6 md:mb-8 px-4 md:px-0">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-                    Chat Admin
-                  </h1>
-                  <p className="text-sm md:text-base text-blue-200 font-medium">
-                    Espace de communication avec les administrateurs
-                  </p>
-                </div>
-
-                <div className="bg-white rounded-none md:rounded-3xl shadow-2xl border-0 md:border border-gray-200 overflow-hidden">
-                  <div className="p-0 md:p-8">
-                    <SellerWorkChat
-                      sellerId={sellerData.id}
-                      sellerFullName={sellerData.full_name}
-                      supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
-                      supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
-                    />
-                  </div>
-                </div>
-              </div>
+              <SellerWorkChat
+                sellerId={sellerData.id}
+                sellerFullName={sellerData.full_name}
+                supabaseUrl={import.meta.env.VITE_SUPABASE_URL}
+                supabaseKey={import.meta.env.VITE_SUPABASE_ANON_KEY}
+              />
             )}
 
             {activeTab === 'argumentaire' && (

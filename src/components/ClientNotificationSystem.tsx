@@ -8,6 +8,8 @@ interface Notification {
   timestamp: string;
   read: boolean;
   messageId?: string;
+  senderType?: string;
+  senderName?: string;
 }
 
 interface ClientNotificationSystemProps {
@@ -66,9 +68,9 @@ const ClientNotificationSystem: React.FC<ClientNotificationSystemProps> = ({
 
       const { data: messages, error } = await supabase
         .from('chat_messages')
-        .select('id, message, created_at, sender_type, read')
+        .select('id, message, created_at, sender_type, sender_name, read')
         .eq('client_id', clientId)
-        .eq('sender_type', 'admin')
+        .in('sender_type', ['admin', 'seller'])
         .eq('read', false)
         .order('created_at', { ascending: false });
 
@@ -94,7 +96,9 @@ const ClientNotificationSystem: React.FC<ClientNotificationSystemProps> = ({
             message: msg.message.substring(0, 100),
             timestamp: new Date(msg.created_at).toLocaleString('fr-FR'),
             read: false,
-            messageId: msg.id
+            messageId: msg.id,
+            senderType: msg.sender_type,
+            senderName: msg.sender_name
           };
           newNotifications.push(notification);
           notifiedMessageIds.current.add(msg.id);
@@ -106,7 +110,7 @@ const ClientNotificationSystem: React.FC<ClientNotificationSystemProps> = ({
       });
 
       if (newNotifications.length > 0) {
-        console.log(`✅ ${newNotifications.length} nouveau(x) message(s) de l'admin`);
+        console.log(`✅ ${newNotifications.length} nouveau(x) message(s)`);
         setNotifications(prev => [...newNotifications, ...prev]);
       }
 
@@ -128,57 +132,59 @@ const ClientNotificationSystem: React.FC<ClientNotificationSystemProps> = ({
     requestNotificationPermission();
   }, []);
 
-  const clearNotification = (notificationId: string) => {
+  const clearNotification = async (notificationId: string) => {
     const notification = notifications.find(n => n.id === notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
 
     if (notification && notification.messageId) {
-      (async () => {
-        try {
-          await supabase
-            .from('chat_messages')
-            .update({ read: true })
-            .eq('id', notification.messageId);
-        } catch (error) {
-          console.error('❌ Erreur lors du marquage du message comme lu:', error);
-        }
-      })();
-    }
-  };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
-
-    (async () => {
       try {
         await supabase
           .from('chat_messages')
           .update({ read: true })
-          .eq('client_id', clientId)
-          .eq('sender_type', 'admin')
-          .eq('read', false);
+          .eq('id', notification.messageId);
+
+        console.log('✅ Message supprimé et marqué comme lu:', notification.messageId);
       } catch (error) {
-        console.error('❌ Erreur lors du marquage des messages:', error);
+        console.error('❌ Erreur lors du marquage du message comme lu:', error);
       }
-    })();
+    }
   };
 
-  const handleNotificationClick = (notification: Notification) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
-    );
+  const clearAllNotifications = async () => {
+    const messageIds = notifications
+      .filter(n => n.messageId)
+      .map(n => n.messageId);
+
+    setNotifications([]);
+
+    if (messageIds.length > 0) {
+      try {
+        await supabase
+          .from('chat_messages')
+          .update({ read: true })
+          .in('id', messageIds);
+
+        console.log('✅ [CLIENT] Tous les messages marqués comme lus:', messageIds.length);
+      } catch (error) {
+        console.error('❌ [CLIENT] Erreur lors du marquage des messages:', error);
+      }
+    }
+  };
+
+  const handleNotificationClick = async (notification: Notification) => {
+    setNotifications(prev => prev.filter(n => n.id !== notification.id));
 
     if (notification.messageId) {
-      (async () => {
-        try {
-          await supabase
-            .from('chat_messages')
-            .update({ read: true })
-            .eq('id', notification.messageId);
-        } catch (error) {
-          console.error('❌ Erreur lors du marquage du message comme lu:', error);
-        }
-      })();
+      try {
+        await supabase
+          .from('chat_messages')
+          .update({ read: true })
+          .eq('id', notification.messageId);
+
+        console.log('✅ Message marqué comme lu:', notification.messageId);
+      } catch (error) {
+        console.error('❌ Erreur lors du marquage du message comme lu:', error);
+      }
     }
 
     if (onNotificationClick) {
@@ -187,35 +193,34 @@ const ClientNotificationSystem: React.FC<ClientNotificationSystemProps> = ({
     setShowPanel(false);
   };
 
-  const handleBellClick = () => {
-    if (!showPanel) {
+  const handleBellClick = async () => {
+    if (!showPanel && notifications.length > 0) {
+      const messageIds = notifications
+        .filter(n => n.messageId)
+        .map(n => n.messageId);
+
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      console.log('🔔 Toutes les notifications marquées comme lues');
+      console.log('🔔 [CLIENT] Badge disparaît, notifications conservées');
 
-      // Marquer tous les messages dans la base de données comme lus
-      (async () => {
+      if (messageIds.length > 0) {
         try {
-          const messageIds = notifications
-            .filter(n => n.messageId)
-            .map(n => n.messageId);
+          await supabase
+            .from('chat_messages')
+            .update({ read: true })
+            .in('id', messageIds);
 
-          if (messageIds.length > 0) {
-            await supabase
-              .from('chat_messages')
-              .update({ read: true })
-              .in('id', messageIds);
-
-            console.log('✅ Messages marqués comme lus dans la DB:', messageIds.length);
-          }
+          console.log('✅ [CLIENT] Messages marqués comme lus dans la DB:', messageIds.length);
         } catch (error) {
-          console.error('❌ Erreur lors du marquage des messages dans la DB:', error);
+          console.error('❌ [CLIENT] Erreur lors du marquage des messages:', error);
         }
-      })();
+      }
     }
     setShowPanel(!showPanel);
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  console.log('🔢 [CLIENT] Nombre de notifications:', notifications.length, '| Badge:', unreadCount);
 
   return (
     <div className="relative">
@@ -282,7 +287,9 @@ const ClientNotificationSystem: React.FC<ClientNotificationSystemProps> = ({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2 mb-1">
                             <p className="text-sm font-semibold text-gray-900">
-                              Message de l'administration
+                              {notification.senderType === 'admin'
+                                ? 'Message de l\'administration'
+                                : `Message de ${notification.senderName || 'votre vendeur'}`}
                             </p>
                             {!notification.read && (
                               <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>

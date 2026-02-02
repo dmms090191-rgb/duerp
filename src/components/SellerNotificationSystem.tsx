@@ -262,86 +262,19 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
     requestNotificationPermission();
   }, []);
 
-  const clearNotification = (notificationId: string) => {
+  const clearNotification = async (notificationId: string) => {
     const notification = notifications.find(n => n.id === notificationId);
     setNotifications(prev => prev.filter(n => n.id !== notificationId));
 
     if (notification) {
-      (async () => {
-        try {
-          if (notification.type === 'admin' && notification.messageId) {
-            await supabase
-              .from('admin_seller_messages')
-              .update({ read: true })
-              .eq('id', notification.messageId);
-          } else if (notification.type === 'client') {
-            // Marquer TOUS les messages de ce client comme lus
-            const clientId = parseInt(notification.id.replace('client-', ''));
-            await supabase
-              .from('chat_messages')
-              .update({ read: true })
-              .eq('client_id', clientId)
-              .eq('sender_type', 'client')
-              .eq('read', false);
-            console.log('✅ [SELLER] Tous les messages du client', clientId, 'marqués comme lus');
-          }
-        } catch (error) {
-          console.error('❌ [SELLER] Erreur lors du marquage du message comme lu:', error);
-        }
-      })();
-    }
-  };
-
-  const clearAllNotifications = () => {
-    setNotifications([]);
-
-    (async () => {
-      try {
-        await supabase
-          .from('admin_seller_messages')
-          .update({ read: true })
-          .eq('seller_id', sellerUuid)
-          .eq('sender_type', 'admin')
-          .eq('read', false);
-
-        if (sellerFullName) {
-          const { data: clientsData } = await supabase
-            .from('clients')
-            .select('id')
-            .eq('vendeur', sellerFullName);
-
-          if (clientsData && clientsData.length > 0) {
-            const clientIds = clientsData.map(c => c.id);
-            await supabase
-              .from('chat_messages')
-              .update({ read: true })
-              .eq('sender_type', 'client')
-              .eq('read', false)
-              .in('client_id', clientIds);
-          }
-        }
-
-        console.log('✅ [SELLER] Tous les messages marqués comme lus');
-      } catch (error) {
-        console.error('❌ [SELLER] Erreur lors du marquage des messages:', error);
-      }
-    })();
-  };
-
-  const handleNotificationClick = (notification: Notification) => {
-    setNotifications(prev =>
-      prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
-    );
-
-    (async () => {
       try {
         if (notification.type === 'admin' && notification.messageId) {
           await supabase
             .from('admin_seller_messages')
             .update({ read: true })
             .eq('id', notification.messageId);
+          console.log('✅ [SELLER] Message admin supprimé et marqué comme lu');
         } else if (notification.type === 'client') {
-          // Marquer TOUS les messages de ce client comme lus
           const clientId = parseInt(notification.id.replace('client-', ''));
           await supabase
             .from('chat_messages')
@@ -349,12 +282,70 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
             .eq('client_id', clientId)
             .eq('sender_type', 'client')
             .eq('read', false);
-          console.log('✅ [SELLER] Tous les messages du client', clientId, 'marqués comme lus');
+          console.log('✅ [SELLER] Tous les messages du client', clientId, 'supprimés et marqués comme lus');
         }
       } catch (error) {
         console.error('❌ [SELLER] Erreur lors du marquage du message comme lu:', error);
       }
-    })();
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    setNotifications([]);
+
+    try {
+      await supabase
+        .from('admin_seller_messages')
+        .update({ read: true })
+        .eq('seller_id', sellerUuid)
+        .eq('sender_type', 'admin')
+        .eq('read', false);
+
+      if (sellerFullName) {
+        const { data: clientsData } = await supabase
+          .from('clients')
+          .select('id')
+          .eq('vendeur', sellerFullName);
+
+        if (clientsData && clientsData.length > 0) {
+          const clientIds = clientsData.map(c => c.id);
+          await supabase
+            .from('chat_messages')
+            .update({ read: true })
+            .eq('sender_type', 'client')
+            .eq('read', false)
+            .in('client_id', clientIds);
+        }
+      }
+
+      console.log('✅ [SELLER] Tous les messages marqués comme lus');
+    } catch (error) {
+      console.error('❌ [SELLER] Erreur lors du marquage des messages:', error);
+    }
+  };
+
+  const handleNotificationClick = async (notification: Notification) => {
+    setNotifications(prev => prev.filter(n => n.id !== notification.id));
+
+    try {
+      if (notification.type === 'admin' && notification.messageId) {
+        await supabase
+          .from('admin_seller_messages')
+          .update({ read: true })
+          .eq('id', notification.messageId);
+      } else if (notification.type === 'client') {
+        const clientId = parseInt(notification.id.replace('client-', ''));
+        await supabase
+          .from('chat_messages')
+          .update({ read: true })
+          .eq('client_id', clientId)
+          .eq('sender_type', 'client')
+          .eq('read', false);
+        console.log('✅ [SELLER] Tous les messages du client', clientId, 'marqués comme lus');
+      }
+    } catch (error) {
+      console.error('❌ [SELLER] Erreur lors du marquage du message comme lu:', error);
+    }
 
     if (onNotificationClick) {
       onNotificationClick(notification.type);
@@ -362,49 +353,49 @@ const SellerNotificationSystem: React.FC<SellerNotificationSystemProps> = ({
     setShowPanel(false);
   };
 
-  const handleBellClick = () => {
-    if (!showPanel) {
+  const handleBellClick = async () => {
+    if (!showPanel && notifications.length > 0) {
+      const currentNotifications = [...notifications];
+
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      console.log('🔔 [SELLER] Toutes les notifications marquées comme lues');
+      console.log('🔔 [SELLER] Badge disparaît, notifications conservées');
 
-      // Marquer tous les messages dans la base de données comme lus
-      (async () => {
-        try {
-          const adminMessageIds = notifications
-            .filter(n => n.type === 'admin' && n.messageId)
-            .map(n => n.messageId);
+      try {
+        const adminMessageIds = currentNotifications
+          .filter(n => n.type === 'admin' && n.messageId)
+          .map(n => n.messageId);
 
-          const clientIds = notifications
-            .filter(n => n.type === 'client')
-            .map(n => parseInt(n.id.replace('client-', '')));
+        const clientIds = currentNotifications
+          .filter(n => n.type === 'client')
+          .map(n => parseInt(n.id.replace('client-', '')));
 
-          if (adminMessageIds.length > 0) {
-            await supabase
-              .from('admin_seller_messages')
-              .update({ read: true })
-              .in('id', adminMessageIds);
-            console.log('✅ [SELLER] Messages admin marqués comme lus dans la DB:', adminMessageIds.length);
-          }
-
-          if (clientIds.length > 0) {
-            // Marquer TOUS les messages de TOUS les clients concernés
-            await supabase
-              .from('chat_messages')
-              .update({ read: true })
-              .in('client_id', clientIds)
-              .eq('sender_type', 'client')
-              .eq('read', false);
-            console.log('✅ [SELLER] Messages de', clientIds.length, 'clients marqués comme lus dans la DB');
-          }
-        } catch (error) {
-          console.error('❌ [SELLER] Erreur lors du marquage des messages dans la DB:', error);
+        if (adminMessageIds.length > 0) {
+          await supabase
+            .from('admin_seller_messages')
+            .update({ read: true })
+            .in('id', adminMessageIds);
+          console.log('✅ [SELLER] Messages admin marqués comme lus dans la DB:', adminMessageIds.length);
         }
-      })();
+
+        if (clientIds.length > 0) {
+          await supabase
+            .from('chat_messages')
+            .update({ read: true })
+            .in('client_id', clientIds)
+            .eq('sender_type', 'client')
+            .eq('read', false);
+          console.log('✅ [SELLER] Messages de', clientIds.length, 'clients marqués comme lus dans la DB');
+        }
+      } catch (error) {
+        console.error('❌ [SELLER] Erreur lors du marquage des messages dans la DB:', error);
+      }
     }
     setShowPanel(!showPanel);
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  console.log('🔢 [SELLER] Nombre de notifications:', notifications.length, '| Badge:', unreadCount);
 
   return (
     <div className="relative">

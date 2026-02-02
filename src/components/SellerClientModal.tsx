@@ -1,5 +1,5 @@
-import React from 'react';
-import { X, RefreshCw, MessageSquare, LogIn, Copy, Check } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { X, RefreshCw, MessageSquare, LogIn, Copy, Check, Edit2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Status } from '../types/Status';
 import ClientEmailSender from './ClientEmailSender';
@@ -80,6 +80,58 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
   onCopyToClipboard,
   onClientLogin,
 }) => {
+  const passwordInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [isEditingCredentials, setIsEditingCredentials] = useState(false);
+
+  const handlePasswordDigitChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+
+    const currentPassword = editedClient?.client_password || '000000';
+    const passwordArray = currentPassword.padEnd(6, '0').split('').slice(0, 6);
+
+    if (value === '') {
+      passwordArray[index] = '0';
+    } else {
+      const newDigit = value.slice(-1);
+      passwordArray[index] = newDigit;
+
+      setTimeout(() => {
+        if (index < 5) {
+          passwordInputRefs.current[index + 1]?.focus();
+          passwordInputRefs.current[index + 1]?.select();
+        }
+      }, 0);
+    }
+
+    const newPassword = passwordArray.join('');
+    onFieldChange('client_password', newPassword);
+  };
+
+  const handlePasswordKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      const currentPassword = editedClient?.client_password || '000000';
+      const passwordArray = currentPassword.padEnd(6, '0').split('').slice(0, 6);
+
+      if (passwordArray[index] === '0' && index > 0) {
+        e.preventDefault();
+        passwordInputRefs.current[index - 1]?.focus();
+        passwordInputRefs.current[index - 1]?.select();
+      } else {
+        passwordArray[index] = '0';
+        const newPassword = passwordArray.join('');
+        onFieldChange('client_password', newPassword);
+      }
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+      e.preventDefault();
+      passwordInputRefs.current[index - 1]?.focus();
+      passwordInputRefs.current[index - 1]?.select();
+    } else if (e.key === 'ArrowRight' && index < 5) {
+      e.preventDefault();
+      passwordInputRefs.current[index + 1]?.focus();
+      passwordInputRefs.current[index + 1]?.select();
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#1a2847]/95 via-[#2d4578]/95 to-[#1a2847]/95 backdrop-blur-xl flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300">
       <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/10 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
@@ -146,7 +198,7 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
           </div>
         </div>
 
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-180px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto h-[calc(95vh-180px)] sm:h-[calc(90vh-180px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
           {/* Onglet Information */}
           {modalTab === 'information' && (
             <>
@@ -463,22 +515,44 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
               <div className="space-y-4 sm:space-y-6">
                 {/* Identifiants de connexion */}
                 <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-3 border-white/10 rounded-2xl p-4 sm:p-8 shadow-xl">
-                  <h4 className="font-extrabold text-white mb-6 text-base sm:text-xl flex items-center gap-3">
-                    <LogIn className="w-6 h-6" />
-                    Identifiants de connexion
-                  </h4>
+                  <div className="flex items-center justify-between mb-6">
+                    <h4 className="font-extrabold text-white text-base sm:text-xl flex items-center gap-3">
+                      <LogIn className="w-6 h-6" />
+                      Identifiants de connexion
+                    </h4>
+                    <button
+                      onClick={() => {
+                        setIsEditingCredentials(!isEditingCredentials);
+                        if (!isEditingCredentials) {
+                          setTimeout(() => {
+                            passwordInputRefs.current[0]?.focus();
+                            passwordInputRefs.current[0]?.select();
+                          }, 100);
+                        }
+                      }}
+                      className="px-4 py-2 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] text-white rounded-lg hover:from-[#3a5488] hover:to-[#2d4578] transition-all duration-300 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 border border-blue-400/30"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                      {isEditingCredentials ? 'Terminer' : 'Modifier'}
+                    </button>
+                  </div>
 
                   <div className="space-y-5">
                     <div className="bg-[#1a2847]/50 rounded-2xl p-4 sm:p-5 border-2 border-white/20 shadow-md hover:shadow-lg transition-all duration-300">
-                      <label className="block text-xs font-bold text-blue-300 mb-3 uppercase tracking-widest">
+                      <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-3">
                         Email
                       </label>
                       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                         <input
-                          type="text"
+                          type="email"
                           value={editedClient?.email || ''}
-                          readOnly
-                          className="flex-1 px-4 py-3 text-sm bg-[#1a2847]/70 border-2 border-white/20 text-white rounded-xl font-mono font-bold shadow-sm"
+                          readOnly={!isEditingCredentials}
+                          onChange={(e) => onFieldChange('email', e.target.value)}
+                          className={`flex-1 px-4 py-3 text-sm bg-[#1a2847]/70 border-2 text-white rounded-xl font-mono font-bold shadow-sm transition-all duration-300 ${
+                            isEditingCredentials
+                              ? 'border-white/20 hover:border-blue-400/50 focus:border-blue-400 focus:ring-4 focus:ring-blue-400/30 cursor-text'
+                              : 'border-white/10 cursor-not-allowed opacity-70'
+                          }`}
                         />
                         <button
                           onClick={() => onCopyToClipboard(editedClient?.email || '', 'email')}
@@ -500,16 +574,35 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                     </div>
 
                     <div className="bg-[#1a2847]/50 rounded-2xl p-4 sm:p-5 border-2 border-white/20 shadow-md hover:shadow-lg transition-all duration-300">
-                      <label className="block text-xs font-bold text-blue-300 mb-3 uppercase tracking-widest">
+                      <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-3">
                         Mot de passe
                       </label>
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                        <input
-                          type="text"
-                          value={editedClient?.client_password || ''}
-                          readOnly
-                          className="flex-1 px-4 py-3 text-sm bg-[#1a2847]/70 border-2 border-white/20 text-white rounded-xl font-mono font-bold shadow-sm"
-                        />
+                      <div className="flex flex-col items-stretch gap-3">
+                        <div className="flex items-center justify-center gap-2">
+                          {Array.from({ length: 6 }).map((_, index) => {
+                            const password = editedClient?.client_password || '000000';
+                            const digit = password.padEnd(6, '0')[index] || '0';
+                            return (
+                              <input
+                                key={index}
+                                ref={(el) => (passwordInputRefs.current[index] = el)}
+                                type="text"
+                                inputMode="numeric"
+                                maxLength={1}
+                                value={digit}
+                                disabled={!isEditingCredentials}
+                                onChange={(e) => handlePasswordDigitChange(index, e.target.value)}
+                                onKeyDown={(e) => handlePasswordKeyDown(index, e)}
+                                onFocus={(e) => e.target.select()}
+                                className={`w-12 h-14 sm:w-14 sm:h-16 bg-[#1a2847]/70 border-2 rounded-xl text-xl sm:text-2xl font-bold text-white font-mono text-center shadow-lg transition-all duration-300 outline-none ${
+                                  isEditingCredentials
+                                    ? 'border-white/20 hover:border-blue-400/50 focus:border-blue-400 focus:ring-4 focus:ring-blue-400/30 cursor-text'
+                                    : 'border-white/10 cursor-not-allowed opacity-70'
+                                }`}
+                              />
+                            );
+                          })}
+                        </div>
                         <button
                           onClick={() => onCopyToClipboard(editedClient?.client_password || '', 'password')}
                           className="px-6 py-3 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] text-white rounded-xl hover:from-[#3a5488] hover:to-[#2d4578] transition-all duration-300 text-sm font-bold flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 border border-blue-400/30"
@@ -569,6 +662,17 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                   <p className="text-sm text-blue-200 font-semibold">
                     <strong className="font-extrabold text-white">Note :</strong> Ces identifiants permettent au client de se connecter à son espace personnel.
                   </p>
+                </div>
+
+                {/* Bouton Enregistrer */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={onSave}
+                    disabled={saving}
+                    className="px-8 py-4 text-sm bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white rounded-xl hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed font-bold transform hover:scale-105 active:scale-95 border border-blue-400/30"
+                  >
+                    {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                  </button>
                 </div>
               </div>
             </div>
