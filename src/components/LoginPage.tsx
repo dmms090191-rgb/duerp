@@ -934,102 +934,182 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onRegister, homepageImag
       </section>
 
       {/* Footer */}
-      <footer className="text-gray-300 py-8 sm:py-10 md:py-12" style={{ backgroundColor: '#0f1729' }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
-            <div>
-              <h4 className="text-white font-bold mb-4">À propos</h4>
-              <p className="text-sm leading-relaxed mb-4">
+      <footer className="relative text-gray-300 py-12 sm:py-16 md:py-20 overflow-hidden" style={{ backgroundColor: '#0a0f1e' }}>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-blue-800/5"></div>
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8 sm:gap-10 mb-12">
+
+            {/* À propos */}
+            <div className="space-y-6">
+              <h4 className="text-white font-bold text-lg mb-6 tracking-wide flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                À PROPOS
+              </h4>
+              <p className="text-sm leading-relaxed text-gray-400 mb-6">
                 Le Cabinet FPE accompagne les entreprises dans leurs démarches réglementaires et administratives.
               </p>
               <div className="flex gap-3">
-                <a href="#" className="w-9 h-9 bg-white/10 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all hover:scale-110">
-                  <Facebook className="w-4 h-4" />
+                <a href="#" className="group relative w-11 h-11 bg-gradient-to-br from-blue-600/20 to-blue-800/20 hover:from-blue-600 hover:to-blue-700 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30 border border-blue-500/20 hover:border-blue-400">
+                  <Facebook className="w-5 h-5 text-blue-400 group-hover:text-white transition-colors" />
                 </a>
-                <a href="#" className="w-9 h-9 bg-white/10 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all hover:scale-110">
-                  <Linkedin className="w-4 h-4" />
+                <a href="#" className="group relative w-11 h-11 bg-gradient-to-br from-blue-600/20 to-blue-800/20 hover:from-blue-600 hover:to-blue-700 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30 border border-blue-500/20 hover:border-blue-400">
+                  <Linkedin className="w-5 h-5 text-blue-400 group-hover:text-white transition-colors" />
                 </a>
-                <a href="#" className="w-9 h-9 bg-white/10 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all hover:scale-110">
-                  <Instagram className="w-4 h-4" />
+                <a href="#" className="group relative w-11 h-11 bg-gradient-to-br from-blue-600/20 to-blue-800/20 hover:from-blue-600 hover:to-blue-700 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30 border border-blue-500/20 hover:border-blue-400">
+                  <Instagram className="w-5 h-5 text-blue-400 group-hover:text-white transition-colors" />
                 </a>
               </div>
             </div>
 
+            {/* DUERP */}
             <div>
-              <h4 className="text-white font-bold mb-4">DUERP</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="text-white font-bold text-lg mb-6 tracking-wide flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                DUERP
+              </h4>
+              <ul className="space-y-3">
                 <li>
-                  <button onClick={() => navigate('/quest-ce-que-duerp')} className="hover:text-white transition-colors">
-                    Qu'est ce que le DUERP
+                  <button
+                    onClick={() => navigate('/quest-ce-que-duerp')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Qu'est ce que le DUERP
+                    </span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/quest-ce-que-penibilite')} className="hover:text-white transition-colors">
-                    Qu'est ce que la pénibilité
+                  <button
+                    onClick={() => navigate('/quest-ce-que-penibilite')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Qu'est ce que la pénibilité
+                    </span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/accompagnement')} className="hover:text-white transition-colors">
-                    Accompagnements
+                  <button
+                    onClick={() => navigate('/accompagnement')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Accompagnements
+                    </span>
                   </button>
                 </li>
               </ul>
             </div>
 
+            {/* MES DROITS */}
             <div>
-              <h4 className="text-white font-bold mb-4">MES DROITS</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="text-white font-bold text-lg mb-6 tracking-wide flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                MES DROITS
+              </h4>
+              <ul className="space-y-3">
                 <li>
-                  <button onClick={() => navigate('/cotisations-atmp')} className="hover:text-white transition-colors">
-                    Cotisations AT/MP
+                  <button
+                    onClick={() => navigate('/cotisations-atmp')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Cotisations AT/MP
+                    </span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/cotisations-atmp#section2')} className="hover:text-white transition-colors">
-                    Majoration Forfaitaires
+                  <button
+                    onClick={() => navigate('/cotisations-atmp#section2')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Majoration Forfaitaires
+                    </span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => navigate('/prise-en-charge-opco')} className="hover:text-white transition-colors">
-                    Prise En Charge OPCO
+                  <button
+                    onClick={() => navigate('/prise-en-charge-opco')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Prise En Charge OPCO
+                    </span>
                   </button>
                 </li>
               </ul>
             </div>
 
+            {/* LIENS UTILES */}
             <div>
-              <h4 className="text-white font-bold mb-4">LIENS UTILES</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="text-white font-bold text-lg mb-6 tracking-wide flex items-center gap-2">
+                <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-blue-600 rounded-full"></div>
+                LIENS UTILES
+              </h4>
+              <ul className="space-y-3">
                 <li>
                   <button
                     onClick={() => setShowContactModal(true)}
-                    className="hover:text-white transition-colors flex items-center gap-2 text-left"
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
                   >
-                    <Phone className="w-4 h-4" />
-                    Contactez-nous
+                    <span className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-blue-400 group-hover:text-blue-300" />
+                      Contactez-nous
+                    </span>
                   </button>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors flex items-center gap-2">
-                    <MailIcon className="w-4 h-4" />
-                    support@cabinetfpe.fr
+                  <a
+                    href="mailto:administration@securiteprofessionnelle.fr"
+                    className="group w-full inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <MailIcon className="w-4 h-4 text-blue-400 group-hover:text-blue-300 flex-shrink-0" />
+                    <span className="break-all">administration@securiteprofessionnelle.fr</span>
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">Conditions Générales</a>
+                  <button
+                    onClick={() => navigate('/cgv')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Conditions Générales
+                    </span>
+                  </button>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">Mentions légales</a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">Protection RGPD</a>
+                  <button
+                    onClick={() => navigate('/mentions-legales')}
+                    className="group w-full text-left px-4 py-2.5 rounded-lg bg-white/5 hover:bg-gradient-to-r hover:from-blue-600/30 hover:to-blue-500/20 border border-transparent hover:border-blue-500/30 text-gray-400 hover:text-white transition-all duration-300 text-sm font-medium hover:translate-x-1"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                      Mentions légales
+                    </span>
+                  </button>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="border-t border-gray-800 pt-8 text-center text-sm">
-            <p>&copy; MydoctoBusiness - Tous droits réservés Cabinet FPE</p>
+          {/* Bottom Section */}
+          <div className="relative pt-8 mt-8">
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
+            <div className="text-center">
+              <p className="text-sm text-gray-400 font-medium bg-gradient-to-r from-gray-400 to-gray-500 bg-clip-text">
+                &copy; {new Date().getFullYear()} Cabinet FPE – Monsieur David Schemmama – Tous droits réservés
+              </p>
+            </div>
           </div>
         </div>
       </footer>

@@ -17,6 +17,8 @@ import CotisationsATMP from './pages/CotisationsATMP';
 import PriseEnChargeOPCO from './pages/PriseEnChargeOPCO';
 import Officiel from './pages/Officiel';
 import DuerpConforme from './pages/DuerpConforme';
+import CGV from './pages/CGV';
+import MentionsLegales from './pages/MentionsLegales';
 import { User } from './types/User';
 import { Lead } from './types/Lead';
 import { Registration } from './types/Registration';
@@ -1125,6 +1127,8 @@ function App() {
           <Route path="/prise-en-charge-opco" element={<PriseEnChargeOPCO />} />
           <Route path="/officiel" element={<Officiel />} />
           <Route path="/duerp-conforme" element={<DuerpConforme />} />
+          <Route path="/cgv" element={<CGV />} />
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
 
           <Route
             path="/client-login"

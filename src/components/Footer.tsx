@@ -94,26 +94,27 @@ export default function Footer() {
                 </button>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <button
+                  onClick={() => handleNavigate('/cgv')}
+                  className="hover:text-white transition-colors text-left w-full"
+                >
                   Conditions Générales
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <button
+                  onClick={() => handleNavigate('/mentions-legales')}
+                  className="hover:text-white transition-colors text-left w-full"
+                >
                   Mentions légales
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white transition-colors">
-                  Protection RGPD
-                </a>
+                </button>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
-          <p>© MydoctoBusiness - Tous droits réservés Cabinet FPE</p>
+          <p>© Cabinet FPE – Monsieur David Schemmama – Tous droits réservés</p>
         </div>
       </div>
 
