@@ -479,6 +479,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 onRefreshAdmins={onRefreshAdmins}
                 superAdminPassword={superAdminPassword}
                 superAdminEmail={superAdminEmail}
+                onClose={() => setActiveTab('leads-tab')}
               />
             )}
 

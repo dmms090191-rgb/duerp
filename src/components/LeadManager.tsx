@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Plus, List, User, Mail, Phone, Lock, Calendar, Hash, Trash2, CheckSquare, Square, UserCheck, ArrowRight, LogIn, Eye, X, Building2, FileText, Smartphone, Briefcase, Building, Tag } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Users, Plus, List, User, Mail, Phone, Lock, Calendar, Hash, Trash2, CheckSquare, Square, UserCheck, ArrowRight, LogIn, Eye, X, Building2, FileText, Smartphone, Briefcase, Building, Tag, Shield } from 'lucide-react';
 import { Lead } from '../types/Lead';
 import { leadService } from '../services/leadService';
 import { statusService } from '../services/statusService';
@@ -34,6 +34,16 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
   const [selectedSellerForAssignment, setSelectedSellerForAssignment] = useState('');
   const [assigning, setAssigning] = useState(false);
   const [superAdmin, setSuperAdmin] = useState<any>(null);
+  const [generatedPassword, setGeneratedPassword] = useState('');
+  const [showGeneratedPassword, setShowGeneratedPassword] = useState(false);
+  const passwordInputRefs = [
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+    useRef<HTMLInputElement>(null),
+  ];
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
@@ -111,11 +121,13 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
       return;
     }
 
-    const generatedPassword = generatePassword();
+    const newPassword = generatePassword();
+    setGeneratedPassword(newPassword);
+    setShowGeneratedPassword(true);
 
     console.log('🔵 [LeadManager v2.1] Début de la soumission du formulaire');
     console.log('🔵 [LeadManager v2.1] Données du formulaire:', formData);
-    console.log('🔵 [LeadManager v2.1] Mot de passe généré:', generatedPassword);
+    console.log('🔵 [LeadManager v2.1] Mot de passe généré:', newPassword);
 
     try {
       const leadData = {
@@ -131,7 +143,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
         rendez_vous: formData.rendezVous ? new Date(formData.rendezVous).toISOString() : null,
         status_id: formData.statusId || null,
         conseiller: formData.vendeur || null,
-        client_password: generatedPassword,
+        client_password: newPassword,
         status: 'new',
         source: 'CRM',
         notes: `Créé par ${currentUserEmail || 'Admin'}`
@@ -148,7 +160,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
         nom: formData.nom,
         prenom: formData.prenom,
         email: formData.email,
-        motDePasse: generatedPassword,
+        motDePasse: newPassword,
         telephone: formData.telephone,
         portable: formData.portable || '',
         societe: formData.societe || '',
@@ -165,7 +177,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
           minute: '2-digit'
         }),
         creePar: currentUserEmail || 'Admin',
-        client_password: generatedPassword
+        client_password: newPassword
       };
 
       console.log('🔵 [LeadManager v2.1] Appel de onLeadCreated avec:', newLead);
@@ -173,24 +185,28 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
 
       console.log('✅ [LeadManager v2.1] SUCCESS COMPLET!');
 
-      setFormData({
-        nom: '',
-        prenom: '',
-        email: '',
-        telephone: '',
-        portable: '',
-        societe: '',
-        siret: '',
-        activite: '',
-        rendezVous: '',
-        statusId: '',
-        vendeur: ''
-      });
+      alert(`✅ Lead créé avec succès!\n\nMot de passe généré: ${newPassword}\n\nLe lead ${formData.prenom} ${formData.nom} a été créé et apparaît maintenant dans la liste.`);
 
-      console.log('🔵 [LeadManager v2.1] Changement vers onglet list');
-      setActiveTab('list');
+      setTimeout(() => {
+        setFormData({
+          nom: '',
+          prenom: '',
+          email: '',
+          telephone: '',
+          portable: '',
+          societe: '',
+          siret: '',
+          activite: '',
+          rendezVous: '',
+          statusId: '',
+          vendeur: ''
+        });
+        setShowGeneratedPassword(false);
+        setGeneratedPassword('');
 
-      alert(`✅ Lead créé avec succès!\n\nMot de passe généré: ${generatedPassword}\n\nLe lead ${formData.prenom} ${formData.nom} a été créé et apparaît maintenant dans la liste.`);
+        console.log('🔵 [LeadManager v2.1] Changement vers onglet list');
+        setActiveTab('list');
+      }, 3000);
 
     } catch (error: any) {
       console.error('❌ [LeadManager v2.1] ERREUR CAPTURÉE:', error);
@@ -350,11 +366,6 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
       setSelectedSellerForAssignment('');
       setSelectedLeads([]);
       alert(`✅ ${selectedLeads.length} lead(s) attribué(s) à ${assigneeName} avec succès !`);
-
-      // Rafraîchir les données depuis la base de données
-      if (onRefreshLeads) {
-        await onRefreshLeads();
-      }
     } catch (error: any) {
       console.error('❌ ERREUR ATTRIBUTION:', error);
       alert(`❌ Erreur lors de l'attribution: ${error.message}`);
@@ -450,264 +461,215 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
             <p className="text-sm md:text-base text-blue-200 font-medium">Gérez vos prospects et suivez vos opportunités commerciales</p>
           </div>
 
-          {/* Bulk Import */}
-          {/* Add Lead Form */}
           {activeTab === 'add' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <Plus className="w-5 h-5 md:w-6 md:h-6 text-slate-600" />
-                <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Ajouter un lead</h2>
+            <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl">
+              <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 overflow-hidden">
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+                <div className="relative flex items-center gap-2 sm:gap-3 md:gap-5">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-xl rounded-xl sm:rounded-2xl flex items-center justify-center ring-2 sm:ring-4 ring-white/30 shadow-lg">
+                    <Plus className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-white drop-shadow-lg" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-white mb-0.5 sm:mb-1 drop-shadow-lg tracking-tight">
+                      Ajouter un lead
+                    </h2>
+                    <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">Créez un nouveau prospect</p>
+                  </div>
+                </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Informations personnelles */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-4">Informations personnelles</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="prenom" className="block text-sm font-medium text-gray-700 mb-2">
+              <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Informations personnelles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="prenom" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         Prénom *
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <User className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          type="text"
-                          id="prenom"
-                          name="prenom"
-                          value={formData.prenom}
-                          onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                          placeholder="Prénom"
-                          required
-                        />
-                      </div>
+                      <input
+                        type="text"
+                        id="prenom"
+                        name="prenom"
+                        value={formData.prenom}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                        placeholder="Prénom"
+                        required
+                      />
                     </div>
 
-                    <div>
-                      <label htmlFor="nom" className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="nom" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         Nom *
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <User className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          type="text"
-                          id="nom"
-                          name="nom"
-                          value={formData.nom}
-                          onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                          placeholder="Nom de famille"
-                          required
-                        />
-                      </div>
+                      <input
+                        type="text"
+                        id="nom"
+                        name="nom"
+                        value={formData.nom}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                        placeholder="Nom de famille"
+                        required
+                      />
                     </div>
                   </div>
                 </div>
 
-                {/* Contact */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-4">Contact</h3>
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Contact</h3>
                   <div className="space-y-4">
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="email" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         E-mail *
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Mail className="h-5 w-5 text-gray-400" />
-                        </div>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                        placeholder="email@exemple.com"
+                        required
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                        <label htmlFor="telephone" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+                          Téléphone *
+                        </label>
                         <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formData.email}
+                          type="tel"
+                          id="telephone"
+                          name="telephone"
+                          value={formData.telephone}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                          placeholder="email@exemple.com"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                          placeholder="+33 1 23 45 67 89"
                           required
                         />
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="telephone" className="block text-sm font-medium text-gray-700 mb-2">
-                          Téléphone *
-                        </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Phone className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <input
-                            type="tel"
-                            id="telephone"
-                            name="telephone"
-                            value={formData.telephone}
-                            onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                            placeholder="+33 1 23 45 67 89"
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div>
-                        <label htmlFor="portable" className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                        <label htmlFor="portable" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                           Portable
                         </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Smartphone className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <input
-                            type="tel"
-                            id="portable"
-                            name="portable"
-                            value={formData.portable}
-                            onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                            placeholder="+33 6 12 34 56 78"
-                          />
-                        </div>
+                        <input
+                          type="tel"
+                          id="portable"
+                          name="portable"
+                          value={formData.portable}
+                          onChange={handleInputChange}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                          placeholder="+33 6 12 34 56 78"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Entreprise */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-4">Entreprise</h3>
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Entreprise</h3>
                   <div className="space-y-4">
-                    <div>
-                      <label htmlFor="societe" className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="societe" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         Société
                       </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Building2 className="h-5 w-5 text-gray-400" />
-                        </div>
-                        <input
-                          type="text"
-                          id="societe"
-                          name="societe"
-                          value={formData.societe}
-                          onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                          placeholder="Nom de la société"
-                        />
-                      </div>
+                      <input
+                        type="text"
+                        id="societe"
+                        name="societe"
+                        value={formData.societe}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                        placeholder="Nom de la société"
+                      />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="siret" className="block text-sm font-medium text-gray-700 mb-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                        <label htmlFor="siret" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                           SIRET
                         </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Hash className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <input
-                            type="text"
-                            id="siret"
-                            name="siret"
-                            value={formData.siret}
-                            onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                            placeholder="123 456 789 00012"
-                          />
-                        </div>
+                        <input
+                          type="text"
+                          id="siret"
+                          name="siret"
+                          value={formData.siret}
+                          onChange={handleInputChange}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                          placeholder="123 456 789 00012"
+                        />
                       </div>
 
-                      <div>
-                        <label htmlFor="activite" className="block text-sm font-medium text-gray-700 mb-2">
+                      <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                        <label htmlFor="activite" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                           Activité
                         </label>
-                        <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Briefcase className="h-5 w-5 text-gray-400" />
-                          </div>
-                          <input
-                            type="text"
-                            id="activite"
-                            name="activite"
-                            value={formData.activite}
-                            onChange={handleInputChange}
-                            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                            placeholder="Secteur d'activité"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Gestion du lead */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-4">Gestion du lead</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="rendezVous" className="block text-sm font-medium text-gray-700 mb-2">
-                        Rendez-vous
-                      </label>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                          <Calendar className="h-5 w-5 text-gray-400" />
-                        </div>
                         <input
-                          type="datetime-local"
-                          id="rendezVous"
-                          name="rendezVous"
-                          value={formData.rendezVous}
+                          type="text"
+                          id="activite"
+                          name="activite"
+                          value={formData.activite}
                           onChange={handleInputChange}
-                          className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                          placeholder="Secteur d'activité"
                         />
                       </div>
                     </div>
+                  </div>
+                </div>
 
-                    <div>
-                      <label htmlFor="statusId" className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Gestion du lead</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="rendezVous" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+                        Rendez-vous
+                      </label>
+                      <input
+                        type="datetime-local"
+                        id="rendezVous"
+                        name="rendezVous"
+                        value={formData.rendezVous}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                      />
+                    </div>
+
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="statusId" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         Statut du client
                       </label>
-                      <div className="relative">
-                        <select
-                          id="statusId"
-                          name="statusId"
-                          value={formData.statusId}
-                          onChange={handleInputChange}
-                          className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                        >
-                          <option value="">Sélectionner un statut</option>
-                          {statuses.map((status) => (
-                            <option key={status.id} value={status.id}>
-                              {status.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <select
+                        id="statusId"
+                        name="statusId"
+                        value={formData.statusId}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50"
+                      >
+                        <option value="">Sélectionner un statut</option>
+                        {statuses.map((status) => (
+                          <option key={status.id} value={status.id}>
+                            {status.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </div>
 
-                {/* Vendeur */}
-                <div>
-                  <label htmlFor="vendeur" className="block text-sm font-medium text-gray-700 mb-2">
-                    Vendeur assigné
-                  </label>
-                  <div className="relative">
-                    <div className="absolute top-3 left-3 pointer-events-none z-10">
-                      <UserCheck className="h-5 w-5 text-gray-400" />
-                    </div>
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Vendeur assigné</h3>
+                  <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
                     <select
                       id="vendeur"
                       name="vendeur"
                       value={formData.vendeur}
                       onChange={handleInputChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200 bg-white"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50"
                     >
                       <option value="">-- Sélectionner un vendeur --</option>
                       <option value="Super Admin">Super Admin</option>
@@ -720,27 +682,34 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                   </div>
                 </div>
 
-                {/* Info mot de passe automatique */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <Lock className="h-5 w-5 text-slate-600 mt-0.5" />
-                    <div>
-                      <h4 className="text-sm font-semibold text-blue-900 mb-1">Mot de passe automatique</h4>
-                      <p className="text-sm text-blue-800">
-                        Un mot de passe de 6 chiffres sera généré automatiquement pour ce lead lors de la création.
-                        Le mot de passe sera affiché après validation.
-                      </p>
+                {showGeneratedPassword && generatedPassword && (
+                  <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-400/50 rounded-xl p-4 sm:p-6 shadow-lg">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="w-12 h-12 bg-green-500/30 backdrop-blur-xl rounded-xl flex items-center justify-center ring-2 ring-green-400/30 shadow-lg">
+                        <Lock className="w-6 h-6 text-green-300" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-green-200 uppercase tracking-wide">Mot de passe généré</h4>
+                        <p className="text-xs text-green-300">Code à 6 chiffres</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 justify-center sm:justify-start flex-wrap">
+                      {[0, 1, 2, 3, 4, 5].map((index) => (
+                        <div key={index} className="w-12 h-14 sm:w-14 sm:h-16 bg-white/90 rounded-lg flex items-center justify-center shadow-lg border-2 border-green-400/50">
+                          <span className="text-2xl sm:text-3xl font-bold text-[#1e3a5f]">{generatedPassword[index] || '0'}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div className="pt-4">
                   <button
                     type="submit"
-                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white py-3 px-8 rounded-lg font-medium hover:from-slate-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-white/20"
                   >
-                    <Plus className="w-4 h-4" />
-                    Valider
+                    <Plus className="w-5 h-5" />
+                    Créer le lead
                   </button>
                 </div>
               </form>
@@ -904,9 +873,6 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                                       rendez_vous: new Date(e.target.value).toISOString()
                                     });
                                     alert('✅ Rendez-vous mis à jour !');
-                                    if (onRefreshLeads) {
-                                      await onRefreshLeads();
-                                    }
                                   } catch (error) {
                                     alert('❌ Erreur lors de la mise à jour');
                                   }

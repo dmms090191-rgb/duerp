@@ -412,10 +412,8 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
 
   const handleBellClick = () => {
     if (!showPanel) {
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-      console.log('🔔 Toutes les notifications marquées comme lues');
+      console.log('🔔 Clic sur la cloche - effacement de toutes les notifications');
 
-      // Marquer tous les messages dans la base de données comme lus
       (async () => {
         try {
           const clientIds = notifications
@@ -427,7 +425,6 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
             .map(n => n.id.replace('seller-', ''));
 
           if (clientIds.length > 0) {
-            // Marquer TOUS les messages de TOUS les clients concernés
             await supabase
               .from('chat_messages')
               .update({ read: true })
@@ -438,7 +435,6 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
           }
 
           if (sellerIds.length > 0) {
-            // Marquer TOUS les messages de TOUS les vendeurs concernés
             const sellerSenderIds = sellerIds.map(id => `seller-${id}`);
             await supabase
               .from('admin_seller_messages')
@@ -452,6 +448,8 @@ const NotificationSystem: React.FC<NotificationSystemProps> = ({ adminEmail, onN
           console.error('❌ Erreur lors du marquage des messages dans la DB:', error);
         }
       })();
+
+      setNotifications([]);
     }
     setShowPanel(!showPanel);
   };

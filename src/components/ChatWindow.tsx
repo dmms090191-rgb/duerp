@@ -328,66 +328,75 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   let lastDate = '';
 
   return (
-    <div className="flex flex-col h-full w-full bg-white relative rounded-none lg:rounded-2xl shadow-xl overflow-hidden">
-      <div className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-slate-700 to-slate-800 flex-shrink-0">
-        <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex flex-col h-full w-full bg-gradient-to-br from-[#0a0e27] via-[#1a1f3a] to-[#0a0e27] relative rounded-none lg:rounded-2xl shadow-2xl overflow-hidden">
+      <div className="relative p-3 sm:p-4 border-b border-cyan-500/30 bg-gradient-to-r from-[#0f1729] via-[#1a2847] to-[#0f1729] flex-shrink-0">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+
+        <div className="relative flex items-center gap-2 sm:gap-3">
           {onBack && (
             <button
               onClick={onBack}
-              className="lg:hidden flex items-center justify-center w-9 h-9 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 active:scale-95"
+              className="lg:hidden flex items-center justify-center w-9 h-9 bg-cyan-500/20 hover:bg-cyan-500/30 backdrop-blur-sm rounded-full transition-all duration-200 active:scale-95 border border-cyan-400/40 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
               title="Retour à la liste"
             >
-              <ArrowLeft className="w-5 h-5 text-white" />
+              <ArrowLeft className="w-5 h-5 text-cyan-400" />
             </button>
           )}
-          <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-            <span className="text-base sm:text-lg lg:text-2xl font-bold text-white">
+          <div className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-cyan-500 to-blue-500 backdrop-blur-sm rounded-full shadow-lg shadow-cyan-500/50">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-400 blur-md opacity-50 animate-pulse"></div>
+            <span className="relative text-base sm:text-lg lg:text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
               {recipientName.charAt(0).toUpperCase()}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-white truncate">
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 truncate drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
               {recipientName}
             </h3>
             <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
-              <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-300 rounded-full animate-pulse"></div>
-              <p className="text-blue-100 text-[10px] sm:text-xs lg:text-sm">
+              <div className="relative w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-pulse">
+                <div className="absolute inset-0 bg-cyan-400 rounded-full blur-sm animate-ping"></div>
+              </div>
+              <p className="text-cyan-300 text-[10px] sm:text-xs lg:text-sm drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]">
                 {currentUserType === 'client' ? 'Votre conseiller' : 'Client'}
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95"
+            className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95 border border-red-400/40 shadow-[0_0_10px_rgba(239,68,68,0.3)]"
             title="Supprimer la conversation"
           >
-            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
           </button>
         </div>
       </div>
 
       {showDeleteConfirm && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-5 lg:p-6 transform transition-all mx-3">
-            <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-red-100 rounded-full flex-shrink-0">
-                <Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-600" />
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="relative bg-gradient-to-br from-[#1a2847] to-[#0f1729] rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-5 lg:p-6 transform transition-all mx-3 border border-cyan-400/30">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 rounded-2xl"></div>
+
+            <div className="relative flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+              <div className="relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-red-500/20 rounded-full flex-shrink-0 border border-red-400/50 shadow-[0_0_20px_rgba(239,68,68,0.4)]">
+                <Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
+                <div className="absolute inset-0 bg-red-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
               </div>
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Supprimer la conversation</h3>
+              <h3 className="text-base sm:text-lg lg:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">Supprimer la conversation</h3>
             </div>
-            <p className="text-xs sm:text-sm lg:text-base text-gray-600 mb-4 sm:mb-6">
+            <p className="relative text-xs sm:text-sm lg:text-base text-cyan-200/90 mb-4 sm:mb-6">
               Êtes-vous sûr de vouloir supprimer tous les messages de cette conversation ? Cette action est irréversible.
             </p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="relative flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-semibold transition-all duration-200 text-sm sm:text-base"
+                className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-slate-700/50 hover:bg-slate-700/70 text-cyan-300 rounded-xl font-semibold transition-all duration-200 text-sm sm:text-base border border-cyan-400/30 backdrop-blur-sm"
               >
                 Annuler
               </button>
               <button
                 onClick={deleteAllMessages}
-                className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl text-sm sm:text-base"
+                className="relative flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] text-sm sm:text-base border border-red-400/50"
               >
                 Supprimer
               </button>
@@ -396,11 +405,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
       )}
 
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4 space-y-2 sm:space-y-3 bg-gradient-to-b from-blue-50/30 to-sky-50/30">
+      <div ref={chatContainerRef} className="relative flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4 space-y-2 sm:space-y-3 bg-gradient-to-b from-[#0a0e27]/50 to-[#1a1f3a]/50">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-50"></div>
         {messages.length === 0 ? (
-          <div className="text-center text-gray-500 py-8 sm:py-12">
-            <p className="text-sm sm:text-base">Aucun message pour le moment</p>
-            <p className="text-xs sm:text-sm mt-2">Commencez la conversation !</p>
+          <div className="relative text-center py-8 sm:py-12">
+            <div className="inline-block bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 rounded-2xl px-6 py-4 backdrop-blur-sm">
+              <p className="text-sm sm:text-base text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">Aucun message pour le moment</p>
+              <p className="text-xs sm:text-sm mt-2 text-blue-300">Commencez la conversation !</p>
+            </div>
           </div>
         ) : (
           messages.map((msg) => {
@@ -414,24 +426,24 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             return (
               <React.Fragment key={msg.id}>
                 {showDateSeparator && (
-                  <div className="flex items-center justify-center my-2 sm:my-3">
-                    <div className="bg-gray-200 text-gray-600 text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium">
+                  <div className="relative flex items-center justify-center my-2 sm:my-3">
+                    <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 text-cyan-300 text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium backdrop-blur-sm shadow-[0_0_10px_rgba(34,211,238,0.2)]">
                       {messageDate}
                     </div>
                   </div>
                 )}
                 <div
-                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                  className={`relative flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
                 >
                   <div className="relative group inline-block max-w-[90%] sm:max-w-[85%] md:max-w-[75%] lg:max-w-md">
                     <div
                       className={`${
                         isOwnMessage
-                          ? 'bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md'
+                          ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md border border-cyan-400/30 shadow-[0_0_15px_rgba(34,211,238,0.3)]'
                           : isAdminMessage
-                          ? 'bg-gradient-to-r from-[#2d4578] to-[#3d5a9e] text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl'
-                          : 'bg-white text-gray-900 rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border-2 border-gray-100'
-                      } px-3 sm:px-4 py-2 sm:py-3 shadow-md hover:shadow-lg transition-shadow duration-200`}
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                          : 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border border-slate-600/50 shadow-[0_0_10px_rgba(148,163,184,0.2)]'
+                      } px-3 sm:px-4 py-2 sm:py-3 hover:shadow-lg transition-all duration-200 backdrop-blur-sm`}
                     >
                       {!isOwnMessage && (
                         <p className={`text-[10px] sm:text-xs font-bold mb-1 sm:mb-1.5 ${isAdminMessage ? 'text-blue-100' : 'text-blue-600'}`}>
@@ -499,21 +511,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-2 sm:p-3 lg:p-4 border-t border-gray-200 bg-white">
+      <div className="relative p-2 sm:p-3 lg:p-4 border-t border-cyan-500/30 bg-gradient-to-r from-[#0f1729] via-[#1a2847] to-[#0f1729]">
+        <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+
         {selectedFile && (
-          <div className="mb-2 sm:mb-3 flex items-center gap-2 p-2 sm:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0" />
+          <div className="mb-2 sm:mb-3 flex items-center gap-2 p-2 sm:p-3 bg-cyan-500/10 border border-cyan-400/30 rounded-lg backdrop-blur-sm shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0" />
             <div className="flex-1 min-w-0">
-              <p className="text-xs sm:text-sm font-medium text-blue-900 truncate">
+              <p className="text-xs sm:text-sm font-medium text-cyan-300 truncate">
                 {selectedFile.name}
               </p>
-              <p className="text-[10px] sm:text-xs text-blue-600">
+              <p className="text-[10px] sm:text-xs text-cyan-400/80">
                 {(selectedFile.size / 1024).toFixed(1)} Ko
               </p>
             </div>
             <button
               onClick={removeSelectedFile}
-              className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors"
+              className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-full flex items-center justify-center transition-colors border border-red-400/40"
               title="Retirer le fichier"
             >
               <X className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -521,7 +535,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         )}
 
-        <div className="flex gap-1.5 sm:gap-2 items-end">
+        <div className="relative flex gap-1.5 sm:gap-2 items-end">
           <input
             ref={fileInputRef}
             type="file"
@@ -532,7 +546,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={loading || uploading}
-            className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed border border-cyan-400/40 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
             title="Joindre un fichier"
           >
             <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -546,20 +560,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               placeholder="Votre message..."
               disabled={loading}
               rows={1}
-              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-full focus:ring-2 focus:ring-[#3d5a9e]/30 focus:border-[#3d5a9e] outline-none disabled:bg-gray-100 disabled:cursor-not-allowed resize-none text-[13px] sm:text-sm lg:text-base bg-gray-50 hover:bg-white transition-colors duration-200"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-cyan-400/30 rounded-full focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none disabled:bg-slate-800/50 disabled:cursor-not-allowed resize-none text-[13px] sm:text-sm lg:text-base bg-slate-800/50 text-white placeholder-cyan-300/50 hover:bg-slate-800/70 transition-all duration-200 backdrop-blur-sm shadow-[inset_0_0_10px_rgba(34,211,238,0.1)]"
               style={{ minHeight: '38px', maxHeight: '100px' }}
             />
           </div>
           <button
             onClick={sendMessage}
             disabled={(!newMessage.trim() && !selectedFile) || loading}
-            className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gradient-to-r from-[#3d5a9e] to-[#4d6bb8] text-white rounded-full font-bold hover:from-[#4d6bb8] hover:to-[#5d7bc8] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 active:scale-95"
+            className="relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-full font-bold hover:from-cyan-500 hover:to-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.5)] hover:shadow-[0_0_30px_rgba(34,211,238,0.8)] hover:scale-110 active:scale-95 border border-cyan-400/50"
             title="Envoyer le message"
           >
+            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 blur-md opacity-50 animate-pulse"></div>
             {uploading ? (
-              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="relative w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Send className="relative w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </button>
         </div>

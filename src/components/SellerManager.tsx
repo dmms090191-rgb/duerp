@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare, Shield } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { sellerService } from '../services/sellerService';
 
@@ -13,7 +13,7 @@ interface SellerManagerProps {
 }
 
 const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated, onSellerUpdated, onSellersDeleted, onSellerLogin, onOpenChat }) => {
-  const [activeTab, setActiveTab] = useState<'add' | 'list'>('list');
+  const [activeTab, setActiveTab] = useState<'add' | 'list'>('add');
   const [selectedSellers, setSelectedSellers] = useState<string[]>([]);
   const [selectedSellerDetails, setSelectedSellerDetails] = useState<Seller | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -227,18 +227,6 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
       <div className="w-full md:w-64 bg-white border-r border-gray-200 p-4 md:p-6">
         <div className="space-y-2">
           <button
-            onClick={() => setActiveTab('list')}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
-              activeTab === 'list'
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            <List className="w-4 h-4" />
-            Liste Vendeurs
-          </button>
-
-          <button
             onClick={() => setActiveTab('add')}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
               activeTab === 'add'
@@ -248,6 +236,18 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           >
             <Plus className="w-4 h-4" />
             Ajouter un vendeur
+          </button>
+
+          <button
+            onClick={() => setActiveTab('list')}
+            className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
+              activeTab === 'list'
+                ? 'bg-blue-50 text-blue-700 font-medium'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Liste Vendeurs
           </button>
         </div>
 
@@ -275,50 +275,53 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           </div>
 
           {activeTab === 'add' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-8">
-              <div className="flex items-center gap-3 mb-6">
-                <Plus className="w-5 h-5 md:w-6 md:h-6 text-slate-600" />
-                <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Ajouter un vendeur</h2>
+            <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl">
+              <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 overflow-hidden">
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+                <div className="relative flex items-center gap-2 sm:gap-3 md:gap-5">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-xl rounded-xl sm:rounded-2xl flex items-center justify-center ring-2 sm:ring-4 ring-white/30 shadow-lg">
+                    <Plus className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-white drop-shadow-lg" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-white mb-0.5 sm:mb-1 drop-shadow-lg tracking-tight">
+                      Ajouter un vendeur
+                    </h2>
+                    <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">Créez un nouveau compte vendeur</p>
+                  </div>
+                </div>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="nom" className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-gray-400" />
-                      </div>
+              <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Informations personnelles</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="nom" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+                        Nom *
+                      </label>
                       <input
                         type="text"
                         id="nom"
                         name="nom"
                         value={formData.nom}
                         onChange={handleInputChange}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
                         placeholder="Dupont"
                         required
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <label htmlFor="prenom" className="block text-sm font-medium text-gray-700 mb-2">
-                      Prénom *
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <User className="h-5 w-5 text-gray-400" />
-                      </div>
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="prenom" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+                        Prénom *
+                      </label>
                       <input
                         type="text"
                         id="prenom"
                         name="prenom"
                         value={formData.prenom}
                         onChange={handleInputChange}
-                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
                         placeholder="Jean"
                         required
                       />
@@ -326,66 +329,63 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="h-5 w-5 text-gray-400" />
+                <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-2 border-white/20 rounded-xl p-4 sm:p-6 shadow-lg">
+                  <h3 className="text-xs font-semibold text-blue-300 mb-4 uppercase tracking-wide">Informations de connexion</h3>
+                  <div className="space-y-4">
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="email" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+                        Email *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                        placeholder="jean.dupont@example.com"
+                        required
+                      />
                     </div>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                      placeholder="jean.dupont@example.com"
-                      required
-                    />
-                  </div>
-                </div>
 
-                <div>
-                  <label htmlFor="motDePasse" className="block text-sm font-medium text-gray-700 mb-2">
-                    Mot de passe *
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Lock className="h-5 w-5 text-gray-400" />
+                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                      <label htmlFor="motDePasse" className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
+                        Mot de passe *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          id="motDePasse"
+                          name="motDePasse"
+                          value={formData.motDePasse}
+                          onChange={handleInputChange}
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-12 text-base sm:text-lg font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                          placeholder="••••••••"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-blue-300 hover:text-blue-200 transition-colors"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      </div>
                     </div>
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="motDePasse"
-                      name="motDePasse"
-                      value={formData.motDePasse}
-                      onChange={handleInputChange}
-                      className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-5 w-5" />
-                      ) : (
-                        <Eye className="h-5 w-5" />
-                      )}
-                    </button>
                   </div>
                 </div>
 
                 <div className="pt-4">
                   <button
                     type="submit"
-                    className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white py-3 px-8 rounded-lg font-medium hover:from-slate-900 hover:to-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-2 border-white/20"
                   >
-                    <Plus className="w-4 h-4" />
-                    Valider
+                    <Plus className="w-5 h-5" />
+                    Créer le vendeur
                   </button>
                 </div>
               </form>
@@ -501,19 +501,19 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                             <div className="flex items-center gap-2 flex-wrap">
                               <button
                                 onClick={() => setSelectedSellerDetails(seller)}
-                                className="flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white text-xs font-bold rounded-lg hover:from-slate-900 hover:via-slate-800 hover:to-black transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                                 title="Voir les détails"
                               >
-                                <Eye className="w-4 h-4" />
+                                <Eye className="w-3 h-3" />
                                 Détails
                               </button>
                               {onOpenChat && (
                                 <button
                                   onClick={() => onOpenChat(seller.id)}
-                                  className="flex items-center gap-2 bg-teal-600 text-white px-3 py-1.5 rounded-lg hover:bg-teal-700 transition-colors"
+                                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-emerald-600 via-green-500 to-teal-600 text-white text-xs font-bold rounded-lg hover:from-emerald-700 hover:via-green-600 hover:to-teal-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
                                   title="Ouvrir le chat"
                                 >
-                                  <MessageSquare className="w-4 h-4" />
+                                  <MessageSquare className="w-3 h-3" />
                                   Chat
                                 </button>
                               )}
