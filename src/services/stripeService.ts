@@ -49,7 +49,13 @@ export const stripeService = {
         .order('unit_amount', { ascending: true });
 
       if (error) throw error;
-      return data || [];
+
+      if (!data) return [];
+
+      const zeroToOneProduct = data.find(p => p.employee_range === '0-1');
+      const otherProducts = data.filter(p => p.employee_range !== '0-1');
+
+      return zeroToOneProduct ? [...otherProducts, zeroToOneProduct] : data;
     } catch (error) {
       console.error('Error fetching products:', error);
       return [];

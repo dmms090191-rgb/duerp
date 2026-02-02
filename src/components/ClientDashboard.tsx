@@ -677,7 +677,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           />
         )}
 
-        <div className="lg:ml-72 flex-1 px-4 md:px-6 lg:px-8">
+        <div className={`lg:ml-72 flex-1 ${activeTab === 'chat' ? 'flex flex-col' : 'px-4 md:px-6 lg:px-8'}`}>
           {activeTab === 'info-juridiques' && (
             <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl sm:rounded-3xl shadow-2xl max-w-4xl mx-auto overflow-hidden border border-white/10 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
 
@@ -4670,7 +4670,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       setPasswordChangeError('Une erreur est survenue');
                     }
                   }}
-                  className="w-full flex items-center justify-center px-6 py-3 sm:px-8 sm:py-3.5 text-sm bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white rounded-xl hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] transition-all duration-300 font-extrabold shadow-xl hover:shadow-2xl transform hover:scale-105 border border-blue-400/30 gap-2"
+                  className="w-full flex items-center justify-center px-6 py-3 sm:px-8 sm:py-3.5 text-sm md:text-base bg-green-900/60 hover:bg-green-800/70 border-2 border-green-500/50 text-white rounded-xl transition-all duration-300 font-extrabold shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-[0.98] gap-2 md:gap-3"
                 >
                   <Lock className="w-5 h-5 md:w-6 md:h-6" />
                   <span>Modifier le mot de passe</span>
@@ -4881,7 +4881,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           )}
 
           {activeTab === 'chat' && (
-            <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-0 lg:gap-6" style={{ height: 'calc(100vh - 10rem)' }}>
+            <div className="flex flex-col lg:grid lg:grid-cols-4 gap-0 lg:gap-6 overflow-hidden pt-4 lg:pt-6 px-4 md:px-6 lg:px-8 pb-4 lg:pb-6 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] lg:h-[calc(100vh-15rem)]">
               <div className="hidden lg:block lg:col-span-1 space-y-4 h-full">
                 <div className="relative bg-gradient-to-br from-[#0a0e27] via-[#1a1f3a] to-[#0a0e27] rounded-xl shadow-2xl border border-cyan-500/30 p-4 lg:p-6 h-full flex flex-col overflow-hidden">
                   <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40"></div>
