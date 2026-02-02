@@ -339,7 +339,7 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
       </div>
 
       {debugLogs.length > 0 && (
-        <div className="bg-gray-900 text-green-400 rounded-lg p-4 mt-4 max-h-96 overflow-y-auto">
+        <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] text-green-400 rounded-lg p-4 mt-4 max-h-96 overflow-y-auto border border-white/10">
           <div className="flex items-center justify-between mb-2">
             <h4 className="text-sm font-semibold text-white">Debug Log (visible dans l'interface)</h4>
             <button

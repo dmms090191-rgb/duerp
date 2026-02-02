@@ -272,9 +272,9 @@ const TemplatesManager: React.FC = () => {
   };
 
   const renderVariablesHelp = () => (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
-      <p className="font-semibold text-blue-900 mb-2">Variables disponibles :</p>
-      <div className="grid grid-cols-2 gap-2 text-blue-700">
+    <div className="bg-blue-500/20 border-2 border-blue-400/30 rounded-lg p-3 text-sm">
+      <p className="font-semibold text-blue-300 mb-2">Variables disponibles :</p>
+      <div className="grid grid-cols-2 gap-2 text-blue-200">
         <code>{'{{prenom}}'}</code>
         <code>{'{{nom}}'}</code>
         <code>{'{{email}}'}</code>
@@ -289,7 +289,7 @@ const TemplatesManager: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
       </div>
     );
   }
@@ -297,10 +297,10 @@ const TemplatesManager: React.FC = () => {
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-lg border ${
+        <div className={`p-4 rounded-lg border-2 ${
           message.type === 'success'
-            ? 'bg-green-50 border-green-200 text-green-800'
-            : 'bg-red-50 border-red-200 text-red-800'
+            ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-200'
+            : 'bg-red-500/20 border-red-400/30 text-red-200'
         }`}>
           <div className="flex items-center gap-2">
             {message.type === 'success' ? <CheckCircle className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
@@ -312,32 +312,32 @@ const TemplatesManager: React.FC = () => {
       {!editingTemplate ? (
         <div className="grid gap-4">
           {templates.map((template) => (
-            <div key={template.id} className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div key={template.id} className="bg-[#1a2847]/50 border-2 border-white/20 rounded-xl p-6 hover:shadow-2xl transition-all hover:border-blue-400/50">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center ring-2 ring-white/20">
                       <Mail className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{template.name}</h3>
-                      <p className="text-sm text-gray-500">Clé: {template.key}</p>
+                      <h3 className="text-lg font-semibold text-white">{template.name}</h3>
+                      <p className="text-sm text-white/60">Clé: {template.key}</p>
                     </div>
                     <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                       template.is_active
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-gray-100 text-gray-500'
+                        ? 'bg-emerald-500/30 text-emerald-200 border border-emerald-400/30'
+                        : 'bg-white/10 text-white/50 border border-white/20'
                     }`}>
                       {template.is_active ? 'Actif' : 'Inactif'}
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600 mb-2">
+                  <p className="text-sm text-white/80 mb-2">
                     <strong>Sujet:</strong> {template.subject}
                   </p>
                   {template.pdfs.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-3">
                       {template.pdfs.map((pdf) => (
-                        <span key={pdf.id} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">
+                        <span key={pdf.id} className="inline-flex items-center gap-1 px-2 py-1 bg-purple-500/30 text-purple-200 rounded border border-purple-400/30 text-xs">
                           <FileText className="w-3 h-3" />
                           {pdf.name}
                         </span>
@@ -348,14 +348,14 @@ const TemplatesManager: React.FC = () => {
                 <div className="ml-4 flex gap-2">
                   <button
                     onClick={() => handleOpenPreviewModal(template)}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-2 transition-colors border-2 border-white/20"
                   >
                     <Eye className="w-4 h-4" />
                     Aperçu
                   </button>
                   <button
                     onClick={() => handleEdit(template)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 transition-colors border-2 border-white/20"
                   >
                     <Edit className="w-4 h-4" />
                     Modifier
@@ -366,13 +366,13 @@ const TemplatesManager: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white border rounded-lg p-6">
+        <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">Édition du template</h3>
+            <h3 className="text-xl font-bold text-white">Édition du template</h3>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowPreview(!showPreview)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg flex items-center gap-2"
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center gap-2 border-2 border-white/20"
               >
                 <Eye className="w-4 h-4" />
                 {showPreview ? 'Édition' : 'Aperçu'}
@@ -380,14 +380,14 @@ const TemplatesManager: React.FC = () => {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-2 disabled:opacity-50 border-2 border-white/20"
               >
                 <Save className="w-4 h-4" />
                 {saving ? 'Enregistrement...' : 'Enregistrer'}
               </button>
               <button
                 onClick={() => setEditingTemplate(null)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg"
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg border-2 border-white/20"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -398,18 +398,18 @@ const TemplatesManager: React.FC = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                     Nom du template
                   </label>
                   <input
                     type="text"
                     value={editingTemplate.name}
                     onChange={(e) => setEditingTemplate({ ...editingTemplate, name: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                     Statut
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -419,20 +419,20 @@ const TemplatesManager: React.FC = () => {
                       onChange={(e) => setEditingTemplate({ ...editingTemplate, is_active: e.target.checked })}
                       className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-700">Template actif</span>
+                    <span className="text-sm text-white">Template actif</span>
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   Sujet de l'email
                 </label>
                 <input
                   type="text"
                   value={editingTemplate.subject}
                   onChange={(e) => setEditingTemplate({ ...editingTemplate, subject: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                   placeholder="Sujet de l'email..."
                 />
               </div>
@@ -440,20 +440,20 @@ const TemplatesManager: React.FC = () => {
               {renderVariablesHelp()}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   Contenu de l'email (HTML)
                 </label>
                 <textarea
                   value={editingTemplate.body_html}
                   onChange={(e) => setEditingTemplate({ ...editingTemplate, body_html: e.target.value })}
                   rows={12}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 font-mono text-sm text-white placeholder-white/50"
                   placeholder="Contenu HTML de l'email..."
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-xs font-semibold text-blue-300 mb-3 uppercase tracking-wide">
                   PDFs attachés ({editingTemplate.pdfs.length})
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -466,23 +466,23 @@ const TemplatesManager: React.FC = () => {
                           onClick={() => togglePDF(pdf)}
                           className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                             isSelected
-                              ? 'border-blue-500 bg-blue-50'
-                              : 'border-gray-200 bg-white hover:border-gray-300'
+                              ? 'border-blue-400/50 bg-blue-500/20'
+                              : 'border-white/20 bg-[#1a2847]/50 hover:border-white/30'
                           }`}
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex items-center gap-2">
-                              <FileText className={`w-5 h-5 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`} />
+                              <FileText className={`w-5 h-5 ${isSelected ? 'text-blue-300' : 'text-white/50'}`} />
                               <div>
-                                <p className={`font-medium text-sm ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
+                                <p className={`font-medium text-sm ${isSelected ? 'text-white' : 'text-white/80'}`}>
                                   {pdf.name}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {pdf.pdf_type === 'dynamic' ? `🔄 Dynamique (${pdf.dynamic_type})` : '📄 Statique'}
+                                <p className="text-xs text-white/60 mt-1">
+                                  {pdf.pdf_type === 'dynamic' ? `Dynamique (${pdf.dynamic_type})` : 'Statique'}
                                 </p>
                               </div>
                             </div>
-                            {isSelected && <CheckCircle className="w-5 h-5 text-blue-600" />}
+                            {isSelected && <CheckCircle className="w-5 h-5 text-blue-300" />}
                           </div>
                         </button>
                         {isDynamic && (
@@ -492,10 +492,10 @@ const TemplatesManager: React.FC = () => {
                               setConfiguringPdf(pdf);
                               setShowPdfConfig(true);
                             }}
-                            className="absolute top-2 right-2 p-1.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-colors shadow-sm"
+                            className="absolute top-2 right-2 p-1.5 bg-[#1a2847] border-2 border-white/20 rounded-lg hover:bg-[#1a2847]/70 hover:border-blue-400/50 transition-colors shadow-sm"
                             title="Configurer le PDF"
                           >
-                            <Settings className="w-4 h-4 text-gray-600" />
+                            <Settings className="w-4 h-4 text-white" />
                           </button>
                         )}
                       </div>
@@ -506,26 +506,26 @@ const TemplatesManager: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="bg-gray-50 border rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Sujet:</h4>
-                <p className="text-gray-700">{editingTemplate.subject}</p>
+              <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-4">
+                <h4 className="font-semibold text-white mb-2">Sujet:</h4>
+                <p className="text-white/80">{editingTemplate.subject}</p>
               </div>
-              <div className="bg-gray-50 border rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Contenu:</h4>
+              <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-4">
+                <h4 className="font-semibold text-white mb-2">Contenu:</h4>
                 <div
-                  className="prose max-w-none"
+                  className="prose max-w-none text-white/80"
                   dangerouslySetInnerHTML={{ __html: editingTemplate.body_html }}
                 />
               </div>
               {editingTemplate.pdfs.length > 0 && (
-                <div className="bg-gray-50 border rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">PDFs attachés:</h4>
+                <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2">PDFs attachés:</h4>
                   <ul className="space-y-2">
                     {editingTemplate.pdfs.map((pdf) => (
-                      <li key={pdf.id} className="flex items-center gap-2 text-gray-700">
+                      <li key={pdf.id} className="flex items-center gap-2 text-white/80">
                         <FileText className="w-4 h-4" />
                         {pdf.name}
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-white/60">
                           ({pdf.pdf_type === 'dynamic' ? `Dynamique - ${pdf.dynamic_type}` : 'Statique'})
                         </span>
                       </li>
@@ -539,16 +539,16 @@ const TemplatesManager: React.FC = () => {
       )}
 
       {showPdfConfig && configuringPdf && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
+        <div className="fixed inset-0 bg-[#1e3a5f]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] border-2 border-white/10 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-[#1a2847]/90 backdrop-blur-xl border-b-2 border-white/10 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center ring-2 ring-white/20">
                   <Settings className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">Configuration du PDF</h3>
-                  <p className="text-sm text-gray-600">{configuringPdf.name}</p>
+                  <h3 className="text-xl font-bold text-white">Configuration du PDF</h3>
+                  <p className="text-sm text-white/70">{configuringPdf.name}</p>
                 </div>
               </div>
               <button
@@ -556,26 +556,26 @@ const TemplatesManager: React.FC = () => {
                   setShowPdfConfig(false);
                   setConfiguringPdf(null);
                 }}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-white/70" />
               </button>
             </div>
 
             <div className="p-6 space-y-6">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900">
+              <div className="bg-blue-500/20 border-2 border-blue-400/30 rounded-lg p-4">
+                <p className="text-sm text-blue-200">
                   <strong>Info:</strong> Personnalisez l'apparence de votre PDF. Ces modifications seront appliquées automatiquement lors de la génération du document.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   Logo de l'entreprise
                 </label>
                 <div className="flex items-center gap-4">
                   {pdfConfig.logo && (
-                    <div className="w-32 h-32 border-2 border-gray-200 rounded-lg flex items-center justify-center overflow-hidden bg-white">
+                    <div className="w-32 h-32 border-2 border-white/20 rounded-lg flex items-center justify-center overflow-hidden bg-[#1a2847]/70">
                       <img src={pdfConfig.logo} alt="Logo" className="max-w-full max-h-full object-contain" />
                     </div>
                   )}
@@ -598,12 +598,12 @@ const TemplatesManager: React.FC = () => {
                     />
                     <label
                       htmlFor="logo-upload"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg cursor-pointer transition-colors border-2 border-white/20"
                     >
                       <Upload className="w-4 h-4" />
                       {pdfConfig.logo ? 'Changer le logo' : 'Ajouter un logo'}
                     </label>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-white/60 mt-2">
                       Format recommandé: PNG transparent, 300x100px
                     </p>
                   </div>
@@ -612,46 +612,46 @@ const TemplatesManager: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                     Nom de l'entreprise
                   </label>
                   <input
                     type="text"
                     value={pdfConfig.companyName}
                     onChange={(e) => setPdfConfig({ ...pdfConfig, companyName: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                     placeholder="Cabinet FPE"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                     Sous-titre
                   </label>
                   <input
                     type="text"
                     value={pdfConfig.subtitle}
                     onChange={(e) => setPdfConfig({ ...pdfConfig, subtitle: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                     placeholder="Sécurité Professionnelle"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   Email de contact
                 </label>
                 <input
                   type="email"
                   value={pdfConfig.email}
                   onChange={(e) => setPdfConfig({ ...pdfConfig, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                   placeholder="administration@securiteprofessionnelle.fr"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   Couleur principale
                 </label>
                 <div className="flex items-center gap-3">
@@ -659,41 +659,41 @@ const TemplatesManager: React.FC = () => {
                     type="color"
                     value={pdfConfig.primaryColor}
                     onChange={(e) => setPdfConfig({ ...pdfConfig, primaryColor: e.target.value })}
-                    className="h-10 w-20 rounded-lg border border-gray-300 cursor-pointer"
+                    className="h-10 w-20 rounded-lg border-2 border-white/20 cursor-pointer"
                   />
                   <input
                     type="text"
                     value={pdfConfig.primaryColor}
                     onChange={(e) => setPdfConfig({ ...pdfConfig, primaryColor: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                    className="flex-1 px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 font-mono text-white placeholder-white/50"
                     placeholder="#2563eb"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-white/60 mt-1">
                   Cette couleur sera utilisée pour les titres et les éléments importants
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   Texte du pied de page
                 </label>
                 <input
                   type="text"
                   value={pdfConfig.footerText}
                   onChange={(e) => setPdfConfig({ ...pdfConfig, footerText: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                   placeholder="Cabinet FPE - Sécurité Professionnelle"
                 />
               </div>
 
-              <div className="border-t pt-6 flex justify-end gap-3">
+              <div className="border-t-2 border-white/10 pt-6 flex justify-end gap-3">
                 <button
                   onClick={() => {
                     setShowPdfConfig(false);
                     setConfiguringPdf(null);
                   }}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors border-2 border-white/20"
                 >
                   Annuler
                 </button>
@@ -781,7 +781,7 @@ const TemplatesManager: React.FC = () => {
                     }
                   }}
                   disabled={saving || uploadingLogo}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2 disabled:opacity-50 border-2 border-white/20"
                 >
                   <Save className="w-4 h-4" />
                   {uploadingLogo ? 'Upload du logo...' : saving ? 'Enregistrement...' : 'Enregistrer la configuration'}
@@ -793,16 +793,16 @@ const TemplatesManager: React.FC = () => {
       )}
 
       {showPreviewModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-[#1e3a5f]/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] border-2 border-white/10 rounded-xl shadow-2xl max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Aperçu du template</h3>
+              <h3 className="text-xl font-bold text-white">Aperçu du template</h3>
               <button
                 onClick={() => {
                   setShowPreviewModal(false);
                   setClientIdForPreview('');
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-white/70 hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -810,16 +810,16 @@ const TemplatesManager: React.FC = () => {
 
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-600 mb-2">
-                  Template: <strong>{previewingTemplate?.name}</strong>
+                <p className="text-sm text-white/80 mb-2">
+                  Template: <strong className="text-white">{previewingTemplate?.name}</strong>
                 </p>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-white/60 mb-4">
                   Entrez l'ID d'un client pour générer un aperçu des PDFs qui seront joints à cet email.
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                   ID du client
                 </label>
                 <input
@@ -827,7 +827,7 @@ const TemplatesManager: React.FC = () => {
                   value={clientIdForPreview}
                   onChange={(e) => setClientIdForPreview(e.target.value)}
                   placeholder="Ex: 10000"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border-2 border-white/20 bg-[#1a2847]/70 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50"
                   disabled={generatingPreview}
                 />
               </div>
@@ -838,7 +838,7 @@ const TemplatesManager: React.FC = () => {
                     setShowPreviewModal(false);
                     setClientIdForPreview('');
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border-2 border-white/20 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
                   disabled={generatingPreview}
                 >
                   Annuler
@@ -846,7 +846,7 @@ const TemplatesManager: React.FC = () => {
                 <button
                   onClick={handleGeneratePreview}
                   disabled={!clientIdForPreview || generatingPreview}
-                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-white/20"
                 >
                   {generatingPreview ? (
                     <>

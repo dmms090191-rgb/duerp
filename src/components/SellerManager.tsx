@@ -223,15 +223,15 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
 
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50">
-      <div className="w-full md:w-64 bg-white border-r border-gray-200 p-4 md:p-6">
+    <div className="flex flex-col md:flex-row h-screen bg-gradient-to-br from-[#1a2847] via-[#2d4578] to-[#1e3a5f]">
+      <div className="w-full md:w-64 bg-gradient-to-b from-[#1e3a5f] to-[#2d4578] border-r border-white/10 p-4 md:p-6">
         <div className="space-y-2">
           <button
             onClick={() => setActiveTab('add')}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
               activeTab === 'add'
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'bg-white/20 text-white font-medium border-2 border-white/30'
+                : 'text-white/70 hover:bg-white/10 border-2 border-transparent'
             }`}
           >
             <Plus className="w-4 h-4" />
@@ -242,8 +242,8 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
             onClick={() => setActiveTab('list')}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors text-sm ${
               activeTab === 'list'
-                ? 'bg-blue-50 text-blue-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
+                ? 'bg-white/20 text-white font-medium border-2 border-white/30'
+                : 'text-white/70 hover:bg-white/10 border-2 border-transparent'
             }`}
           >
             <List className="w-4 h-4" />
@@ -251,10 +251,10 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           </button>
         </div>
 
-        <div className="mt-4 md:mt-8 p-4 bg-gradient-to-br from-blue-50 to-sky-50 rounded-lg border border-blue-100">
+        <div className="mt-4 md:mt-8 p-4 bg-white/10 rounded-lg border-2 border-white/20 backdrop-blur-xl">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Total sellers</span>
-            <span className="font-medium text-gray-900">{sellers.length}</span>
+            <span className="text-white/70">Total sellers</span>
+            <span className="font-medium text-white">{sellers.length}</span>
           </div>
         </div>
       </div>
@@ -263,15 +263,15 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
         <div className="w-full">
           <div className="mb-6 md:mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-r from-slate-800 to-slate-900 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 md:w-10 md:h-10 bg-white/20 backdrop-blur-xl rounded-lg flex items-center justify-center border-2 border-white/30">
                 <ShoppingBag className="w-4 h-4 md:w-5 md:h-5 text-white" />
               </div>
-              <h1 className="text-xl md:text-3xl font-bold text-gray-900 drop-shadow-sm">
+              <h1 className="text-xl md:text-3xl font-bold text-white drop-shadow-lg">
                 <span className="md:hidden">Gestion vendeur</span>
                 <span className="hidden md:inline">Gestionnaire de Vendeurs</span>
               </h1>
             </div>
-            <p className="text-sm md:text-base text-gray-600 font-medium">Gérez vos vendeurs et leurs accès</p>
+            <p className="text-sm md:text-base text-white/80 font-medium">Gérez vos vendeurs et leurs accès</p>
           </div>
 
           {activeTab === 'add' && (
@@ -393,17 +393,17 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           )}
 
           {activeTab === 'list' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
+            <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-xl shadow-2xl border-2 border-white/10">
+              <div className="p-6 border-b-2 border-white/10">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <List className="w-5 h-5 text-gray-600" />
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <List className="w-5 h-5 text-white" />
+                    <h2 className="text-xl font-semibold text-white">
                       Liste des Vendeurs ({sellers.length})
                     </h2>
                   </div>
                   {selectedSellers.length > 0 && (
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-white/70">
                       {selectedSellers.length} sélectionné(s)
                     </span>
                   )}
@@ -412,12 +412,12 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
 
               {sellers.length === 0 ? (
                 <div className="p-12 text-center">
-                  <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun vendeur créé</h3>
-                  <p className="text-gray-500 mb-6">Commencez par ajouter votre premier vendeur</p>
+                  <ShoppingBag className="w-16 h-16 text-white/30 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">Aucun vendeur créé</h3>
+                  <p className="text-white/70 mb-6">Commencez par ajouter votre premier vendeur</p>
                   <button
                     onClick={() => setActiveTab('add')}
-                    className="inline-flex items-center gap-2 bg-[#2d4578] text-white px-4 py-2 rounded-lg hover:bg-[#1a2847] transition-colors"
+                    className="inline-flex items-center gap-2 bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors border-2 border-white/30"
                   >
                     <Plus className="w-4 h-4" />
                     Ajouter un vendeur
@@ -426,12 +426,12 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
               ) : (
                 <div className="overflow-x-auto w-full">
                   <table className="w-full min-w-[640px]">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-[#1a2847]/50 border-b-2 border-white/10">
                       <tr>
                         <th className="px-6 py-3 text-left">
                           <button
                             onClick={handleSelectAll}
-                            className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-gray-700 transition-colors"
+                            className="flex items-center justify-center w-5 h-5 text-white/70 hover:text-white transition-colors"
                             title={selectedSellers.length === sellers.length ? "Désélectionner tout" : "Sélectionner tout"}
                           >
                             {selectedSellers.length === sellers.length ? (
@@ -441,60 +441,60 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                             )}
                           </button>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4" />
                             Nom
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4" />
                             Prénom
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">
                           <div className="flex items-center gap-2">
                             <Mail className="w-4 h-4" />
                             Email
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
                             Date de création
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-blue-300 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-[#1e3a5f]/30 divide-y divide-white/10">
                       {sellers.map((seller) => (
-                        <tr key={seller.id} className="hover:bg-gray-50 transition-colors">
+                        <tr key={seller.id} className="hover:bg-white/10 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <button
                               onClick={() => handleSelectSeller(seller.id)}
-                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-slate-600 transition-colors"
+                              className="flex items-center justify-center w-5 h-5 text-white/70 hover:text-white transition-colors"
                             >
                               {selectedSellers.includes(seller.id) ? (
-                                <CheckSquare className="w-5 h-5 text-slate-600" />
+                                <CheckSquare className="w-5 h-5 text-white" />
                               ) : (
                                 <Square className="w-5 h-5" />
                               )}
                             </button>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
                             {seller.nom}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
                             {seller.prenom}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-medium">
                             {seller.email}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                             {seller.dateCreation}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm">

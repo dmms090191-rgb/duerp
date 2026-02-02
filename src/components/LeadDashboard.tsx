@@ -146,7 +146,7 @@ const LeadDashboard: React.FC<LeadDashboardProps> = ({ lead, onLogout }) => {
                   <Edit className="w-4 h-4" />
                   Modifier mes informations
                 </button>
-                <button className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                <button className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 text-red-600 border border-red-300/30 rounded-lg hover:bg-red-500/20 transition-colors">
                   <Shield className="w-4 h-4" />
                   Changer le mot de passe
                 </button>

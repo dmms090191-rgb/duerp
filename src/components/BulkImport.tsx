@@ -349,11 +349,11 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
   return (
     <div className="flex flex-col md:flex-row h-full">
       {/* Left Navigation Sidebar */}
-      <div className="w-full md:w-80 bg-white border-r border-gray-200 p-4 md:p-6">
+      <div className="w-full md:w-80 bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] border-r border-white/10 p-4 md:p-6">
         <div className="space-y-4">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Navigation</h3>
-            <p className="text-sm text-gray-600">Import de masse</p>
+            <h3 className="text-lg font-semibold text-white mb-2">Navigation</h3>
+            <p className="text-sm text-white/70">Import de masse</p>
           </div>
 
           <div className="space-y-2">
@@ -361,14 +361,14 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
               onClick={() => setActiveTab('import')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 activeTab === 'import'
-                  ? 'bg-slate-100 text-slate-800 border border-slate-200'
-                  : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                  ? 'bg-white/20 text-white border-2 border-white/30'
+                  : 'text-white/70 hover:bg-white/10 border-2 border-transparent'
               }`}
             >
               <Upload className="w-4 h-4" />
               <div>
                 <div className="font-medium text-sm">Importer des leads</div>
-                <div className="text-xs text-gray-500">Fichier CSV</div>
+                <div className="text-xs text-white/60">Fichier CSV</div>
               </div>
             </button>
 
@@ -376,8 +376,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
               onClick={() => setActiveTab('list')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 activeTab === 'list'
-                  ? 'bg-slate-100 text-slate-800 border border-slate-200'
-                  : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                  ? 'bg-white/20 text-white border-2 border-white/30'
+                  : 'text-white/70 hover:bg-white/10 border-2 border-transparent'
               }`}
             >
               <List className="w-4 h-4" />
@@ -385,28 +385,28 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 <div className="font-medium text-sm flex items-center justify-between">
                   Liste des leads masse
                   {leads.length > 0 && (
-                    <span className="bg-slate-200 text-slate-900 text-xs font-medium px-2 py-0.5 rounded-full">
+                    <span className="bg-white/30 text-white text-xs font-medium px-2 py-0.5 rounded-full">
                       {leads.length}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">Leads importés</div>
+                <div className="text-xs text-white/60">Leads importés</div>
               </div>
             </button>
           </div>
 
           {/* Stats */}
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-3">Statistiques</h4>
+          <div className="mt-8 p-4 bg-[#1a2847]/50 rounded-lg border-2 border-white/20">
+            <h4 className="font-medium text-white mb-3">Statistiques</h4>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Total leads</span>
-                <span className="font-medium text-gray-900">{leads.length}</span>
+                <span className="text-white/70">Total leads</span>
+                <span className="font-medium text-white">{leads.length}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Importés aujourd'hui</span>
-                <span className="font-medium text-gray-900">
-                  {leads.filter(lead => 
+                <span className="text-white/70">Importés aujourd'hui</span>
+                <span className="font-medium text-white">
+                  {leads.filter(lead =>
                     lead.dateCreation.includes(new Date().toLocaleDateString('fr-FR'))
                   ).length}
                 </span>
@@ -417,16 +417,24 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-4 md:p-6 overflow-x-hidden overflow-y-auto">
+      <div className="flex-1 p-4 md:p-6 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f]">
         <div className="w-full">
-          <div className="mb-6 md:mb-8">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg flex items-center justify-center">
-                <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold text-white drop-shadow-lg">Import de masse</h1>
-                <p className="text-sm md:text-base text-blue-200 font-medium">Importez vos leads depuis un fichier CSV</p>
+          {/* Header */}
+          <div className="mb-6 bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl">
+            <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 overflow-hidden">
+              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+              <div className="relative flex items-center gap-2 sm:gap-3 md:gap-5">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-xl rounded-xl sm:rounded-2xl flex items-center justify-center ring-2 sm:ring-4 ring-white/30 shadow-lg">
+                  <Upload className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-white drop-shadow-lg" />
+                </div>
+                <div>
+                  <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-white mb-0.5 sm:mb-1 drop-shadow-lg tracking-tight">
+                    Import de masse
+                  </h1>
+                  <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">
+                    Importez vos leads depuis un fichier CSV
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -436,15 +444,15 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
             <>
               <div className="space-y-6">
                 {/* Format Configuration */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Upload className="w-4 h-4 md:w-5 md:h-5 text-slate-800" />
+                <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl shadow-2xl border-2 border-white/10 p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <Upload className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     Format des colonnes
                   </h3>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-blue-300 mb-2">
                         Encodage du fichier CSV
                       </label>
                       <div className="flex gap-4 mb-4">
@@ -460,9 +468,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                                 handleFileSelect(csvFile, 'UTF-8');
                               }
                             }}
-                            className="w-4 h-4 text-slate-800 focus:ring-blue-500"
+                            className="w-4 h-4 text-blue-500 focus:ring-blue-500"
                           />
-                          <span className="text-sm text-gray-700">UTF-8 (recommandé)</span>
+                          <span className="text-sm text-white">UTF-8 (recommandé)</span>
                         </label>
                         <label className="flex items-center gap-2 cursor-pointer">
                           <input
@@ -476,44 +484,44 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                                 handleFileSelect(csvFile, 'ISO-8859-1');
                               }
                             }}
-                            className="w-4 h-4 text-slate-800 focus:ring-blue-500"
+                            className="w-4 h-4 text-blue-500 focus:ring-blue-500"
                           />
-                          <span className="text-sm text-gray-700">ISO-8859-1 (Excel Windows)</span>
+                          <span className="text-sm text-white">ISO-8859-1 (Excel Windows)</span>
                         </label>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-white/70">
                         Si vous voyez des "?" à la place des accents (é, è, à), changez l'encodage
                       </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-blue-300 mb-2">
                         Format CSV (ordre des colonnes)
                       </label>
                       <input
                         type="text"
                         value={csvFormat}
                         onChange={(e) => setCsvFormat(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        className="w-full px-3 py-2 bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50 transition-colors"
                         placeholder="nom,prenom,email,motDePasse,telephone"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-white/70 mt-1">
                         {csvFile ? '✓ Colonnes détectées automatiquement depuis votre fichier' : 'Personnalisez l\'ordre des colonnes selon votre fichier CSV'}
                       </p>
                     </div>
 
                     {csvFile && csvFormat && (
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="text-sm font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                          <div className="w-5 h-5 bg-[#2d4578] rounded-full flex items-center justify-center">
+                      <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-4">
+                        <h4 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
+                          <div className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center">
                             <span className="text-white text-xs">✓</span>
                           </div>
                           Colonnes détectées
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {csvFormat.split(',').map((col, index) => (
-                            <span key={index} className="inline-flex items-center gap-1 bg-white px-3 py-1.5 rounded-full text-sm font-medium text-blue-700 border border-blue-200">
-                              <span className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-700">
+                            <span key={index} className="inline-flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-sm font-medium text-white border border-white/20">
+                              <span className="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold text-white">
                                 {index + 1}
                               </span>
                               {col.trim()}
@@ -523,8 +531,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                       </div>
                     )}
 
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <p className="text-sm text-blue-800">
+                    <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-3">
+                      <p className="text-sm text-white">
                         <strong>Colonnes supportées :</strong> nom, prenom, email, motDePasse, telephone, portable, siret, societe, activite, conseiller, vendeur, source
                       </p>
                     </div>
@@ -532,30 +540,30 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 </div>
 
                 {/* File Upload */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Plus className="w-4 h-4 md:w-5 md:h-5 text-slate-800" />
+                <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl shadow-2xl border-2 border-white/10 p-4 md:p-6">
+                  <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <Plus className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     Sélectionner le fichier
                   </h3>
 
                   <div
                     className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200 ${
                       isDragging
-                        ? 'border-blue-400 bg-blue-50'
-                        : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                        ? 'border-white/50 bg-white/10'
+                        : 'border-white/30 hover:border-white/50 hover:bg-white/5'
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                   >
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-lg font-medium text-gray-900 mb-2">
+                    <Upload className="w-12 h-12 text-white/70 mx-auto mb-4" />
+                    <p className="text-lg font-medium text-white mb-2">
                       Glissez-déposez votre fichier CSV ici
                     </p>
-                    <p className="text-gray-500 mb-4">ou</p>
+                    <p className="text-white/70 mb-4">ou</p>
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="bg-[#2d4578] text-white px-6 py-2 rounded-lg hover:bg-[#1a2847] transition-colors font-medium"
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-2 rounded-lg transition-all duration-300 font-medium shadow-lg border-2 border-white/20"
                     >
                       Parcourir les fichiers
                     </button>
@@ -569,15 +577,15 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                   </div>
 
                   {csvFile && (
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="mt-6 p-4 bg-[#1a2847]/50 rounded-lg border-2 border-white/20">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <Upload className="w-5 h-5 text-slate-800" />
+                          <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                            <Upload className="w-5 h-5 text-white" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">{csvFile.name}</p>
-                            <p className="text-sm text-gray-500">
+                            <p className="font-medium text-white">{csvFile.name}</p>
+                            <p className="text-sm text-white/70">
                               {(csvFile.size / 1024).toFixed(1)} KB
                             </p>
                           </div>
@@ -590,40 +598,40 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                               fileInputRef.current.value = '';
                             }
                           }}
-                          className="text-red-600 hover:text-red-800 text-sm font-medium"
+                          className="text-red-400 hover:text-red-300 text-sm font-medium"
                         >
                           Supprimer
                         </button>
                       </div>
 
                       {isProcessingCsv ? (
-                        <div className="flex items-center gap-2 text-blue-600">
-                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="flex items-center gap-2 text-blue-300">
+                          <div className="w-4 h-4 border-2 border-blue-300 border-t-transparent rounded-full animate-spin"></div>
                           <span className="text-sm">Analyse du fichier...</span>
                         </div>
                       ) : csvPreview.length > 0 ? (
                         <div className="space-y-3">
-                          <div className="flex items-center gap-2 text-slate-800">
-                            <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <div className="flex items-center gap-2 text-white">
+                            <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
                               <span className="text-xs font-bold">{csvPreview.length - 1}</span>
                             </div>
                             <span className="text-sm font-medium">
                               {csvPreview.length - 1} leads détectés
                             </span>
                           </div>
-                          <p className="text-xs text-gray-600">
+                          <p className="text-xs text-white/70">
                             Fichier: <strong>{csvFile.name}</strong>
                           </p>
                           <button
                             onClick={handleImportCsv}
-                            className="w-full bg-[#2d4578] text-white py-3 px-4 rounded-lg hover:bg-[#1a2847] transition-colors font-medium flex items-center justify-center gap-2"
+                            className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-3 px-4 rounded-lg transition-all duration-300 font-medium flex items-center justify-center gap-2 shadow-lg border-2 border-white/20"
                           >
                             <Upload className="w-4 h-4" />
                             Importer {csvPreview.length - 1} leads
                           </button>
                           <button
                             onClick={debugCsvData}
-                            className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                            className="w-full bg-white/10 hover:bg-white/20 text-white py-2 px-4 rounded-lg transition-colors text-sm border-2 border-white/20"
                           >
                             Debug: Voir les données
                           </button>
@@ -635,16 +643,16 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
 
                 {/* Instructions Section */}
                 <div className="space-y-6">
-                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-                    <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Eye className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                  <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl shadow-2xl border-2 border-white/10 p-4 md:p-6">
+                    <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <Eye className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       Instructions d'utilisation
                     </h3>
 
                     <div className="space-y-4">
-                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                        <h4 className="font-medium text-amber-900 mb-2">Détection automatique des colonnes</h4>
-                        <ul className="text-sm text-amber-800 space-y-1">
+                      <div className="bg-amber-500/20 border-2 border-amber-500/30 rounded-lg p-4">
+                        <h4 className="font-medium text-amber-200 mb-2">Détection automatique des colonnes</h4>
+                        <ul className="text-sm text-white/90 space-y-1">
                           <li>• <strong>Détection automatique</strong> : Les colonnes sont automatiquement détectées depuis la première ligne de votre fichier CSV</li>
                           <li>• <strong>Aperçu visuel</strong> : Vous verrez les colonnes détectées affichées avec leur ordre</li>
                           <li>• <strong>Personnalisation</strong> : Vous pouvez modifier manuellement l'ordre si nécessaire</li>
@@ -653,9 +661,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                         </ul>
                       </div>
 
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="font-medium text-blue-900 mb-2">Règles d'import</h4>
-                        <ul className="text-sm text-blue-800 space-y-1">
+                      <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-4">
+                        <h4 className="font-medium text-blue-300 mb-2">Règles d'import</h4>
+                        <ul className="text-sm text-white/90 space-y-1">
                           <li>• La première ligne de votre CSV doit contenir les noms des colonnes</li>
                           <li>• Les noms de colonnes seront automatiquement détectés et affichés</li>
                           <li>• Séparateurs supportés : virgule (,) ou point-virgule (;)</li>
@@ -664,9 +672,9 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                         </ul>
                       </div>
 
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h4 className="font-medium text-blue-900 mb-2">Processus d'import</h4>
-                        <ol className="text-sm text-blue-800 space-y-1">
+                      <div className="bg-[#1a2847]/50 border-2 border-white/20 rounded-lg p-4">
+                        <h4 className="font-medium text-blue-300 mb-2">Processus d'import</h4>
+                        <ol className="text-sm text-white/90 space-y-1">
                           <li>1. Choisissez l'encodage correct (UTF-8 ou ISO-8859-1)</li>
                           <li>2. Sélectionnez votre fichier CSV</li>
                           <li>3. Les colonnes seront automatiquement détectées et affichées</li>
@@ -687,8 +695,8 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
             <>
               {selectedLeads.length > 0 && (
                 <>
-                  <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-white shadow-lg rounded-full px-4 py-2 z-40 border-2 border-blue-500">
-                    <span className="text-sm font-medium text-slate-900">
+                  <div className="fixed top-20 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] shadow-lg rounded-full px-4 py-2 z-40 border-2 border-white/30">
+                    <span className="text-sm font-medium text-white">
                       {selectedLeads.length} lead(s) sélectionné(s)
                     </span>
                   </div>
@@ -716,13 +724,13 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                   </div>
                 </>
               )}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div className="p-4 md:p-6 border-b border-gray-200">
+              <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl shadow-2xl border-2 border-white/10">
+                <div className="p-4 md:p-6 border-b border-white/20">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div className="flex items-center gap-3">
-                      <List className="w-5 h-5 md:w-6 md:h-6 text-slate-800" />
-                      <h2 className="text-lg md:text-2xl font-semibold text-gray-900">Liste des leads masse</h2>
-                      <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded-full">
+                      <List className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                      <h2 className="text-lg md:text-2xl font-semibold text-white">Liste des leads masse</h2>
+                      <span className="bg-white/20 text-white text-sm font-medium px-2.5 py-0.5 rounded-full border border-white/30">
                         {leads.length}
                       </span>
                     </div>
@@ -731,12 +739,12 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
 
               {leads.length === 0 ? (
                 <div className="p-12 text-center">
-                  <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun lead importé</h3>
-                  <p className="text-gray-500 mb-6">Commencez par importer votre premier fichier CSV</p>
+                  <Users className="w-16 h-16 text-white/50 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">Aucun lead importé</h3>
+                  <p className="text-white/70 mb-6">Commencez par importer votre premier fichier CSV</p>
                   <button
                     onClick={() => setActiveTab('import')}
-                    className="inline-flex items-center gap-2 bg-[#2d4578] text-white px-4 py-2 rounded-lg hover:bg-[#1a2847] transition-colors"
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2 rounded-lg transition-all duration-300 border-2 border-white/20 shadow-lg"
                   >
                     <Upload className="w-4 h-4" />
                     Importer des leads
@@ -746,11 +754,11 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                 <div className="overflow-x-auto w-full">
                   <table className="w-full min-w-[1000px] border-collapse table-auto">
                     <thead>
-                      <tr className="bg-blue-50 border-b border-gray-300">
-                        <th className="px-2 py-2 text-left border-r border-gray-300 w-8">
+                      <tr className="bg-[#1a2847]/50 border-b border-white/20">
+                        <th className="px-2 py-2 text-left border-r border-white/20 w-8">
                           <button
                             onClick={handleSelectAll}
-                            className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-gray-700 transition-colors"
+                            className="flex items-center justify-center w-5 h-5 text-white/70 hover:text-white transition-colors"
                             title={selectedLeads.length === leads.length ? "Désélectionner tout" : "Sélectionner tout"}
                           >
                             {selectedLeads.length === leads.length ? (
@@ -760,39 +768,39 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                             )}
                           </button>
                         </th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300 w-32">Rendez-vous</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300 w-80">Statut du client</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300 w-24">Prénom</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300 w-24">Nom</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">Téléphone</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">Portable</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">E-mail</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">Activité</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">Société</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">SIRET</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900 border-r border-gray-300">Commentaire</th>
-                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-900">Créé le</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20 w-32">Rendez-vous</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20 w-80">Statut du client</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20 w-24">Prénom</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20 w-24">Nom</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">Téléphone</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">Portable</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">E-mail</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">Activité</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">Société</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">SIRET</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300 border-r border-white/20">Commentaire</th>
+                        <th className="px-3 py-2 text-left text-xs font-bold text-blue-300">Créé le</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 divide-y divide-white/10">
                       {leads.map((lead) => (
-                        <tr key={lead.id} className="hover:bg-blue-50 transition-colors border-b border-gray-300">
-                          <td className="px-2 py-2 border-r border-gray-200 text-center w-8">
+                        <tr key={lead.id} className="hover:bg-white/5 transition-colors border-b border-white/10">
+                          <td className="px-2 py-2 border-r border-white/10 text-center w-8">
                             <button
                               onClick={() => handleSelectLead(lead.id)}
-                              className="flex items-center justify-center w-5 h-5 text-gray-500 hover:text-slate-800 transition-colors"
+                              className="flex items-center justify-center w-5 h-5 text-white/70 hover:text-white transition-colors"
                             >
                               {selectedLeads.includes(lead.id) ? (
-                                <CheckSquare className="w-5 h-5 text-slate-800" />
+                                <CheckSquare className="w-5 h-5 text-white" />
                               ) : (
                                 <Square className="w-5 h-5" />
                               )}
                             </button>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200 w-32">
-                            <div className="text-xs text-gray-700">{lead.rendez_vous ? new Date(lead.rendez_vous).toLocaleString('fr-FR') : '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10 w-32">
+                            <div className="text-xs text-white">{lead.rendez_vous ? new Date(lead.rendez_vous).toLocaleString('fr-FR') : '-'}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200 w-80">
+                          <td className="px-3 py-2 border-r border-white/10 w-80">
                             {lead.status ? (
                               <span
                                 className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium"
@@ -805,38 +813,38 @@ const BulkImport: React.FC<BulkImportProps> = ({ leads, onLeadCreated, onLeadsDe
                                 {lead.status.name}
                               </span>
                             ) : (
-                              <span className="text-xs text-gray-400 italic">Aucun statut</span>
+                              <span className="text-xs text-white/50 italic">Aucun statut</span>
                             )}
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200 w-24">
-                            <div className="text-xs text-gray-900 font-semibold">{lead.prenom}</div>
+                          <td className="px-3 py-2 border-r border-white/10 w-24">
+                            <div className="text-xs text-white font-semibold">{lead.prenom}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200 w-24">
-                            <div className="text-xs text-gray-900 font-semibold">{lead.nom}</div>
+                          <td className="px-3 py-2 border-r border-white/10 w-24">
+                            <div className="text-xs text-white font-semibold">{lead.nom}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.telephone || '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.telephone || '-'}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.portable || '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.portable || '-'}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.email}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.email}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.activite || '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.activite || '-'}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.societe || '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.societe || '-'}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.siret || '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.siret || '-'}</div>
                           </td>
-                          <td className="px-3 py-2 border-r border-gray-200">
-                            <div className="text-xs text-gray-700">{lead.conseiller || '-'}</div>
+                          <td className="px-3 py-2 border-r border-white/10">
+                            <div className="text-xs text-white">{lead.conseiller || '-'}</div>
                           </td>
                           <td className="px-3 py-2">
-                            <div className="text-xs text-gray-700">{lead.dateCreation}</div>
+                            <div className="text-xs text-white">{lead.dateCreation}</div>
                           </td>
                         </tr>
                       ))}

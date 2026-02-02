@@ -375,13 +375,13 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-full">
+    <div className="flex flex-col md:flex-row h-full bg-gradient-to-br from-[#1a2847] via-[#2d4578] to-[#1e3a5f]">
       {/* Left Navigation Sidebar */}
-      <div className="w-full md:w-80 bg-white border-r border-gray-200 p-4 md:p-6">
+      <div className="w-full md:w-80 bg-gradient-to-b from-[#1e3a5f] to-[#2d4578] border-r border-white/10 p-4 md:p-6">
         <div className="space-y-4">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Navigation</h3>
-            <p className="text-sm text-gray-600">Gestionnaire de leads</p>
+            <h3 className="text-lg font-semibold text-white mb-2">Navigation</h3>
+            <p className="text-sm text-white/70">Gestionnaire de leads</p>
           </div>
 
           <div className="space-y-2">
@@ -389,14 +389,14 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
               onClick={() => setActiveTab('add')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 activeTab === 'add'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                  : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                  ? 'bg-white/20 text-white border-2 border-white/30'
+                  : 'text-white/70 hover:bg-white/10 border-2 border-transparent'
               }`}
             >
               <Plus className="w-4 h-4" />
               <div>
                 <div className="font-medium text-sm">Ajouter un lead</div>
-                <div className="text-xs text-gray-500">Créer un nouveau prospect</div>
+                <div className="text-xs text-white/60">Créer un nouveau prospect</div>
               </div>
             </button>
 
@@ -404,8 +404,8 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
               onClick={() => setActiveTab('list')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-left transition-all duration-200 ${
                 activeTab === 'list'
-                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                  : 'text-gray-700 hover:bg-gray-50 border border-transparent'
+                  ? 'bg-white/20 text-white border-2 border-white/30'
+                  : 'text-white/70 hover:bg-white/10 border-2 border-transparent'
               }`}
             >
               <List className="w-4 h-4" />
@@ -413,28 +413,28 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                 <div className="font-medium text-sm flex items-center justify-between">
                   Leads créés
                   {leads.length > 0 && (
-                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                    <span className="bg-white/20 text-white text-xs font-medium px-2 py-0.5 rounded-full border border-white/30">
                       {leads.length}
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-gray-500">Voir tous les prospects</div>
+                <div className="text-xs text-white/60">Voir tous les prospects</div>
               </div>
             </button>
           </div>
 
           {/* Stats */}
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-medium text-gray-900 mb-3">Statistiques</h4>
+          <div className="mt-8 p-4 bg-white/10 rounded-lg border-2 border-white/20 backdrop-blur-xl">
+            <h4 className="font-medium text-white mb-3">Statistiques</h4>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Total leads</span>
-                <span className="font-medium text-gray-900">{leads.length}</span>
+                <span className="text-white/70">Total leads</span>
+                <span className="font-medium text-white">{leads.length}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Ajoutés aujourd'hui</span>
-                <span className="font-medium text-gray-900">
-                  {leads.filter(lead => 
+                <span className="text-white/70">Ajoutés aujourd'hui</span>
+                <span className="font-medium text-white">
+                  {leads.filter(lead =>
                     lead.dateCreation.includes(new Date().toLocaleDateString('fr-FR'))
                   ).length}
                 </span>

@@ -1764,9 +1764,9 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                             onClientLogin(editedLead);
                           }}
                           disabled={!editedLead?.siret || !editedLead?.client_password}
-                          className={`w-full px-6 py-3 rounded-lg transition-colors font-semibold flex items-center justify-center gap-2 ${
+                          className={`w-full px-6 py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all duration-300 shadow-md ${
                             editedLead?.siret && editedLead?.client_password
-                              ? 'bg-blue-600 text-white hover:bg-blue-700'
+                              ? 'bg-gradient-to-r from-slate-800 via-slate-700 to-slate-900 text-white hover:from-slate-900 hover:via-slate-800 hover:to-black hover:shadow-lg transform hover:scale-105'
                               : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                           }`}
                         >

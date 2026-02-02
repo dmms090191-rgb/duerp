@@ -161,47 +161,58 @@ const ArgumentaireViewer: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-4">
           {filteredDocuments.map((doc) => (
             <div
               key={doc.id}
-              className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl overflow-hidden hover:border-blue-400/50 hover:shadow-2xl transition-all duration-300 group cursor-pointer transform hover:-translate-y-1"
+              className="bg-gradient-to-br from-[#1a2847]/70 via-[#2d4578]/60 to-[#1a2847]/70 backdrop-blur-xl border-2 border-white/20 rounded-2xl overflow-hidden hover:border-blue-400/50 hover:shadow-2xl transition-all duration-300 group cursor-pointer transform hover:scale-[1.02]"
               onClick={() => setSelectedDocument(doc)}
             >
-              <div className="relative h-32 bg-gradient-to-br from-[#2d4578] to-[#1a2847] overflow-hidden">
-                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-all"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <FileText className="w-16 h-16 text-white opacity-20" />
-                </div>
-                <div className="absolute top-4 right-4">
-                  <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 border border-white/30">
-                    <span className="text-xs text-white font-medium">
-                      {new Date(doc.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
-                    </span>
+              <div className="flex flex-col sm:flex-row">
+                <div className="relative w-full sm:w-64 h-48 sm:h-auto bg-gradient-to-br from-[#2d4578] via-[#1e3a5f] to-[#2d4578] overflow-hidden flex-shrink-0">
+                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-24 h-24 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center ring-4 ring-white/20 shadow-2xl group-hover:ring-white/40 group-hover:scale-110 transition-all">
+                      <FileText className="w-12 h-12 text-white drop-shadow-lg" />
+                    </div>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 border-2 border-white/30 shadow-lg">
+                      <span className="text-xs text-white font-semibold">
+                        {new Date(doc.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="p-5">
-                <h3 className="font-bold text-white mb-2 text-lg group-hover:text-blue-300 transition-colors line-clamp-2">
-                  {doc.titre || 'Sans titre'}
-                </h3>
-                <p className="text-sm text-blue-200 line-clamp-3 mb-4">
-                  {doc.contenu.substring(0, 120)}
-                  {doc.contenu.length > 120 ? '...' : ''}
-                </p>
+                <div className="flex-1 p-6 flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-bold text-white mb-3 text-xl group-hover:text-blue-300 transition-colors line-clamp-2 drop-shadow-sm">
+                      {doc.titre || 'Sans titre'}
+                    </h3>
+                    <p className="text-sm text-white/80 line-clamp-2 leading-relaxed mb-4">
+                      {doc.contenu.substring(0, 200)}
+                      {doc.contenu.length > 200 ? '...' : ''}
+                    </p>
+                  </div>
 
-                <div className="flex items-center justify-between pt-4 border-t border-white/20">
-                  <span className="text-xs text-blue-300 font-medium">
-                    {doc.contenu.split('\n').filter(p => p.trim()).length} paragraphes
-                  </span>
-                  <button
-                    onClick={() => setSelectedDocument(doc)}
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all text-sm font-semibold shadow-md hover:shadow-lg"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Lire
-                  </button>
+                  <div className="flex items-center justify-between pt-4 border-t-2 border-white/20">
+                    <span className="text-xs text-blue-300 font-semibold flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
+                      {doc.contenu.split('\n').filter(p => p.trim()).length} paragraphes
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedDocument(doc);
+                      }}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all text-sm font-semibold shadow-lg hover:shadow-xl border-2 border-white/20 hover:scale-110"
+                    >
+                      <Eye className="w-4 h-4" />
+                      Lire le document
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
