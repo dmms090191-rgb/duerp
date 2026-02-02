@@ -249,16 +249,16 @@ export default function SimpleEmailConfigurator() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl sm:rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl">
+    <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
+      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-xl sm:rounded-2xl lg:rounded-3xl shadow-2xl border border-white/10 backdrop-blur-2xl">
         <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 overflow-hidden">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
           <div className="relative flex items-center gap-2 sm:gap-3 md:gap-5">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 bg-white/20 backdrop-blur-xl rounded-xl sm:rounded-2xl flex items-center justify-center ring-2 sm:ring-4 ring-white/30 shadow-lg">
-              <Mail className="w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9 text-white drop-shadow-lg" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 bg-white/20 backdrop-blur-xl rounded-lg sm:rounded-xl md:rounded-2xl flex items-center justify-center ring-2 sm:ring-4 ring-white/30 shadow-lg flex-shrink-0">
+              <Mail className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-9 lg:h-9 text-white drop-shadow-lg" />
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-white mb-0.5 sm:mb-1 drop-shadow-lg tracking-tight">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-extrabold text-white mb-0.5 sm:mb-1 drop-shadow-lg tracking-tight">
                 Configuration des Emails
               </h1>
               <p className="text-white/80 text-xs sm:text-sm md:text-base font-medium">
@@ -269,7 +269,7 @@ export default function SimpleEmailConfigurator() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {templates.map((template) => {
           const isEditing = editingId === template.id;
           const linkedPdfs = pdfsMap[template.id] || [];
@@ -280,20 +280,20 @@ export default function SimpleEmailConfigurator() {
           return (
             <div
               key={template.id}
-              className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl shadow-2xl border-2 border-white/10 overflow-hidden hover:shadow-2xl transition-all"
+              className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-xl sm:rounded-2xl shadow-2xl border-2 border-white/10 overflow-hidden hover:shadow-2xl transition-all"
             >
-              <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] p-6 text-white overflow-hidden">
+              <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] p-4 sm:p-5 md:p-6 text-white overflow-hidden">
                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
                 <div className="relative">
-                  <div className="text-5xl mb-3">{getEmailIcon(template.key)}</div>
-                  <h3 className="text-2xl font-bold drop-shadow-lg">{template.name}</h3>
+                  <div className="text-3xl sm:text-4xl md:text-5xl mb-2 sm:mb-3">{getEmailIcon(template.key)}</div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold drop-shadow-lg line-clamp-2">{template.name}</h3>
                 </div>
               </div>
 
-              <div className="p-6 space-y-4 bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+              <div className="p-4 sm:p-5 md:p-6 space-y-3 sm:space-y-4 bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
                 {isEditing ? (
-                  <div className="space-y-4">
-                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                  <div className="space-y-3 sm:space-y-4">
+                    <div className="bg-[#1a2847]/50 rounded-lg sm:rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
                       <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         Sujet
                       </label>
@@ -301,37 +301,37 @@ export default function SimpleEmailConfigurator() {
                         type="text"
                         value={editSubject}
                         onChange={(e) => setEditSubject(e.target.value)}
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-base font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base font-bold text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 placeholder-white/50"
                       />
                     </div>
 
-                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                    <div className="bg-[#1a2847]/50 rounded-lg sm:rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
                       <label className="block text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">
                         Contenu HTML
                       </label>
                       <textarea
                         value={editBody}
                         onChange={(e) => setEditBody(e.target.value)}
-                        rows={12}
-                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm font-medium text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 font-mono placeholder-white/50"
+                        rows={10}
+                        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 font-mono placeholder-white/50"
                       />
-                      <p className="text-xs text-white/70 mt-2">
+                      <p className="text-xs text-white/70 mt-2 break-words">
                         Variables: {'{{prenom}}'}, {'{{nom}}'}, {'{{email}}'}, {'{{password}}'}, {'{{societe}}'}, {'{{siret}}'}
                       </p>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <button
                         onClick={() => saveTemplate(template.id)}
                         disabled={saving}
-                        className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-300 font-bold shadow-lg disabled:opacity-50 border-2 border-white/20"
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-300 font-bold shadow-lg disabled:opacity-50 border-2 border-white/20 text-sm sm:text-base"
                       >
                         <Check className="w-4 h-4" />
                         {saving ? 'Sauvegarde...' : 'Enregistrer'}
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors border-2 border-white/20"
+                        className="sm:w-auto px-4 py-2.5 sm:py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors border-2 border-white/20 flex items-center justify-center"
                       >
                         <X className="w-5 h-5" />
                       </button>
@@ -339,23 +339,23 @@ export default function SimpleEmailConfigurator() {
                   </div>
                 ) : (
                   <>
-                    <div className="bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                    <div className="bg-[#1a2847]/50 rounded-lg sm:rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
                       <div className="text-xs font-semibold text-blue-300 mb-2 uppercase tracking-wide">Sujet</div>
-                      <div className="text-white font-medium">{template.subject}</div>
+                      <div className="text-white font-medium text-sm sm:text-base break-words">{template.subject}</div>
                     </div>
 
                     {showPreview === template.id && (
-                      <div className="border-2 border-blue-400/50 rounded-xl p-4 bg-[#1a2847]/50 max-h-64 overflow-y-auto">
+                      <div className="border-2 border-blue-400/50 rounded-lg sm:rounded-xl p-3 sm:p-4 bg-[#1a2847]/50 max-h-48 sm:max-h-64 overflow-y-auto">
                         <div
-                          className="prose prose-sm prose-invert max-w-none text-white"
+                          className="prose prose-sm prose-invert max-w-none text-white text-xs sm:text-sm"
                           dangerouslySetInnerHTML={{ __html: template.body_html || template.body }}
                         />
                       </div>
                     )}
 
-                    <div className="space-y-2 bg-[#1a2847]/50 rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+                    <div className="space-y-2 bg-[#1a2847]/50 rounded-lg sm:rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
                       <div className="flex items-center gap-2 text-xs font-semibold text-blue-300 uppercase tracking-wide">
-                        <Paperclip className="w-4 h-4" />
+                        <Paperclip className="w-3 h-3 sm:w-4 sm:h-4" />
                         PDFs attachés ({linkedPdfs.length})
                       </div>
                       {linkedPdfs.length > 0 ? (
@@ -363,25 +363,25 @@ export default function SimpleEmailConfigurator() {
                           {linkedPdfs.map((link) => (
                             <div
                               key={link.pdf_template_id}
-                              className="flex items-center justify-between p-3 bg-[#1a2847]/70 rounded-lg border-2 border-white/20"
+                              className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-[#1a2847]/70 rounded-lg border-2 border-white/20"
                             >
-                              <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-blue-300" />
-                                <span className="text-sm font-medium text-white">
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 flex-shrink-0" />
+                                <span className="text-xs sm:text-sm font-medium text-white truncate">
                                   {link.pdf_templates.name}
                                 </span>
                               </div>
                               <button
                                 onClick={() => removePDF(template.id, link.pdf_template_id)}
-                                className="p-1 text-red-400 hover:bg-red-500/20 rounded transition-colors"
+                                className="p-1 text-red-400 hover:bg-red-500/20 rounded transition-colors flex-shrink-0"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                               </button>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-white/70 italic">Aucun PDF attaché</p>
+                        <p className="text-xs sm:text-sm text-white/70 italic">Aucun PDF attaché</p>
                       )}
 
                       {unlinkedPdfs.length > 0 && (
@@ -392,10 +392,10 @@ export default function SimpleEmailConfigurator() {
                               <button
                                 key={pdf.id}
                                 onClick={() => addPDF(template.id, pdf.id)}
-                                className="w-full flex items-center gap-2 p-2 border-2 border-dashed border-white/30 rounded-lg hover:border-blue-400/50 hover:bg-[#1a2847]/70 transition-colors text-left text-sm"
+                                className="w-full flex items-center gap-2 p-2 border-2 border-dashed border-white/30 rounded-lg hover:border-blue-400/50 hover:bg-[#1a2847]/70 transition-colors text-left"
                               >
-                                <Plus className="w-4 h-4 text-blue-300" />
-                                <span className="font-medium text-white">{pdf.name}</span>
+                                <Plus className="w-3 h-3 sm:w-4 sm:h-4 text-blue-300 flex-shrink-0" />
+                                <span className="font-medium text-white text-xs sm:text-sm truncate">{pdf.name}</span>
                               </button>
                             ))}
                           </div>
@@ -406,17 +406,18 @@ export default function SimpleEmailConfigurator() {
                     <div className="pt-2 space-y-2">
                       <button
                         onClick={() => startEdit(template)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white rounded-xl hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] transition-all duration-300 font-bold shadow-xl border border-blue-400/30"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white rounded-lg sm:rounded-xl hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] transition-all duration-300 font-bold shadow-xl border border-blue-400/30 text-sm sm:text-base"
                       >
                         <Edit2 className="w-4 h-4" />
                         Modifier
                       </button>
                       <button
                         onClick={() => setShowPreview(showPreview === template.id ? null : template.id)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors font-medium border-2 border-white/20"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg sm:rounded-xl transition-colors font-medium border-2 border-white/20 text-sm sm:text-base"
                       >
                         <Eye className="w-4 h-4" />
-                        {showPreview === template.id ? 'Masquer aperçu' : 'Voir aperçu'}
+                        <span className="hidden xs:inline">{showPreview === template.id ? 'Masquer aperçu' : 'Voir aperçu'}</span>
+                        <span className="xs:hidden">{showPreview === template.id ? 'Masquer' : 'Aperçu'}</span>
                       </button>
                     </div>
                   </>
@@ -427,27 +428,27 @@ export default function SimpleEmailConfigurator() {
         })}
       </div>
 
-      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-2xl shadow-2xl border-2 border-white/10 overflow-hidden">
-        <div className="p-6 sm:p-8 space-y-4 bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
-          <div className="flex items-start gap-4 sm:gap-6">
-            <div className="w-14 h-14 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-2xl p-4 text-white flex items-center justify-center ring-2 ring-white/30 shadow-lg flex-shrink-0">
-              <Send className="w-6 h-6" />
+      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-xl sm:rounded-2xl shadow-2xl border-2 border-white/10 overflow-hidden">
+        <div className="p-4 sm:p-6 md:p-8 space-y-3 sm:space-y-4 bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+          <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 md:gap-6">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-white flex items-center justify-center ring-2 ring-white/30 shadow-lg flex-shrink-0">
+              <Send className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div className="flex-1">
-              <h3 className="text-xl sm:text-2xl font-extrabold text-white mb-1 drop-shadow-lg">Envoyer un Email de Test</h3>
-              <p className="text-white/70 mb-4 text-sm sm:text-base">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-white mb-1 drop-shadow-lg">Envoyer un Email de Test</h3>
+              <p className="text-white/70 mb-2 sm:mb-4 text-xs sm:text-sm md:text-base">
                 Testez vos emails avant de les envoyer aux clients
               </p>
             </div>
           </div>
-          <div className="bg-[#1a2847]/50 rounded-xl p-4 border-2 border-white/20 shadow-md">
-            <div className="flex flex-col sm:flex-row gap-3">
+          <div className="bg-[#1a2847]/50 rounded-lg sm:rounded-xl p-3 sm:p-4 border-2 border-white/20 shadow-md">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <input
                 type="email"
                 value={testEmail}
                 onChange={(e) => setTestEmail(e.target.value)}
                 placeholder="votre-email@exemple.com"
-                className="flex-1 px-4 py-3 bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50 font-medium"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 bg-[#1a2847]/70 border-2 border-white/20 rounded-lg focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400/50 text-white placeholder-white/50 font-medium text-sm sm:text-base"
               />
               <select
                 onChange={(e) => {
@@ -455,7 +456,7 @@ export default function SimpleEmailConfigurator() {
                   if (template) sendTest(template);
                 }}
                 disabled={sendingTest || !testEmail}
-                className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-300 font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white/20"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg transition-all duration-300 font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white/20 text-sm sm:text-base"
               >
                 <option value="">Envoyer...</option>
                 {templates.map(t => (
