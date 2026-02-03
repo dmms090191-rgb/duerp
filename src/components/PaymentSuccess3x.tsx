@@ -58,7 +58,8 @@ const PaymentSuccess3x: React.FC = () => {
           clientId: parseInt(clientId),
           employeeRange,
           invoiceUrl: '',
-          certificateUrl: ''
+          certificateUrl: '',
+          paymentType: '3x'
         })
       });
 

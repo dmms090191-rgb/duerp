@@ -69,7 +69,8 @@ const PaymentSuccess: React.FC = () => {
           clientId: parseInt(clientId),
           employeeRange,
           invoiceUrl: '',
-          certificateUrl: ''
+          certificateUrl: '',
+          paymentType: '1x'
         })
       });
 

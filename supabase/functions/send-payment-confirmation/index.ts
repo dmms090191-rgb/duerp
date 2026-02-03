@@ -14,6 +14,7 @@ interface SendPaymentConfirmationRequest {
   employeeRange: string;
   invoiceUrl: string;
   certificateUrl: string;
+  paymentType?: '1x' | '3x';
 }
 
 async function loadLogoFromSupabase(supabase: any): Promise<string | null> {
@@ -46,7 +47,7 @@ async function loadLogoFromSupabase(supabase: any): Promise<string | null> {
   }
 }
 
-async function generateFacturePDF(data: any, logoBase64?: string): Promise<Uint8Array> {
+async function generateFacturePDF(data: any, logoBase64?: string, paymentType?: '1x' | '3x'): Promise<Uint8Array> {
   const doc = new jsPDF();
 
   const primaryColor = [37, 99, 235];
@@ -76,6 +77,12 @@ async function generateFacturePDF(data: any, logoBase64?: string): Promise<Uint8
   doc.setFontSize(11);
   doc.setFont(undefined, 'normal');
   doc.text('Document Unique d\'Évaluation des Risques Professionnels', 125, 27, { align: 'center' });
+
+  if (paymentType === '3x') {
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'bold');
+    doc.text('Paiement en 3 fois sans frais', 125, 33, { align: 'center' });
+  }
 
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(200, 220, 255);
@@ -174,14 +181,19 @@ async function generateFacturePDF(data: any, logoBase64?: string): Promise<Uint8
     yPrestation += 7;
   });
 
+  let boxHeight = 46;
+  if (paymentType === '3x') {
+    boxHeight = 82;
+  }
+
   doc.setFillColor(250, 252, 255);
   doc.setDrawColor(200, 220, 255);
   doc.setLineWidth(1);
-  doc.roundedRect(15, 164, 180, 46, 3, 3, 'FD');
+  doc.roundedRect(15, 164, 180, boxHeight, 3, 3, 'FD');
 
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.setLineWidth(2.5);
-  doc.line(15, 164, 15, 210);
+  doc.line(15, 164, 15, 164 + boxHeight);
 
   doc.setFontSize(10);
   doc.setTextColor(30, 30, 30);
@@ -212,6 +224,52 @@ async function generateFacturePDF(data: any, logoBase64?: string): Promise<Uint8
   doc.setFontSize(15);
   doc.text(`${data.montant_ttc} €`, 180, summaryY + 29, { align: 'right' });
 
+  if (paymentType === '3x') {
+    const montantParEcheance = (parseFloat(data.montant_ttc) / 3).toFixed(2);
+    const today = new Date();
+
+    const date1 = new Date(today);
+    const date2 = new Date(today);
+    date2.setMonth(date2.getMonth() + 1);
+    const date3 = new Date(today);
+    date3.setMonth(date3.getMonth() + 2);
+
+    const formatDate = (date: Date) => {
+      return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setLineWidth(1);
+    doc.line(22, summaryY + 38, 185, summaryY + 38);
+
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'bold');
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text('ÉCHÉANCIER DE PAIEMENT', 22, summaryY + 46);
+
+    doc.setFontSize(9);
+    doc.setFont(undefined, 'normal');
+    doc.setTextColor(30, 30, 30);
+
+    const echeanceY = summaryY + 54;
+
+    doc.text(`1ère échéance - ${formatDate(date1)}`, 28, echeanceY);
+    doc.setFont(undefined, 'bold');
+    doc.text(`${montantParEcheance} €`, 180, echeanceY, { align: 'right' });
+
+    doc.setFont(undefined, 'normal');
+    doc.text(`2ème échéance - ${formatDate(date2)}`, 28, echeanceY + 7);
+    doc.setFont(undefined, 'bold');
+    doc.text(`${montantParEcheance} €`, 180, echeanceY + 7, { align: 'right' });
+
+    doc.setFont(undefined, 'normal');
+    doc.text(`3ème échéance - ${formatDate(date3)}`, 28, echeanceY + 14);
+    doc.setFont(undefined, 'bold');
+    doc.text(`${montantParEcheance} €`, 180, echeanceY + 14, { align: 'right' });
+  }
+
+  doc.setTextColor(0, 0, 0);
+
   const currentDate = new Date().toLocaleDateString('fr-FR', {
     day: '2-digit',
     month: '2-digit',
@@ -222,30 +280,32 @@ async function generateFacturePDF(data: any, logoBase64?: string): Promise<Uint8
     minute: '2-digit'
   });
 
+  const signatureY = paymentType === '3x' ? 254 : 218;
+
   doc.setFillColor(240, 248, 255);
   doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.setLineWidth(1);
-  doc.roundedRect(60, 218, 90, 18, 3, 3, 'FD');
+  doc.roundedRect(60, signatureY, 90, 18, 3, 3, 'FD');
 
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.circle(70, 227, 5, 'F');
+  doc.circle(70, signatureY + 9, 5, 'F');
 
   doc.setDrawColor(255, 255, 255);
   doc.setLineWidth(2);
   doc.setLineCap('round');
   doc.setLineJoin('round');
-  doc.line(67.5, 227, 69, 229);
-  doc.line(69, 229, 73, 224.5);
+  doc.line(67.5, signatureY + 9, 69, signatureY + 11);
+  doc.line(69, signatureY + 11, 73, signatureY + 6.5);
 
   doc.setFontSize(7.5);
   doc.setFont(undefined, 'bold');
   doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-  doc.text('Document signé électroniquement', 105, 225, { align: 'center' });
+  doc.text('Document signé électroniquement', 105, signatureY + 7, { align: 'center' });
 
   doc.setFontSize(6);
   doc.setFont(undefined, 'normal');
   doc.setTextColor(80, 80, 80);
-  doc.text(`Cabinet FPE - ${currentDate} à ${currentTime}`, 105, 231, { align: 'center' });
+  doc.text(`Cabinet FPE - ${currentDate} à ${currentTime}`, 105, signatureY + 13, { align: 'center' });
 
   doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
   doc.rect(0, 258, 210, 39, 'F');
@@ -514,7 +574,7 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { clientId, employeeRange, invoiceUrl, certificateUrl }: SendPaymentConfirmationRequest = await req.json();
+    const { clientId, employeeRange, invoiceUrl, certificateUrl, paymentType }: SendPaymentConfirmationRequest = await req.json();
 
     console.log('📧 Envoi email confirmation paiement:', { clientId, employeeRange });
 
@@ -569,7 +629,7 @@ Deno.serve(async (req: Request) => {
       description_prestation: `Document Unique d\'Évaluation des Risques Professionnels (DUERP) - ${product.name}`
     };
 
-    const facturePDF = await generateFacturePDF(factureData, logoBase64 || undefined);
+    const facturePDF = await generateFacturePDF(factureData, logoBase64 || undefined, paymentType || '1x');
     const factureFilename = 'PRISE_EN_CHARGE_DUERP.pdf';
     const factureFilePath = `${clientId}/${factureFilename}`;
 
