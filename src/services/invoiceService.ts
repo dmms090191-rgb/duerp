@@ -51,6 +51,46 @@ const loadImageAsBase64 = async (url: string): Promise<string> => {
   }
 };
 
+const createRoundedImage = async (imageData: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        if (ctx) {
+          const cornerRadius = 50;
+
+          ctx.beginPath();
+          ctx.moveTo(cornerRadius, 0);
+          ctx.lineTo(img.width - cornerRadius, 0);
+          ctx.quadraticCurveTo(img.width, 0, img.width, cornerRadius);
+          ctx.lineTo(img.width, img.height - cornerRadius);
+          ctx.quadraticCurveTo(img.width, img.height, img.width - cornerRadius, img.height);
+          ctx.lineTo(cornerRadius, img.height);
+          ctx.quadraticCurveTo(0, img.height, 0, img.height - cornerRadius);
+          ctx.lineTo(0, cornerRadius);
+          ctx.quadraticCurveTo(0, 0, cornerRadius, 0);
+          ctx.closePath();
+          ctx.clip();
+
+          ctx.drawImage(img, 0, 0);
+        }
+
+        const roundedImageData = canvas.toDataURL('image/png');
+        resolve(roundedImageData);
+      };
+      img.onerror = () => reject(new Error('Failed to load image for rounding'));
+      img.src = imageData;
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<string | null> => {
   try {
     const doc = new jsPDF();
@@ -79,11 +119,12 @@ export const generateInvoicePDF = async (invoiceData: InvoiceData): Promise<stri
 
       if (!configError && pdfConfig?.logo_url) {
         const logoBase64 = await loadImageAsBase64(pdfConfig.logo_url);
+        const roundedLogo = await createRoundedImage(logoBase64);
 
         doc.setFillColor(255, 255, 255);
         doc.roundedRect(70, 15, 70, 32, 3, 3, 'F');
 
-        doc.addImage(logoBase64, 'PNG', 80, 20, 50, 22);
+        doc.addImage(roundedLogo, 'PNG', 80, 20, 50, 22);
         logoLoaded = true;
       }
     } catch (error) {

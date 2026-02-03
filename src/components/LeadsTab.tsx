@@ -8,6 +8,7 @@ import { adminService } from '../services/adminService';
 import { Status } from '../types/Status';
 import { supabase } from '../lib/supabase';
 import ClientEmailSender from './ClientEmailSender';
+import PaymentEmailSender from './PaymentEmailSender';
 
 interface Seller {
   id: string;
@@ -36,7 +37,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
   const [selectedLeadDetails, setSelectedLeadDetails] = React.useState<Lead | null>(null);
   const [editedLead, setEditedLead] = React.useState<Lead | null>(null);
   const [saving, setSaving] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState<'information' | 'mail' | 'liste-commentaire' | 'panel-client'>('information');
+  const [activeTab, setActiveTab] = React.useState<'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client'>('information');
   const [showTransferModal, setShowTransferModal] = React.useState(false);
   const [leadToTransfer, setLeadToTransfer] = React.useState<Lead | null>(null);
   const [sellers, setSellers] = React.useState<Seller[]>([]);
@@ -1222,6 +1223,16 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                   Mail
                 </button>
                 <button
+                  onClick={() => setActiveTab('reglement-fractionne')}
+                  className={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-extrabold transition-all duration-300 whitespace-nowrap rounded-t-xl ${
+                    activeTab === 'reglement-fractionne'
+                      ? 'text-white bg-[#1e3a5f] shadow-lg border-t-4 border-blue-400 transform scale-105'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  Paiement fractionné
+                </button>
+                <button
                   onClick={() => setActiveTab('liste-commentaire')}
                   className={`px-4 sm:px-6 py-3 text-xs sm:text-sm font-extrabold transition-all duration-300 whitespace-nowrap rounded-t-xl ${
                     activeTab === 'liste-commentaire'
@@ -1244,7 +1255,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
               </div>
             </div>
 
-            <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(95vh-180px)] sm:max-h-[calc(90vh-230px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+            <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto h-[calc(95vh-180px)] sm:h-[calc(90vh-230px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
               {/* Onglet Information */}
               {activeTab === 'information' && (
                 <>
@@ -1503,6 +1514,14 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                     clientName={`${editedLead.prenom} ${editedLead.nom}`}
                     clientEmail={editedLead.email}
                   />
+                </div>
+              )}
+
+              {/* Onglet Paiement fractionné */}
+              {activeTab === 'reglement-fractionne' && editedLead && (
+                <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-xl border-2 border-white/10 shadow-xl">
+                  <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6">Configuration du paiement fractionné</h3>
+                  <PaymentEmailSender client={editedLead} />
                 </div>
               )}
 

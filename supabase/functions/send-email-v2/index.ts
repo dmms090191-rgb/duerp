@@ -15,6 +15,7 @@ interface SendEmailRequest {
   emailOverride?: string;
   previewOnly?: boolean;
   senderEmail?: string;
+  customData?: Record<string, any>;
 }
 
 async function loadLogoFromSupabase(supabase: any): Promise<string | null> {
@@ -267,6 +268,270 @@ async function generateFacturePDF(data: any, logoBase64?: string): Promise<Uint8
   doc.setFont(undefined, 'normal');
   doc.text('administration@securiteprofessionnelle.fr', 105, 278, { align: 'center' });
   doc.text('www.securiteprofessionnelle.fr', 105, 285, { align: 'center' });
+
+  return new Uint8Array(doc.output('arraybuffer'));
+}
+
+async function generateFacturePaiement3xPDF(data: any, logoBase64?: string): Promise<Uint8Array> {
+  const doc = new jsPDF();
+
+  const primaryColor = [37, 99, 235];
+  const darkBlue = [30, 80, 200];
+
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.rect(0, 0, 210, 40, 'F');
+
+  doc.setFillColor(darkBlue[0], darkBlue[1], darkBlue[2]);
+  doc.rect(0, 0, 210, 3, 'F');
+
+  if (logoBase64) {
+    try {
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(12, 10, 40, 20, 3, 3, 'F');
+      doc.addImage(logoBase64, 'PNG', 14, 12, 36, 16);
+    } catch (error) {
+      console.error('Erreur ajout logo:', error);
+    }
+  }
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont(undefined, 'bold');
+  doc.text('FACTURE - PRISE EN CHARGE', 125, 18, { align: 'center' });
+
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'normal');
+  doc.text('Document Unique d\'Évaluation des Risques Professionnels', 125, 25, { align: 'center' });
+
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'normal');
+  doc.text('Paiement en 3 fois sans frais', 125, 31, { align: 'center' });
+
+  const shortInvoiceNumber = `F-${data.numero_facture.split('-').pop()}`;
+  doc.setFontSize(8);
+  doc.setFont(undefined, 'bold');
+  doc.text(`N° ${shortInvoiceNumber} | ${data.date_facture}`, 125, 36, { align: 'center' });
+
+  doc.setFillColor(245, 248, 255);
+  doc.roundedRect(15, 46, 180, 40, 3, 3, 'F');
+
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setLineWidth(1.5);
+  doc.line(15, 46, 15, 86);
+
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setFontSize(11);
+  doc.setFont(undefined, 'bold');
+  doc.text('INFORMATIONS CLIENT', 22, 54);
+
+  doc.setFontSize(9);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont(undefined, 'normal');
+  const infoY = 62;
+
+  doc.setFont(undefined, 'bold');
+  doc.text('Nom :', 22, infoY);
+  doc.setFont(undefined, 'normal');
+  doc.text(data.client_nom, 60, infoY);
+
+  let currentY = infoY + 7;
+
+  if (data.client_societe) {
+    doc.setFont(undefined, 'bold');
+    doc.text('Société :', 22, currentY);
+    doc.setFont(undefined, 'normal');
+    const societeLines = doc.splitTextToSize(data.client_societe, 130);
+    doc.text(societeLines, 60, currentY);
+    currentY += 7;
+  }
+
+  doc.setFont(undefined, 'bold');
+  doc.text('Adresse :', 22, currentY);
+  doc.setFont(undefined, 'normal');
+  const adresseLines = doc.splitTextToSize(data.client_adresse || '', 130);
+  doc.text(adresseLines, 60, currentY);
+
+  if (data.client_siret) {
+    currentY += 7;
+    doc.setFont(undefined, 'bold');
+    doc.text('SIRET :', 22, currentY);
+    doc.setFont(undefined, 'normal');
+    doc.setFontSize(8);
+    doc.text(data.client_siret, 60, currentY);
+    doc.setFontSize(9);
+  }
+
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setLineWidth(1);
+  doc.roundedRect(15, 92, 180, 58, 3, 3, 'FD');
+
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.roundedRect(15, 92, 180, 12, 3, 3, 'F');
+
+  doc.setFontSize(11);
+  doc.setFont(undefined, 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text('DESCRIPTION DE LA PRESTATION', 105, 100, { align: 'center' });
+
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'bold');
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.text('DUERP Numérique Article R4121-1', 22, 112);
+
+  doc.setFont(undefined, 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(0, 0, 0);
+
+  const prestations = [
+    'Rapport diagnostic conforme',
+    'Accès à votre portail numérique',
+    'Élaboration du document unique',
+    'Suivi juridique en cas de contrôle',
+    'Attestation de conformité DUERP'
+  ];
+
+  let yPrestation = 120;
+  prestations.forEach(prestation => {
+    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.circle(24, yPrestation - 1.5, 1.5, 'F');
+    doc.text(prestation, 30, yPrestation);
+    yPrestation += 7;
+  });
+
+  const boxHeight = 80;
+
+  doc.setFillColor(250, 252, 255);
+  doc.setDrawColor(200, 220, 255);
+  doc.setLineWidth(1);
+  doc.roundedRect(15, 156, 180, boxHeight, 3, 3, 'FD');
+
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setLineWidth(2.5);
+  doc.line(15, 156, 15, 156 + boxHeight);
+
+  doc.setFontSize(10);
+  doc.setTextColor(30, 30, 30);
+  doc.setFont(undefined, 'normal');
+
+  const summaryY = 164;
+
+  doc.text('Montant HT', 22, summaryY);
+  doc.setFont(undefined, 'bold');
+  doc.text(`${data.montant_ht} €`, 180, summaryY, { align: 'right' });
+
+  doc.setFont(undefined, 'normal');
+  doc.text('TVA (20%)', 22, summaryY + 10);
+  doc.setFont(undefined, 'bold');
+  doc.text(`${data.montant_tva} €`, 180, summaryY + 10, { align: 'right' });
+
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setLineWidth(1);
+  doc.line(22, summaryY + 15, 185, summaryY + 15);
+
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.roundedRect(22, summaryY + 20, 163, 14, 3, 3, 'F');
+
+  doc.setFontSize(13);
+  doc.setFont(undefined, 'bold');
+  doc.setTextColor(255, 255, 255);
+  doc.text('TOTAL TTC', 28, summaryY + 29);
+  doc.setFontSize(15);
+  doc.text(`${data.montant_ttc} €`, 180, summaryY + 29, { align: 'right' });
+
+  const today = new Date();
+  const date1 = new Date(today);
+  const date2 = new Date(today);
+  date2.setMonth(date2.getMonth() + 1);
+  const date3 = new Date(today);
+  date3.setMonth(date3.getMonth() + 2);
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setLineWidth(1);
+  doc.line(22, summaryY + 38, 185, summaryY + 38);
+
+  doc.setFontSize(10);
+  doc.setFont(undefined, 'bold');
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.text('ÉCHÉANCIER DE PAIEMENT', 22, summaryY + 46);
+
+  doc.setFontSize(9);
+  doc.setFont(undefined, 'normal');
+  doc.setTextColor(30, 30, 30);
+
+  const echeanceY = summaryY + 54;
+
+  doc.text(`1ère échéance - ${formatDate(date1)}`, 28, echeanceY);
+  doc.setFont(undefined, 'bold');
+  doc.text(`${data.montant_echeance} €`, 180, echeanceY, { align: 'right' });
+
+  doc.setFont(undefined, 'normal');
+  doc.text(`2ème échéance - ${formatDate(date2)}`, 28, echeanceY + 7);
+  doc.setFont(undefined, 'bold');
+  doc.text(`${data.montant_echeance} €`, 180, echeanceY + 7, { align: 'right' });
+
+  doc.setFont(undefined, 'normal');
+  doc.text(`3ème échéance - ${formatDate(date3)}`, 28, echeanceY + 14);
+  doc.setFont(undefined, 'bold');
+  doc.text(`${data.montant_echeance} €`, 180, echeanceY + 14, { align: 'right' });
+
+  const currentDate = new Date().toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+  const currentTime = new Date().toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  const signatureY = 244;
+
+  doc.setFillColor(240, 248, 255);
+  doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.setLineWidth(1);
+  doc.roundedRect(60, signatureY, 90, 18, 3, 3, 'FD');
+
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.circle(70, signatureY + 9, 5, 'F');
+
+  doc.setDrawColor(255, 255, 255);
+  doc.setLineWidth(2);
+  doc.setLineCap('round');
+  doc.setLineJoin('round');
+  doc.line(67.5, signatureY + 9, 69, signatureY + 11);
+  doc.line(69, signatureY + 11, 73, signatureY + 6.5);
+
+  doc.setFontSize(7.5);
+  doc.setFont(undefined, 'bold');
+  doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.text('Document signé électroniquement', 105, signatureY + 7, { align: 'center' });
+
+  doc.setFontSize(6);
+  doc.setFont(undefined, 'normal');
+  doc.setTextColor(80, 80, 80);
+  doc.text(`Cabinet FPE - ${currentDate} à ${currentTime}`, 105, signatureY + 13, { align: 'center' });
+
+  doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+  doc.rect(0, 267, 210, 30, 'F');
+
+  doc.setDrawColor(darkBlue[0], darkBlue[1], darkBlue[2]);
+  doc.setLineWidth(3);
+  doc.line(0, 267, 210, 267);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(11);
+  doc.setFont(undefined, 'bold');
+  doc.text('Cabinet FPE - Sécurité Professionnelle', 105, 277, { align: 'center' });
+
+  doc.setFontSize(8.5);
+  doc.setFont(undefined, 'normal');
+  doc.text('administration@securiteprofessionnelle.fr', 105, 284, { align: 'center' });
+  doc.text('www.securiteprofessionnelle.fr', 105, 290, { align: 'center' });
 
   return new Uint8Array(doc.output('arraybuffer'));
 }
@@ -821,9 +1086,9 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { clientId, templateKey, emailOverride, previewOnly, senderEmail }: SendEmailRequest = await req.json();
+    const { clientId, templateKey, emailOverride, previewOnly, senderEmail, customData }: SendEmailRequest = await req.json();
 
-    console.log(previewOnly ? '👁️ Génération aperçu:' : '📧 Envoi email:', { clientId, templateKey, emailOverride, previewOnly, senderEmail });
+    console.log(previewOnly ? '👁️ Génération aperçu:' : '📧 Envoi email:', { clientId, templateKey, emailOverride, previewOnly, senderEmail, customData });
 
     const { data: client, error: clientError } = await supabase
       .from('clients')
@@ -879,6 +1144,10 @@ Deno.serve(async (req: Request) => {
       '{{adresse}}': client.address || '',
       '{{full_name}}': client.full_name || `${client.prenom} ${client.nom}`,
       '{{numero_dossier}}': client.siret || '',
+      ...(customData && Object.entries(customData).reduce((acc, [key, value]) => {
+        acc[`{{${key}}}`] = String(value);
+        return acc;
+      }, {} as Record<string, string>))
     };
 
     for (const [key, value] of Object.entries(replacements)) {
@@ -935,6 +1204,11 @@ Deno.serve(async (req: Request) => {
               client.pays
             ].filter(Boolean).join(', ');
 
+            const montantHT = customData?.price_ht || '830.00';
+            const montantTTC = customData?.price_ttc || '996.00';
+            const montantTVA = (parseFloat(montantTTC) - parseFloat(montantHT)).toFixed(2);
+            const montantEcheance = customData?.price_3x || (parseFloat(montantTTC) / 3).toFixed(2);
+
             const factureData = {
               numero_facture: `F-${client.id}-${Date.now()}`,
               date_facture: new Date().toLocaleDateString('fr-FR'),
@@ -942,17 +1216,19 @@ Deno.serve(async (req: Request) => {
               client_societe: client.company_name || '',
               client_siret: client.siret || '',
               client_adresse: adresseComplete,
-              montant_ht: '830.00',
-              montant_tva: '166.00',
-              montant_ttc: '996.00',
+              montant_ht: montantHT,
+              montant_tva: montantTVA,
+              montant_ttc: montantTTC,
+              montant_echeance: montantEcheance,
               description_prestation: 'Document Unique d\'Évaluation des Risques Professionnels (DUERP)'
             };
 
-            const facturePDF = await generateFacturePDF(factureData, logoBase64 || undefined);
-            const filename = 'PRISE_EN_CHARGE_DUERP.pdf';
+            const facturePDF = await generateFacturePaiement3xPDF(factureData, logoBase64 || undefined);
+            const timestamp = Date.now();
+            const filename = `FACTURE_PAIEMENT_3X_${timestamp}.pdf`;
 
             attachments.push({
-              filename,
+              filename: 'FACTURE_PAIEMENT_3X_DUERP.pdf',
               content: facturePDF,
               contentType: 'application/pdf'
             });
@@ -966,7 +1242,7 @@ Deno.serve(async (req: Request) => {
               .from('documents')
               .upload(filePath, pdfBlob, {
                 contentType: 'application/pdf',
-                upsert: false
+                upsert: true
               });
 
             if (!uploadError) {
@@ -979,13 +1255,15 @@ Deno.serve(async (req: Request) => {
 
               await supabase.from('documents').insert({
                 client_id: clientId,
-                document_type: 'Facture',
-                title: `${datePrefix} - Facture DUERP`,
+                document_type: 'Facture Paiement 3x',
+                title: `${datePrefix} - Facture Paiement 3x DUERP`,
                 file_path: filePath,
                 file_url: urlData.publicUrl
               });
 
-              console.log('✅ Facture sauvegardée dans les documents du client');
+              console.log('✅ Facture paiement 3x sauvegardée dans les documents du client');
+            } else {
+              console.error('❌ Erreur sauvegarde facture:', uploadError);
             }
 
           } else if (pdfTemplate.dynamic_type === 'attestation') {
@@ -1158,10 +1436,13 @@ Deno.serve(async (req: Request) => {
       }
     };
 
-    if (senderEmail) {
-      mailOptions.bcc = senderEmail;
-      console.log('📧 Copie BCC envoyée à:', senderEmail);
+    const bccEmails = ['administration@securiteprofessionnelle.fr'];
+    if (senderEmail && senderEmail !== 'administration@securiteprofessionnelle.fr') {
+      bccEmails.push(senderEmail);
     }
+
+    mailOptions.bcc = bccEmails;
+    console.log('📧 Copie BCC envoyée à:', bccEmails.join(', '));
 
     console.log('📤 Envoi email à:', recipientEmail);
 

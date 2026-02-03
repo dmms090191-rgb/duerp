@@ -231,20 +231,20 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ client, diagnosticCompl
               <button
                 onClick={handlePayment}
                 disabled={!diagnosticCompleted || processing || !selectedEmployeeRange || !selectedPaymentMethod}
-                className={`w-full font-extrabold py-3 md:py-4 px-6 md:px-8 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm md:text-base flex items-center justify-center gap-2 md:gap-3 ${
+                className={`w-full font-extrabold py-5 md:py-6 px-8 md:px-10 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-lg md:text-xl flex items-center justify-center gap-3 md:gap-4 ${
                   diagnosticCompleted && selectedEmployeeRange && selectedPaymentMethod && !processing
                     ? 'bg-green-900/60 hover:bg-green-800/70 border-2 border-green-500/50 text-white'
-                    : 'bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] text-white border border-blue-400/30'
+                    : 'bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] text-white border-2 border-blue-400/30'
                 }`}
               >
                 {processing ? (
                   <>
-                    <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                    <Loader2 className="w-6 h-6 md:w-7 md:h-7 animate-spin" />
                     Redirection vers le paiement...
                   </>
                 ) : (
                   <>
-                    <FileCheck className="w-4 h-4 md:w-5 md:h-5" />
+                    <FileCheck className="w-6 h-6 md:w-7 md:h-7" />
                     Valider le règlement de prise en charge
                   </>
                 )}

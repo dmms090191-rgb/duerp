@@ -200,20 +200,6 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
     }
   };
 
-  const getButtonColor = (type: string) => {
-    switch (type) {
-      case 'identifiants':
-        return 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700';
-      case 'relance':
-        return 'from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700';
-      case 'procedure_prise_en_charge':
-        return 'from-green-500 to-green-600 hover:from-green-600 hover:to-green-700';
-      case 'autre_moyen_paiement':
-        return 'from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700';
-      default:
-        return 'from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700';
-    }
-  };
 
   const formatLastSent = (date: Date) => {
     const now = new Date();
@@ -238,103 +224,117 @@ const ClientEmailSender: React.FC<ClientEmailSenderProps> = ({ clientId, clientN
 
   return (
     <div className="space-y-4">
-      <div className="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <Mail className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+            <Mail className="w-4 h-4 text-blue-300" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Envoi d'emails</h3>
+            <h3 className="text-sm font-semibold text-white">Envoi d'emails</h3>
             {clientName && (
-              <p className="text-sm text-gray-600">Client: {clientName}</p>
+              <p className="text-xs text-white/60">Client: {clientName}</p>
             )}
           </div>
         </div>
         {clientEmail && (
-          <p className="text-sm text-gray-600 ml-13">
-            <Mail className="w-4 h-4 inline mr-1" />
+          <p className="text-xs text-white/70 ml-11">
+            <Mail className="w-3 h-3 inline mr-1" />
             {clientEmail}
           </p>
         )}
       </div>
 
       {showSuccess && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3 animate-fade-in">
-          <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
+        <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3 flex items-start gap-2 animate-fade-in backdrop-blur-sm">
+          <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-green-900">Succès</p>
-            <p className="text-sm text-green-700">{message}</p>
+            <p className="text-xs font-semibold text-green-300">Succès</p>
+            <p className="text-xs text-green-200/80">{message}</p>
           </div>
         </div>
       )}
 
       {showError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 animate-fade-in">
-          <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex items-start gap-2 animate-fade-in backdrop-blur-sm">
+          <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-red-900">Erreur</p>
-            <p className="text-sm text-red-700">{message}</p>
+            <p className="text-xs font-semibold text-red-300">Erreur</p>
+            <p className="text-xs text-red-200/80">{message}</p>
           </div>
         </div>
       )}
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4">
         <button
           onClick={testConfiguration}
-          className="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors"
+          className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 text-white text-xs font-medium rounded-lg transition-all duration-200 backdrop-blur-sm"
         >
-          🧪 Test de Configuration
+          Test de Configuration
         </button>
         {testResult && (
-          <div className="mt-3 p-3 bg-white rounded border border-yellow-300">
-            <pre className="text-xs text-gray-800 whitespace-pre-wrap">{testResult}</pre>
+          <div className="mt-3 p-3 bg-white/5 rounded-lg border border-white/10">
+            <pre className="text-xs text-white/80 whitespace-pre-wrap">{testResult}</pre>
           </div>
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
-        {emailTypes.map((type) => (
-          <div key={type} className="space-y-2">
-            <button
-              onClick={() => {
-                alert(`BOUTON CLIQUÉ!\n\nType: ${type}\nClient ID: ${clientId}\nClient Name: ${clientName}\nClient Email: ${clientEmail}`);
-                addDebugLog(`🖱️ BOUTON CLIQUÉ: ${type}`);
-                sendEmail(type);
-              }}
-              disabled={sending !== null}
-              className={`w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r ${getButtonColor(type)} text-white rounded-lg font-semibold shadow-md transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
-            >
-              {sending === type ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Envoi en cours...
-                </>
-              ) : (
-                <>
-                  {getButtonIcon(type)}
-                  {getButtonLabel(type)}
-                </>
-              )}
-            </button>
+      <div className="flex flex-wrap gap-3 pb-8">
+        {emailTypes.map((type) => {
+          let buttonColors = 'bg-white/10 hover:bg-white/20 border-white/20 hover:border-white/40';
 
-            {lastSent[type] && (
-              <p className="text-xs text-gray-500 text-center">
-                Dernier envoi: {formatLastSent(lastSent[type])}
-              </p>
-            )}
-          </div>
-        ))}
+          if (type === 'identifiants') {
+            buttonColors = 'bg-blue-700/30 hover:bg-blue-600/40 border-blue-600/40 hover:border-blue-500/60';
+          } else if (type === 'relance') {
+            buttonColors = 'bg-orange-700/30 hover:bg-orange-600/40 border-orange-600/40 hover:border-orange-500/60';
+          } else if (type === 'procedure_prise_en_charge') {
+            buttonColors = 'bg-green-700/30 hover:bg-green-600/40 border-green-600/40 hover:border-green-500/60';
+          } else if (type === 'autre_moyen_paiement') {
+            buttonColors = 'bg-yellow-700/30 hover:bg-yellow-600/40 border-yellow-600/40 hover:border-yellow-500/60';
+          }
+
+          return (
+            <div key={type} className="relative group">
+              <button
+                onClick={() => {
+                  alert(`BOUTON CLIQUÉ!\n\nType: ${type}\nClient ID: ${clientId}\nClient Name: ${clientName}\nClient Email: ${clientEmail}`);
+                  addDebugLog(`🖱️ BOUTON CLIQUÉ: ${type}`);
+                  sendEmail(type);
+                }}
+                disabled={sending !== null}
+                className={`flex items-center gap-3 px-6 py-4 ${buttonColors} border-2 text-white text-base font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm shadow-lg hover:shadow-xl hover:scale-105`}
+              >
+                {sending === type ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Envoi...</span>
+                  </>
+                ) : (
+                  <>
+                    {getButtonIcon(type)}
+                    <span>{getButtonLabel(type)}</span>
+                  </>
+                )}
+              </button>
+
+              {lastSent[type] && (
+                <div className="absolute -bottom-6 left-0 right-0 text-xs text-white/50 text-center whitespace-nowrap">
+                  {formatLastSent(lastSent[type])}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
-        <p className="text-sm text-yellow-800">
-          <strong>Note:</strong> Les emails seront envoyés depuis <code className="bg-yellow-100 px-1 rounded">administration@securiteprofessionnelle.fr</code>
+      <div className="bg-white/5 border border-white/10 rounded-xl p-4 mt-4">
+        <p className="text-xs text-white/70">
+          <strong className="text-white/90">Note:</strong> Les emails seront envoyés depuis <code className="bg-white/10 px-1.5 py-0.5 rounded text-blue-300">administration@securiteprofessionnelle.fr</code>
         </p>
-        <ul className="text-xs text-yellow-700 mt-2 space-y-1 ml-4 list-disc">
-          <li><strong>Identifiants:</strong> Envoie les identifiants de connexion au client</li>
-          <li><strong>Relance:</strong> Envoie un email de relance au client</li>
-          <li><strong>Procédure de prise en charge:</strong> Envoie la procédure avec facture et attestation PDF</li>
-          <li><strong>Autre moyen de paiement:</strong> Envoie les informations sur les moyens de paiement disponibles</li>
+        <ul className="text-[11px] text-white/60 mt-2 space-y-1 ml-4 list-disc">
+          <li><strong className="text-white/80">Identifiants:</strong> Envoie les identifiants de connexion au client</li>
+          <li><strong className="text-white/80">Relance:</strong> Envoie un email de relance au client</li>
+          <li><strong className="text-white/80">Procédure de prise en charge:</strong> Envoie la procédure avec facture et attestation PDF</li>
+          <li><strong className="text-white/80">Autre moyen de paiement:</strong> Envoie les informations sur les moyens de paiement disponibles</li>
         </ul>
       </div>
 

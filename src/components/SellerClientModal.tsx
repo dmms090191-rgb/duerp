@@ -3,6 +3,7 @@ import { X, RefreshCw, MessageSquare, LogIn, Copy, Check, Edit2 } from 'lucide-r
 import { supabase } from '../lib/supabase';
 import { Status } from '../types/Status';
 import ClientEmailSender from './ClientEmailSender';
+import PaymentEmailSender from './PaymentEmailSender';
 
 interface Client {
   id: string;
@@ -35,7 +36,7 @@ interface SellerClientModalProps {
   client: Client;
   editedClient: Client;
   statuses: Status[];
-  modalTab: 'information' | 'liste-commentaire' | 'mail' | 'panel-client';
+  modalTab: 'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client';
   saving: boolean;
   comments: any[];
   newComment: string;
@@ -46,7 +47,7 @@ interface SellerClientModalProps {
   copiedPassword: boolean;
   sellerFullName: string;
   onClose: () => void;
-  onTabChange: (tab: 'information' | 'liste-commentaire' | 'mail' | 'panel-client') => void;
+  onTabChange: (tab: 'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client') => void;
   onFieldChange: (field: keyof Client, value: any) => void;
   onSave: () => void;
   onCommentChange: (value: string) => void;
@@ -82,6 +83,8 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 }) => {
   const passwordInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [isEditingCredentials, setIsEditingCredentials] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editModeTab, setEditModeTab] = useState<'information' | 'mail' | 'paiement-fractionne'>('information');
 
   const handlePasswordDigitChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
@@ -134,8 +137,8 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#1a2847]/95 via-[#2d4578]/95 to-[#1a2847]/95 backdrop-blur-xl flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300">
-      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden border border-white/10 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
-        <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-3 sm:px-8 py-4 sm:py-6 overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1e3a5f] via-[#2d4578] to-[#1e3a5f] rounded-3xl shadow-2xl max-w-5xl w-full h-[95vh] sm:h-[90vh] flex flex-col overflow-hidden border border-white/10 backdrop-blur-2xl animate-in slide-in-from-bottom-4 duration-500">
+        <div className="relative bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] px-3 sm:px-8 py-4 sm:py-6 overflow-hidden flex-shrink-0">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
           <div className="relative flex items-center justify-between">
             <h2 className="text-base sm:text-3xl font-extrabold text-white uppercase tracking-tight drop-shadow-lg">
@@ -150,57 +153,328 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
           </div>
         </div>
 
-        <div className="border-b-2 border-white/10 overflow-x-auto bg-gradient-to-r from-[#1e3a5f]/80 via-[#2d4578]/80 to-[#1e3a5f]/80 backdrop-blur-sm">
+        <div className="border-b-2 border-white/10 overflow-x-auto bg-gradient-to-r from-[#1e3a5f]/80 via-[#2d4578]/80 to-[#1e3a5f]/80 backdrop-blur-sm flex-shrink-0">
           <div className="flex gap-1 sm:gap-2 px-3 sm:px-6 min-w-max">
-            <button
-              onClick={() => onTabChange('information')}
-              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
-                modalTab === 'information'
-                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
-                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
-              }`}
-            >
-              Information
-            </button>
-            <button
-              onClick={() => onTabChange('liste-commentaire')}
-              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
-                modalTab === 'liste-commentaire'
-                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
-                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
-              }`}
-            >
-              Liste commentaire
-            </button>
-            <button
-              onClick={() => onTabChange('mail')}
-              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
-                modalTab === 'mail'
-                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
-                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
-              }`}
-            >
-              Mail
-            </button>
-            <button
-              onClick={() => onTabChange('panel-client')}
-              className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
-                modalTab === 'panel-client'
-                  ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
-                  : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
-              }`}
-            >
-              Panel client
-            </button>
+            {editMode ? (
+              <>
+                <button
+                  onClick={() => setEditModeTab('information')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    editModeTab === 'information'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Information
+                </button>
+                <button
+                  onClick={() => setEditModeTab('mail')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    editModeTab === 'mail'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Mail
+                </button>
+                <button
+                  onClick={() => setEditModeTab('paiement-fractionne')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    editModeTab === 'paiement-fractionne'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Paiement fractionné
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => onTabChange('information')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    modalTab === 'information'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Information
+                </button>
+                <button
+                  onClick={() => onTabChange('mail')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    modalTab === 'mail'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Mail
+                </button>
+                <button
+                  onClick={() => onTabChange('reglement-fractionne')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    modalTab === 'reglement-fractionne'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Paiement fractionné
+                </button>
+                <button
+                  onClick={() => onTabChange('liste-commentaire')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    modalTab === 'liste-commentaire'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Liste commentaire
+                </button>
+                <button
+                  onClick={() => onTabChange('panel-client')}
+                  className={`px-3 sm:px-6 py-3 text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap relative ${
+                    modalTab === 'panel-client'
+                      ? 'text-white bg-gradient-to-r from-[#2d4578] to-[#1a2847] shadow-lg rounded-t-xl -mb-0.5 border-t-4 border-blue-400/50 transform scale-105'
+                      : 'text-white/80 hover:text-white hover:bg-white/10 rounded-t-lg'
+                  }`}
+                >
+                  Panel client
+                </button>
+              </>
+            )}
           </div>
-          <div className="px-3 sm:px-6 py-2 bg-[#1a2847]/60">
+          <div className="px-3 sm:px-6 py-2 bg-[#1a2847]/60 flex items-center justify-between">
             <p className="text-xs text-blue-200 font-medium">{client.prenom} {client.nom}</p>
+            {editMode && (
+              <button
+                onClick={() => {
+                  setEditMode(false);
+                  setEditModeTab('information');
+                }}
+                className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded-lg text-xs font-bold transition-all duration-300 border border-red-500/30"
+              >
+                Quitter le mode édition
+              </button>
+            )}
           </div>
         </div>
 
-        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto h-[calc(95vh-180px)] sm:h-[calc(90vh-180px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
-          {/* Onglet Information */}
-          {modalTab === 'information' && (
+        <div className="p-3 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto flex-1 min-h-0 bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+          {editMode ? (
+            <>
+              {/* Mode édition - Onglet Information */}
+              {editModeTab === 'information' && (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+                    {/* Colonne Gauche */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Prénom :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.prenom || ''}
+                          onChange={(e) => onFieldChange('prenom', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Téléphone :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.phone || ''}
+                          onChange={(e) => onFieldChange('phone', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Pays :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.pays || 'France'}
+                          onChange={(e) => onFieldChange('pays', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Adresse :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.address || ''}
+                          onChange={(e) => onFieldChange('address', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Date de création :</label>
+                        <input
+                          type="text"
+                          value={new Date(editedClient?.created_at).toLocaleString('fr-FR')}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/70 text-white/70 rounded-xl font-semibold shadow-sm"
+                          readOnly
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">E-mail :</label>
+                        <input
+                          type="email"
+                          value={editedClient?.email || ''}
+                          onChange={(e) => onFieldChange('email', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Statut du client :</label>
+                        <select
+                          value={editedClient?.status_id || ''}
+                          onChange={(e) => onFieldChange('status_id', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-bold shadow-sm hover:border-white/30"
+                        >
+                          <option value="">Aucun statut</option>
+                          {statuses.map((status) => (
+                            <option key={status.id} value={status.id} style={{ color: status.color }}>
+                              {status.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Activité :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.activite || ''}
+                          onChange={(e) => onFieldChange('activite', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Rendez-vous :</label>
+                        <input
+                          type="datetime-local"
+                          value={editedClient?.rendez_vous ? new Date(editedClient.rendez_vous).toISOString().slice(0, 16) : ''}
+                          onChange={(e) => onFieldChange('rendez_vous', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                    </div>
+                    {/* Colonne Droite */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Nom :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.nom || ''}
+                          onChange={(e) => onFieldChange('nom', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-bold uppercase shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Portable :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.portable || ''}
+                          onChange={(e) => onFieldChange('portable', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Ville :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.ville || ''}
+                          onChange={(e) => onFieldChange('ville', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Code postal :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.code_postal || ''}
+                          onChange={(e) => onFieldChange('code_postal', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Date de naissance :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.anniversaire || ''}
+                          onChange={(e) => onFieldChange('anniversaire', e.target.value)}
+                          placeholder="jj/mm/aaaa"
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Autre Courriel :</label>
+                        <input
+                          type="email"
+                          value={editedClient?.autre_courriel || ''}
+                          onChange={(e) => onFieldChange('autre_courriel', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">SIRET :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.siret || ''}
+                          onChange={(e) => onFieldChange('siret', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Société :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.company_name || ''}
+                          onChange={(e) => onFieldChange('company_name', e.target.value)}
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-2">Source :</label>
+                        <input
+                          type="text"
+                          value={editedClient?.source || ''}
+                          onChange={(e) => onFieldChange('source', e.target.value)}
+                          placeholder="Source"
+                          className="w-full px-4 py-3 text-sm border-2 border-white/20 bg-[#1a2847]/50 text-white rounded-xl focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400/50 transition-all duration-300 font-semibold shadow-sm hover:border-white/30"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
+                    <button
+                      onClick={onSave}
+                      disabled={saving}
+                      className="w-full sm:w-auto px-8 py-4 text-sm bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white rounded-xl hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] transition-all duration-300 shadow-xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed font-bold transform hover:scale-105 active:scale-95 border border-blue-400/30"
+                    >
+                      {saving ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {/* Mode édition - Onglet Mail */}
+              {editModeTab === 'mail' && (
+                <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+                  <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6">Envoi d'emails au client</h3>
+                  <ClientEmailSender client={client} />
+                </div>
+              )}
+
+              {/* Mode édition - Onglet Paiement fractionné */}
+              {editModeTab === 'paiement-fractionne' && (
+                <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+                  <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6">Emails de règlement fractionné</h3>
+                  <PaymentEmailSender client={client} />
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Onglet Information */}
+              {modalTab === 'information' && (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
                 {/* Colonne Gauche */}
@@ -507,6 +781,14 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
             </div>
           )}
 
+          {/* Onglet Paiement fractionné */}
+          {modalTab === 'reglement-fractionne' && (
+            <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
+              <h3 className="text-base sm:text-2xl font-extrabold text-white mb-6">Configuration du paiement fractionné</h3>
+              <PaymentEmailSender client={client} />
+            </div>
+          )}
+
           {/* Onglet Panel client */}
           {modalTab === 'panel-client' && (
             <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl">
@@ -522,18 +804,13 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                     </h4>
                     <button
                       onClick={() => {
-                        setIsEditingCredentials(!isEditingCredentials);
-                        if (!isEditingCredentials) {
-                          setTimeout(() => {
-                            passwordInputRefs.current[0]?.focus();
-                            passwordInputRefs.current[0]?.select();
-                          }, 100);
-                        }
+                        setEditMode(true);
+                        setEditModeTab('information');
                       }}
                       className="px-4 py-2 bg-gradient-to-r from-[#2d4578] to-[#1e3a5f] text-white rounded-lg hover:from-[#3a5488] hover:to-[#2d4578] transition-all duration-300 text-xs font-bold flex items-center gap-2 shadow-md hover:shadow-lg transform hover:scale-105 border border-blue-400/30"
                     >
                       <Edit2 className="w-3 h-3" />
-                      {isEditingCredentials ? 'Terminer' : 'Modifier'}
+                      Modifier
                     </button>
                   </div>
 
@@ -676,6 +953,8 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 </div>
               </div>
             </div>
+          )}
+            </>
           )}
         </div>
       </div>

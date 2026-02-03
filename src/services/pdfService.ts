@@ -40,6 +40,46 @@ const loadImageAsBase64 = async (url: string): Promise<string> => {
   }
 };
 
+const createRoundedImage = async (imageData: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        if (ctx) {
+          const cornerRadius = 50;
+
+          ctx.beginPath();
+          ctx.moveTo(cornerRadius, 0);
+          ctx.lineTo(img.width - cornerRadius, 0);
+          ctx.quadraticCurveTo(img.width, 0, img.width, cornerRadius);
+          ctx.lineTo(img.width, img.height - cornerRadius);
+          ctx.quadraticCurveTo(img.width, img.height, img.width - cornerRadius, img.height);
+          ctx.lineTo(cornerRadius, img.height);
+          ctx.quadraticCurveTo(0, img.height, 0, img.height - cornerRadius);
+          ctx.lineTo(0, cornerRadius);
+          ctx.quadraticCurveTo(0, 0, cornerRadius, 0);
+          ctx.closePath();
+          ctx.clip();
+
+          ctx.drawImage(img, 0, 0);
+        }
+
+        const roundedImageData = canvas.toDataURL('image/png');
+        resolve(roundedImageData);
+      };
+      img.onerror = () => reject(new Error('Failed to load image for rounding'));
+      img.src = imageData;
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 export const generateDUERPPDF = async (formData: FormData, clientId: number): Promise<string | null> => {
   try {
     console.log('Starting PDF generation for client:', clientId);
@@ -58,7 +98,8 @@ export const generateDUERPPDF = async (formData: FormData, clientId: number): Pr
 
       if (!configError && pdfConfig?.logo_url) {
         const logoBase64 = await loadImageAsBase64(pdfConfig.logo_url);
-        doc.addImage(logoBase64, 'PNG', 15, yPosition, 45, 13);
+        const roundedLogo = await createRoundedImage(logoBase64);
+        doc.addImage(roundedLogo, 'PNG', 15, yPosition, 45, 13);
       } else {
         console.warn('No logo configured in pdf_configuration');
       }

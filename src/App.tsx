@@ -8,6 +8,8 @@ import ClientDashboard from './components/ClientDashboard';
 import SellerDashboard from './components/SellerDashboard';
 import PaymentSuccess from './components/PaymentSuccess';
 import PaymentSuccess3x from './components/PaymentSuccess3x';
+import TestInvoicePreview from './components/TestInvoicePreview';
+import PricingModalDemo from './components/PricingModalDemo';
 import SecteurTertiaire from './pages/SecteurTertiaire';
 import SecteurResidentiel from './pages/SecteurResidentiel';
 import SecteurIndustriel from './pages/SecteurIndustriel';
@@ -1119,6 +1121,8 @@ function App() {
         <Routes>
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/payment-success-3x" element={<PaymentSuccess3x />} />
+          <Route path="/test-facture" element={<TestInvoicePreview />} />
+          <Route path="/tarifs" element={<PricingModalDemo />} />
           <Route path="/secteurs/tertiaire" element={<SecteurTertiaire />} />
           <Route path="/secteurs/residentiel" element={<SecteurResidentiel />} />
           <Route path="/secteurs/industriel" element={<SecteurIndustriel />} />
