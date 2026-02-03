@@ -66,6 +66,16 @@ const PaymentSection: React.FC<PaymentSectionProps> = ({ client, diagnosticCompl
         throw new Error('Produit non trouvé');
       }
 
+      if (selectedPaymentMethod === 'cb-3fois' && selectedProduct.payment_link_3x) {
+        localStorage.setItem('stripy_payment_pending', JSON.stringify({
+          clientId: client.id,
+          employeeRange: selectedEmployeeRange,
+          timestamp: Date.now()
+        }));
+        window.location.href = selectedProduct.payment_link_3x;
+        return;
+      }
+
       const result = await stripeService.createCheckoutSession(
         selectedProduct.stripe_price_id,
         parseInt(client.id),

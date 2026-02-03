@@ -14,6 +14,7 @@ export interface StripeProduct {
   stock: number;
   created_at: string;
   updated_at: string;
+  payment_link_3x?: string;
 }
 
 export const stripeService = {

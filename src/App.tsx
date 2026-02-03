@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard';
 import ClientDashboard from './components/ClientDashboard';
 import SellerDashboard from './components/SellerDashboard';
 import PaymentSuccess from './components/PaymentSuccess';
+import PaymentSuccess3x from './components/PaymentSuccess3x';
 import SecteurTertiaire from './pages/SecteurTertiaire';
 import SecteurResidentiel from './pages/SecteurResidentiel';
 import SecteurIndustriel from './pages/SecteurIndustriel';
@@ -1117,6 +1118,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-success-3x" element={<PaymentSuccess3x />} />
           <Route path="/secteurs/tertiaire" element={<SecteurTertiaire />} />
           <Route path="/secteurs/residentiel" element={<SecteurResidentiel />} />
           <Route path="/secteurs/industriel" element={<SecteurIndustriel />} />
