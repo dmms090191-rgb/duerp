@@ -658,7 +658,7 @@ Deno.serve(async (req: Request) => {
     const { data: emailTemplate, error: templateError } = await supabase
       .from('email_templates')
       .select('*')
-      .eq('key', 'procedure')
+      .eq('key', 'procedure_prise_en_charge')
       .maybeSingle();
 
     if (templateError || !emailTemplate) {

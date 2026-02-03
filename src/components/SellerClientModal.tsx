@@ -642,7 +642,7 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                       disabled={!editedClient?.siret || !editedClient?.client_password}
                       className={`w-full px-8 py-4 rounded-xl transition-all duration-300 font-extrabold flex items-center justify-center gap-3 shadow-xl transform ${
                         editedClient?.siret && editedClient?.client_password
-                          ? 'bg-gradient-to-r from-[#2d4578] via-[#1e3a5f] to-[#2d4578] text-white hover:from-[#3a5488] hover:via-[#2d4578] hover:to-[#3a5488] hover:shadow-2xl hover:scale-105 border border-blue-400/30'
+                          ? 'bg-orange-700/60 text-white hover:bg-orange-800/70 hover:shadow-2xl hover:scale-105 border border-orange-600/40 backdrop-blur-sm'
                           : 'bg-white/10 text-white/50 cursor-not-allowed border border-white/10'
                       }`}
                     >
