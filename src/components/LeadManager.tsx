@@ -878,7 +878,7 @@ const LeadManager: React.FC<LeadManagerProps> = ({ leads, onLeadCreated, onLeads
                                   }
                                 }
                               }}
-                              className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-slate-500"
+                              className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white text-gray-900"
                             />
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">

@@ -919,7 +919,7 @@ const LeadsTab: React.FC<LeadsTabProps> = ({ leads, onLeadsDeleted, onClientLogi
                                 value: e.target.value
                               });
                             }}
-                            className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500"
+                            className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-slate-500 focus:border-blue-500 bg-white text-gray-900"
                           />
                           {editingRendezVous?.leadId === lead.id && (
                             <button
