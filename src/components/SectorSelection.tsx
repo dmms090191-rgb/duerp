@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Truck, UtensilsCrossed, Wrench, Heart, ClipboardCheck, Stethoscope, FlaskConical, Church, Pill, Package, TreePine, Factory, Baby, Hammer, ShoppingCart, Store, Users, Building2, Sparkles, Recycle, Wheat, Leaf, Banana, Package2, ShoppingBag, Dog, Armchair, Scissors, Search, Cake, Settings, Trash2, Home, Printer, Ambulance, Briefcase, Fish, TruckIcon, FileCheck, Hand, Bus, Waves, Ship, ChefHat, Hotel, Video, Lock, Unlock } from 'lucide-react';
+import { Truck, UtensilsCrossed, Wrench, Heart, ClipboardCheck, Stethoscope, FlaskConical, Church, Pill, Package, TreePine, Factory, Baby, Hammer, ShoppingCart, Store, Users, Building2, Sparkles, Recycle, Wheat, Leaf, Banana, Package2, ShoppingBag, Dog, Armchair, Scissors, Search, Cake, Settings, Trash2, Home, Printer, Ambulance, Briefcase, Fish, TruckIcon, FileCheck, Hand, Bus, Waves, Ship, ChefHat, Hotel, Video, Lock, Unlock, FileEdit } from 'lucide-react';
 import { sectorUnlockService } from '../services/sectorUnlockService';
 
 interface SectorSelectionProps {
   onSelectSector: (sector: string) => void;
+  onOpenForm?: (sector: string) => void;
+  onSectorAssigned?: (sectorId: string, sectorName: string) => void;
+  onSectorUnassigned?: () => void;
   currentType?: string;
   unlockedSectorIds?: string[];
   canToggleLock?: boolean;
   clientId?: number;
   userType?: 'admin' | 'seller' | 'client';
+  hideFilters?: boolean;
 }
 
 interface Sector {
@@ -80,7 +84,7 @@ const sectors: Sector[] = sectorsBase
     id: String(index + 1).padStart(2, '0')
   }));
 
-const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, currentType, unlockedSectorIds: initialUnlockedSectorIds, canToggleLock = false, clientId, userType }) => {
+const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, onOpenForm, onSectorAssigned, onSectorUnassigned, currentType, unlockedSectorIds: initialUnlockedSectorIds, canToggleLock = false, clientId, userType, hideFilters = false }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
@@ -115,22 +119,29 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
     setTogglingLock(sector.id);
 
     const isCurrentlyUnlocked = unlockedSectorIds.includes(sector.id);
+    const previousIds = [...unlockedSectorIds];
 
     if (isCurrentlyUnlocked) {
-      setUnlockedSectorIds(prev => prev.filter(id => id !== sector.id));
+      setUnlockedSectorIds([]);
     } else {
-      setUnlockedSectorIds(prev => [...prev, sector.id]);
+      setUnlockedSectorIds([sector.id]);
+    }
+
+    if (isCurrentlyUnlocked) {
+      onSectorUnassigned?.();
+    } else {
+      onSectorAssigned?.(sector.id, sector.name);
     }
 
     try {
-      await sectorUnlockService.toggleSectorLock(clientId, sector.id, sector.name);
-    } catch (error) {
-      console.error('Error toggling sector lock:', error);
       if (isCurrentlyUnlocked) {
-        setUnlockedSectorIds(prev => [...prev, sector.id]);
+        await sectorUnlockService.lockAllSectors(clientId);
       } else {
-        setUnlockedSectorIds(prev => prev.filter(id => id !== sector.id));
+        await sectorUnlockService.selectSingleSector(clientId, sector.id, sector.name);
       }
+    } catch (error) {
+      console.error('Error selecting sector:', error);
+      setUnlockedSectorIds(previousIds);
     } finally {
       setTogglingLock(null);
     }
@@ -170,21 +181,23 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
               />
             </div>
 
-            <div className="flex flex-wrap gap-3">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`relative px-6 py-3 rounded-xl font-semibold transition-all duration-300 overflow-hidden ${
-                    selectedCategory === category
-                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30 scale-105'
-                      : 'bg-white/80 text-gray-700 hover:bg-blue-50 border border-blue-200/50 hover:border-blue-400/50'
-                  }`}
-                >
-                  <span className="relative z-10">{category === 'all' ? 'Tous' : category}</span>
-                </button>
-              ))}
-            </div>
+            {!hideFilters && (
+              <div className="flex flex-wrap gap-3">
+                {categories.map(category => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`relative px-6 py-3 rounded-xl font-semibold transition-all duration-300 overflow-hidden ${
+                      selectedCategory === category
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30 scale-105'
+                        : 'bg-white/80 text-gray-700 hover:bg-blue-50 border border-blue-200/50 hover:border-blue-400/50'
+                    }`}
+                  >
+                    <span className="relative z-10">{category === 'all' ? 'Tous' : category}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -195,16 +208,22 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
           const isSelected = currentType === `${sector.id} ${sector.name}`;
           const isSectorUnlocked = unlockedSectorIds.includes(sector.id);
           const isLocked = !isSectorUnlocked;
+          const hasAnyAssigned = canToggleLock && unlockedSectorIds.length > 0;
+          const isGrayedOut = hasAnyAssigned && !isSectorUnlocked;
 
           return (
             <div
               key={sector.id}
               className={`group relative transition-all duration-300 ${
-                isLocked ? 'opacity-60' : isSelected ? 'scale-[1.02]' : 'hover:scale-[1.02]'
+                isGrayedOut ? 'opacity-40 grayscale' : isLocked && !canToggleLock ? 'opacity-60' : isSectorUnlocked ? 'scale-[1.03]' : 'hover:scale-[1.02]'
               }`}
             >
               <div className={`absolute inset-0 rounded-2xl transition-all duration-300 ${
-                isLocked
+                isSectorUnlocked
+                  ? 'bg-gradient-to-br from-emerald-500/20 to-green-500/20 blur-xl scale-105'
+                  : isGrayedOut
+                  ? ''
+                  : isLocked
                   ? 'bg-gradient-to-br from-gray-500/10 to-gray-600/10 blur-xl'
                   : isSelected
                   ? 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20 blur-xl scale-105'
@@ -212,7 +231,9 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
               }`} />
 
               <div className={`relative bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 ${
-                isLocked
+                isSectorUnlocked
+                  ? 'border-2 border-emerald-500 shadow-2xl shadow-emerald-500/20 ring-2 ring-emerald-400/30'
+                  : isLocked && !canToggleLock
                   ? 'border border-gray-300'
                   : isSelected
                   ? 'border-2 border-blue-500 shadow-2xl shadow-blue-500/20'
@@ -220,7 +241,11 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
               }`}>
                 <div
                   className={`relative h-48 overflow-hidden bg-gradient-to-br transition-all duration-300 ${
-                    isLocked
+                    isSectorUnlocked
+                      ? 'from-emerald-500 via-green-500 to-emerald-600'
+                      : isGrayedOut
+                      ? 'from-gray-400 via-gray-500 to-gray-600'
+                      : isLocked
                       ? 'from-gray-400 via-gray-500 to-gray-600'
                       : isSelected
                       ? 'from-blue-500 via-cyan-500 to-blue-600'
@@ -232,22 +257,24 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
 
                   {canToggleLock && userType !== 'client' && (
                     <div className="absolute top-3 left-3 z-20">
-                      <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center gap-2 shadow-lg">
+                      <div className={`backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center gap-2 shadow-lg ${
+                        isSectorUnlocked ? 'bg-emerald-500/90' : 'bg-white/90'
+                      }`}>
                         {togglingLock === sector.id ? (
                           <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                         ) : isLocked ? (
                           <Lock className="w-4 h-4 text-gray-600" />
                         ) : (
-                          <Unlock className="w-4 h-4 text-emerald-600" />
+                          <Unlock className="w-4 h-4 text-white" />
                         )}
-                        <span className="text-xs font-semibold text-gray-700">
-                          {isLocked ? 'Verrouillé' : 'Déverrouillé'}
+                        <span className={`text-xs font-semibold ${isSectorUnlocked ? 'text-white' : 'text-gray-700'}`}>
+                          {isLocked ? 'Cliquez pour attribuer' : 'Attribue au client'}
                         </span>
                       </div>
                     </div>
                   )}
 
-                  {isLocked && (
+                  {isLocked && !canToggleLock && (
                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
                       <Lock className="w-16 h-16 text-white drop-shadow-2xl" />
                     </div>
@@ -257,7 +284,7 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
                     <img
                       src={sector.image}
                       alt={sector.name}
-                      className={`w-full h-full object-cover transition-transform duration-500 ${isLocked ? 'grayscale' : 'group-hover:scale-110'}`}
+                      className={`w-full h-full object-cover transition-transform duration-500 ${isLocked && !canToggleLock ? 'grayscale' : 'group-hover:scale-110'}`}
                       onError={() => {
                         setImageErrors(prev => new Set(prev).add(sector.id));
                       }}
@@ -298,37 +325,81 @@ const SectorSelection: React.FC<SectorSelectionProps> = ({ onSelectSector, curre
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => onSelectSector(`${sector.id} ${sector.name}`)}
-                    disabled={sector.status === 'archive' || isLocked}
-                    className={`relative w-full py-3.5 px-6 rounded-xl font-bold transition-all duration-300 overflow-hidden ${
-                      isLocked
-                        ? 'bg-gray-400 text-gray-100 cursor-not-allowed'
-                        : sector.status === 'actif'
-                        ? isSelected
-                          ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg shadow-emerald-500/30 hover:shadow-xl'
-                          : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:-translate-y-0.5'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      {isLocked ? (
-                        <>
-                          <Lock className="w-4 h-4" />
-                          Verrouillé
-                        </>
-                      ) : isSelected ? (
-                        <>
-                          <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                          Sélectionné
-                        </>
-                      ) : sector.status === 'actif' ? (
-                        'Commencer'
-                      ) : (
-                        'Télécharger'
+                  {canToggleLock && userType !== 'client' ? (
+                    <div className="space-y-2">
+                      <button
+                        onClick={(e) => handleToggleLock(e, sector)}
+                        disabled={togglingLock === sector.id}
+                        className={`relative w-full py-3.5 px-6 rounded-xl font-bold transition-all duration-300 overflow-hidden ${
+                          isSectorUnlocked
+                            ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg shadow-emerald-500/30 hover:from-red-500 hover:to-red-600 hover:shadow-red-500/30'
+                            : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:-translate-y-0.5'
+                        }`}
+                      >
+                        <span className="relative z-10 flex items-center justify-center gap-2">
+                          {togglingLock === sector.id ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : isSectorUnlocked ? (
+                            <>
+                              <Unlock className="w-4 h-4" />
+                              Outil attribue - Cliquer pour retirer
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="w-4 h-4" />
+                              Attribuer au client
+                            </>
+                          )}
+                        </span>
+                      </button>
+                      {isSectorUnlocked && onOpenForm && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenForm(`${sector.id} ${sector.name}`);
+                          }}
+                          className="relative w-full py-3 px-6 rounded-xl font-bold transition-all duration-300 overflow-hidden bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
+                        >
+                          <span className="relative z-10 flex items-center justify-center gap-2">
+                            <FileEdit className="w-4 h-4" />
+                            Remplir le formulaire
+                          </span>
+                        </button>
                       )}
-                    </span>
-                  </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => onSelectSector(`${sector.id} ${sector.name}`)}
+                      disabled={sector.status === 'archive' || isLocked}
+                      className={`relative w-full py-3.5 px-6 rounded-xl font-bold transition-all duration-300 overflow-hidden ${
+                        isLocked
+                          ? 'bg-gray-400 text-gray-100 cursor-not-allowed'
+                          : sector.status === 'actif'
+                          ? isSelected
+                            ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white shadow-lg shadow-emerald-500/30 hover:shadow-xl'
+                            : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:-translate-y-0.5'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {isLocked ? (
+                          <>
+                            <Lock className="w-4 h-4" />
+                            Verrouille
+                          </>
+                        ) : isSelected ? (
+                          <>
+                            <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                            Selectionne
+                          </>
+                        ) : sector.status === 'actif' ? (
+                          'Commencer'
+                        ) : (
+                          'Telecharger'
+                        )}
+                      </span>
+                    </button>
+                  )}
                 </div>
 
                 {isSelected && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, User, Send, Search, ShoppingBag, X, Trash2, Paperclip, FileText, Download, ArrowLeft } from 'lucide-react';
+import { MessageSquare, Send, Search, ShoppingBag, X, Trash2, Paperclip, FileText, Download, ArrowLeft } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface Seller {
@@ -95,9 +95,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   }, [selectedSeller]);
 
   useEffect(() => {
-    const messageCountChanged = messages.length !== lastMessageCountRef.current;
     const isNewMessage = messages.length > lastMessageCountRef.current;
-
     const shouldScroll = isFirstLoadRef.current || (!isUserScrollingRef.current && isNewMessage);
 
     if (shouldScroll && messages.length > 0) {
@@ -239,7 +237,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
             sender_id: adminEmail,
             sender_type: 'admin',
             sender_name: 'Admin',
-            message: newMessage.trim() || '📎 Fichier joint',
+            message: newMessage.trim() || 'Fichier joint',
             read: false,
             attachment_url: attachmentUrl,
             attachment_name: attachmentName,
@@ -254,7 +252,6 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         isUserScrollingRef.current = false;
         loadMessages(selectedSeller.id);
 
-        // Remettre le focus sur l'input pour garder le clavier ouvert sur mobile
         setTimeout(() => {
           messageInputRef.current?.focus();
         }, 100);
@@ -293,7 +290,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
         setMessages([]);
         setShowDeleteConfirm(false);
         await loadSellersWithDiscussions();
-        alert('Tous les messages ont été supprimés');
+        alert('Tous les messages ont ete supprimes');
       } else {
         alert('Erreur lors de la suppression des messages');
       }
@@ -374,9 +371,7 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
       <>
         {parts.map((part, index) =>
           regex.test(part) ? (
-            <mark key={index} className="bg-yellow-400/30 px-1 rounded">
-              {part}
-            </mark>
+            <mark key={index} className="bg-cyan-400/30 px-1 rounded">{part}</mark>
           ) : (
             <span key={index}>{part}</span>
           )
@@ -391,21 +386,24 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
       <button
         key={seller.id}
         onClick={() => setSelectedSeller(seller)}
-        className={`w-full text-left p-3 rounded-lg border transition-all ${
+        className={`w-full text-left p-3 rounded-xl border transition-all duration-300 group/card ${
           selectedSeller?.id === seller.id
-            ? 'border-blue-500 bg-blue-600/20'
-            : 'border-slate-600 hover:border-blue-500 hover:bg-slate-700/50'
+            ? 'border-cyan-400/50 bg-gradient-to-br from-cyan-500/15 to-blue-500/15 shadow-lg shadow-cyan-500/10'
+            : 'border-slate-700/50 hover:border-cyan-500/30 bg-gradient-to-br from-slate-800/50 to-slate-900/50 hover:from-slate-800/80 hover:to-slate-900/80'
         }`}
       >
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-            <ShoppingBag className="w-5 h-5 text-white" />
+          <div className="relative flex-shrink-0">
+            <div className={`absolute inset-0 rounded-xl blur-lg transition-opacity ${selectedSeller?.id === seller.id ? 'bg-cyan-500/30 opacity-100' : 'bg-cyan-500/20 opacity-0 group-hover/card:opacity-100'}`}></div>
+            <div className="relative w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/30">
+              <ShoppingBag className="w-5 h-5 text-white" />
+            </div>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white truncate">
+            <p className="text-sm font-bold text-white truncate">
               {highlightText(fullName, searchQuery)}
             </p>
-            <p className="text-xs text-slate-400 truncate">{seller.email}</p>
+            <p className="text-xs text-cyan-300/50 truncate">{seller.email}</p>
           </div>
         </div>
       </button>
@@ -417,39 +415,47 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
   return (
     <div className="h-full flex flex-col lg:grid lg:grid-cols-4 gap-4 lg:gap-6">
       <div className={`lg:col-span-1 space-y-4 h-full ${selectedSeller ? 'hidden lg:block' : 'block'}`}>
-        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 p-4 lg:p-6 h-full flex flex-col">
-          <div className="flex items-center gap-2 mb-3 lg:mb-4">
-            <MessageSquare className="w-5 h-5 text-green-400" />
-            <h3 className="text-lg font-bold text-white">
+        <div className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-2xl border border-cyan-500/30 p-4 lg:p-6 h-full flex flex-col overflow-hidden backdrop-blur-2xl">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#0ff_1px,transparent_1px),linear-gradient(to_bottom,#0ff_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.02]"></div>
+          <div className="absolute top-0 left-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+
+          <div className="relative flex items-center gap-3 mb-4">
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 bg-cyan-500/30 rounded-xl blur-lg"></div>
+              <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/50">
+                <MessageSquare className="w-5 h-5 text-white" />
+              </div>
+            </div>
+            <h3 className="text-base lg:text-lg font-black text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text">
               Conversations ({sellersWithDiscussions.length})
             </h3>
           </div>
 
-          <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un vendeur..."
-                className="w-full pl-10 pr-4 py-2.5 bg-slate-700/50 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-cyan-400/50" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher un vendeur..."
+              className="w-full pl-10 pr-4 py-2.5 bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/30 text-white placeholder-cyan-300/40 rounded-xl focus:ring-2 focus:ring-cyan-400/30 focus:border-cyan-400/50 text-sm transition-all duration-300 outline-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-cyan-400/50 hover:text-cyan-300 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
-          <div className="space-y-2 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600/40 scrollbar-track-transparent hover:scrollbar-thumb-slate-500/50">
+          <div className="relative space-y-2 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-500/40 scrollbar-track-transparent hover:scrollbar-thumb-cyan-400/60">
             {sellersWithDiscussions.length === 0 ? (
-              <p className="text-sm text-slate-400 text-center py-4">
-                {searchQuery ? 'Aucun résultat' : 'Aucune discussion'}
+              <p className="text-sm text-cyan-300/50 text-center py-4 font-medium">
+                {searchQuery ? 'Aucun resultat' : 'Aucune discussion'}
               </p>
             ) : (
               sellersWithDiscussions.map((seller) => <SellerCard key={seller.id} seller={seller} />)
@@ -460,89 +466,108 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
 
       <div className={`lg:col-span-3 flex flex-col h-full ${selectedSeller ? 'fixed inset-0 z-50 lg:static lg:z-auto' : 'hidden lg:flex'}`}>
         {selectedSeller ? (
-          <div className="flex flex-col h-full bg-gradient-to-br from-[#0a0e27] via-[#1a1f3a] to-[#0a0e27] relative rounded-none lg:rounded-2xl shadow-2xl overflow-hidden w-full">
-            <div className="relative p-3 sm:p-4 border-b border-cyan-500/30 bg-gradient-to-r from-[#0f1729] via-[#1a2847] to-[#0f1729] flex-shrink-0">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30"></div>
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+          <div className="relative flex flex-col h-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-none lg:rounded-2xl shadow-2xl overflow-hidden w-full border-0 lg:border border-cyan-500/30">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0ff_1px,transparent_1px),linear-gradient(to_bottom,#0ff_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.02]"></div>
+            <div className="absolute top-0 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse"></div>
+            <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-              <div className="relative flex items-center gap-2 sm:gap-3">
-                <button
-                  onClick={() => setSelectedSeller(null)}
-                  className="lg:hidden flex items-center justify-center w-9 h-9 bg-cyan-500/20 hover:bg-cyan-500/30 backdrop-blur-sm rounded-full transition-all duration-200 active:scale-95 border border-cyan-400/40 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
-                  title="Retour à la liste"
-                >
-                  <ArrowLeft className="w-5 h-5 text-cyan-400" />
-                </button>
-                <div className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-cyan-500 to-blue-500 backdrop-blur-sm rounded-full shadow-lg shadow-cyan-500/50">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-400 blur-md opacity-50 animate-pulse"></div>
-                  <span className="relative text-base sm:text-lg lg:text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-                    {selectedSeller.prenom.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm sm:text-base lg:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 truncate drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-                    {selectedSeller.prenom} {selectedSeller.nom}
-                  </h3>
-                  <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5">
-                    <div className="relative w-1.5 h-1.5 sm:w-2 sm:h-2 bg-cyan-400 rounded-full animate-pulse">
-                      <div className="absolute inset-0 bg-cyan-400 rounded-full blur-sm animate-ping"></div>
+            <div className="relative z-10 flex flex-col h-full">
+              <div className="relative px-4 sm:px-6 py-4 sm:py-5 border-b border-cyan-500/30 flex-shrink-0">
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-30"></div>
+
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedSeller(null)}
+                    className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 active:scale-95 shadow-lg shadow-cyan-500/10"
+                  >
+                    <ArrowLeft className="w-5 h-5 text-cyan-400" />
+                  </button>
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute inset-0 bg-cyan-500/30 rounded-xl blur-lg"></div>
+                    <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/50">
+                      <span className="text-lg sm:text-xl font-black text-white">
+                        {selectedSeller.prenom.charAt(0).toUpperCase()}
+                      </span>
                     </div>
-                    <p className="text-cyan-300 text-[10px] sm:text-xs lg:text-sm drop-shadow-[0_0_5px_rgba(34,211,238,0.4)] truncate">{selectedSeller.email}</p>
                   </div>
-                </div>
-                <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm rounded-full transition-all duration-200 hover:scale-110 active:scale-95 border border-red-400/40 shadow-[0_0_10px_rgba(239,68,68,0.3)]"
-                  title="Supprimer la conversation"
-                >
-                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
-                </button>
-              </div>
-            </div>
-
-            {showDeleteConfirm && (
-              <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-4">
-                <div className="relative bg-gradient-to-br from-[#1a2847] to-[#0f1729] rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-5 lg:p-6 transform transition-all mx-3 border border-cyan-400/30">
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-30 rounded-2xl"></div>
-
-                  <div className="relative flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                    <div className="relative flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-red-500/20 rounded-full flex-shrink-0 border border-red-400/50 shadow-[0_0_20px_rgba(239,68,68,0.4)]">
-                      <Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
-                      <div className="absolute inset-0 bg-red-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base sm:text-lg font-black text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text truncate">
+                      {selectedSeller.prenom} {selectedSeller.nom}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <div className="relative w-2 h-2 bg-cyan-400 rounded-full animate-pulse">
+                        <div className="absolute inset-0 bg-cyan-400 rounded-full blur-sm animate-ping"></div>
+                      </div>
+                      <p className="text-cyan-300/70 text-xs sm:text-sm font-medium truncate">{selectedSeller.email}</p>
                     </div>
-                    <h3 className="text-base sm:text-lg lg:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-300">Supprimer la conversation</h3>
                   </div>
-                  <p className="relative text-xs sm:text-sm lg:text-base text-cyan-200/90 mb-4 sm:mb-6">
-                    Êtes-vous sûr de vouloir supprimer tous les messages de cette conversation ? Cette action est irréversible.
-                  </p>
-                  <div className="relative flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <button
-                      onClick={() => setShowDeleteConfirm(false)}
-                      className="flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-slate-700/50 hover:bg-slate-700/70 text-cyan-300 rounded-xl font-semibold transition-all duration-200 text-sm sm:text-base border border-cyan-400/30 backdrop-blur-sm"
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      onClick={deleteAllMessages}
-                      className="relative flex-1 px-3 py-2.5 sm:px-4 sm:py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl font-semibold transition-all duration-200 shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:shadow-[0_0_30px_rgba(239,68,68,0.6)] text-sm sm:text-base border border-red-400/50"
-                    >
-                      Supprimer
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="relative group/btn flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-red-500/10 to-rose-600/10 border border-red-500/30 hover:border-red-400/50 transition-all duration-300 hover:scale-105 active:scale-95"
+                    title="Supprimer la conversation"
+                  >
+                    <Trash2 className="relative w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
+                  </button>
                 </div>
               </div>
-            )}
 
-            <div ref={chatContainerRef} className="relative flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4 space-y-2 sm:space-y-3 bg-gradient-to-b from-[#0a0e27]/50 to-[#1a1f3a]/50">
-              <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-50"></div>
-              {messages.length === 0 ? (
-                <div className="relative text-center py-8 sm:py-12">
-                  <div className="inline-block bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-400/30 rounded-2xl px-6 py-4 backdrop-blur-sm">
-                    <p className="text-sm sm:text-base text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">Aucun message pour le moment</p>
-                    <p className="text-xs sm:text-sm mt-2 text-blue-300">Commencez la conversation !</p>
+              {showDeleteConfirm && (
+                <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                  <div className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl rounded-2xl border border-cyan-500/30 shadow-2xl max-w-md w-full overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-400 to-transparent opacity-50"></div>
+                    <div className="p-5 sm:p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="relative flex-shrink-0">
+                          <div className="absolute inset-0 bg-red-500/30 rounded-xl blur-lg"></div>
+                          <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center border border-red-400/50 shadow-lg shadow-red-500/50">
+                            <Trash2 className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
+                        <h3 className="text-lg font-black text-transparent bg-gradient-to-r from-red-400 to-rose-400 bg-clip-text">
+                          Supprimer la conversation
+                        </h3>
+                      </div>
+                      <p className="text-sm text-cyan-200/80 mb-6 leading-relaxed">
+                        Etes-vous sur de vouloir supprimer tous les messages de cette conversation ? Cette action est irreversible.
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setShowDeleteConfirm(false)}
+                          className="flex-1 px-4 py-3 bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-cyan-500/30 hover:border-cyan-400/50 text-cyan-300 rounded-xl font-bold transition-all duration-300 text-sm"
+                        >
+                          Annuler
+                        </button>
+                        <button
+                          onClick={deleteAllMessages}
+                          className="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white rounded-xl font-bold transition-all duration-300 shadow-lg shadow-red-500/30 hover:shadow-red-500/50 text-sm border border-red-400/50"
+                        >
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              ) : (
+              )}
+
+              <div ref={chatContainerRef} className="relative flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6 space-y-3">
+                {messages.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-50"></div>
+                      <div className="relative bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-2xl border border-cyan-500/30 p-8 text-center shadow-2xl">
+                        <div className="relative mx-auto mb-4" style={{ width: 56, height: 56 }}>
+                          <div className="absolute inset-0 bg-cyan-500/30 rounded-xl blur-lg"></div>
+                          <div className="relative w-14 h-14 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/50 mx-auto">
+                            <MessageSquare className="w-7 h-7 text-white" />
+                          </div>
+                        </div>
+                        <p className="text-base font-bold text-white mb-2">Aucun message pour le moment</p>
+                        <p className="text-sm text-cyan-300/70">Commencez la conversation !</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
                   messages.map((msg) => {
                     const messageDate = formatDate(msg.created_at);
                     const showDateSeparator = messageDate !== lastDate;
@@ -552,161 +577,172 @@ const SellerChatViewer: React.FC<SellerChatViewerProps> = ({
                     return (
                       <React.Fragment key={msg.id}>
                         {showDateSeparator && (
-                          <div className="relative flex items-center justify-center my-2 sm:my-3">
-                            <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-400/30 text-cyan-300 text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium backdrop-blur-sm shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                              {messageDate}
+                          <div className="flex items-center justify-center my-4">
+                            <div className="relative">
+                              <div className="absolute inset-0 bg-cyan-500/20 rounded-full blur-md"></div>
+                              <div className="relative bg-gradient-to-r from-slate-800/90 to-slate-900/90 backdrop-blur-sm border border-cyan-500/30 text-cyan-300/80 text-xs px-4 py-1.5 rounded-full font-bold shadow-lg">
+                                {messageDate}
+                              </div>
                             </div>
                           </div>
                         )}
-                        <div
-                          className={`relative flex ${isAdminMessage ? 'justify-end' : 'justify-start'}`}
-                        >
+                        <div className={`relative flex ${isAdminMessage ? 'justify-end' : 'justify-start'}`}>
                           <div className="relative group inline-block max-w-[90%] sm:max-w-[85%] md:max-w-[75%] lg:max-w-md">
+                            <div className={`absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 ${
+                              isAdminMessage
+                                ? 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20'
+                                : 'bg-gradient-to-r from-slate-500/10 to-slate-400/10'
+                            }`}></div>
+
                             <div
-                              className={`${
+                              className={`relative backdrop-blur-xl px-4 py-3 transition-all duration-300 hover:scale-[1.01] ${
                                 isAdminMessage
-                                  ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
-                                  : 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-md rounded-br-2xl border border-slate-600/50 shadow-[0_0_10px_rgba(148,163,184,0.2)]'
-                              } px-3 sm:px-4 py-2 sm:py-3 hover:shadow-lg transition-all duration-200 backdrop-blur-sm`}
+                                  ? 'bg-gradient-to-br from-blue-600/90 to-cyan-700/90 text-white rounded-2xl rounded-br-md border border-blue-400/40 shadow-lg shadow-blue-500/20'
+                                  : 'bg-gradient-to-br from-slate-800/90 to-slate-900/90 text-white rounded-2xl rounded-bl-md border border-slate-600/40 shadow-lg'
+                              }`}
                             >
+                              <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent opacity-40 ${
+                                isAdminMessage ? 'via-blue-400' : 'via-slate-500'
+                              }`}></div>
+
                               {!isAdminMessage && (
-                                <p className="text-[10px] sm:text-xs font-bold mb-1 sm:mb-1.5 text-blue-600">
+                                <p className="text-[10px] sm:text-xs font-black tracking-wider mb-1.5 text-cyan-400">
                                   {msg.sender_name || 'Vendeur'}
                                 </p>
                               )}
                               <p className="text-[13px] sm:text-sm lg:text-base break-words leading-relaxed">{msg.message}</p>
 
                               {msg.attachment_url && (
-                                <div className="mt-2 pt-2 border-t border-white/20">
+                                <div className="mt-2.5 pt-2.5 border-t border-white/15">
                                   <a
                                     href={msg.attachment_url}
                                     download={msg.attachment_name}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`flex items-center gap-2 p-2 rounded-lg ${
-                                      isAdminMessage
-                                        ? 'bg-white/10 hover:bg-white/20'
-                                        : 'bg-gray-100 hover:bg-gray-200'
-                                    } transition-colors`}
+                                    className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/20 transition-all duration-300 group/file"
                                   >
-                                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/30 to-blue-500/30 flex items-center justify-center border border-cyan-400/30 flex-shrink-0">
+                                      <FileText className="w-4 h-4 text-cyan-300" />
+                                    </div>
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-[10px] sm:text-xs font-medium truncate">
+                                      <p className="text-xs font-bold truncate text-white/90">
                                         {msg.attachment_name || 'Fichier'}
                                       </p>
                                     </div>
-                                    <Download className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                    <Download className="w-4 h-4 text-cyan-300/70 group-hover/file:text-cyan-300 transition-colors flex-shrink-0" />
                                   </a>
                                 </div>
                               )}
 
-                              <div className="flex items-center gap-1 sm:gap-1.5 justify-end mt-1.5 sm:mt-2">
-                                <span
-                                  className={`text-[10px] sm:text-xs font-medium ${
-                                    isAdminMessage ? 'text-white/70' : 'text-gray-500'
-                                  }`}
-                                >
+                              <div className="flex items-center gap-1.5 justify-end mt-2">
+                                <span className={`text-[10px] sm:text-xs font-medium ${
+                                  isAdminMessage ? 'text-white/50' : 'text-slate-400'
+                                }`}>
                                   {formatTime(msg.created_at)}
                                 </span>
                               </div>
                             </div>
                             <button
                               onClick={() => deleteMessage(msg.id)}
-                              className="absolute -top-2 -right-2 w-6 h-6 sm:w-7 sm:h-7 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                              className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg shadow-red-500/40 border border-red-400/50 hover:scale-110"
                               title="Supprimer ce message"
                             >
-                              <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                         </div>
                       </React.Fragment>
                     );
                   })
-              )}
-              <div ref={messagesEndRef} />
-            </div>
+                )}
+                <div ref={messagesEndRef} />
+              </div>
 
-            <div className="relative p-2 sm:p-3 lg:p-4 border-t border-cyan-500/30 bg-gradient-to-r from-[#0f1729] via-[#1a2847] to-[#0f1729]">
-              <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
+              <div className="relative px-3 sm:px-4 lg:px-6 py-3 sm:py-4 border-t border-cyan-500/30 flex-shrink-0">
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
 
-              {selectedFile && (
-                <div className="mb-2 sm:mb-3 flex items-center gap-2 p-2 sm:p-3 bg-cyan-500/10 border border-cyan-400/30 rounded-lg backdrop-blur-sm shadow-[0_0_10px_rgba(34,211,238,0.2)]">
-                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs sm:text-sm font-medium text-cyan-300 truncate">
-                      {selectedFile.name}
-                    </p>
-                    <p className="text-[10px] sm:text-xs text-cyan-400/80">
-                      {(selectedFile.size / 1024).toFixed(1)} Ko
-                    </p>
+                {selectedFile && (
+                  <div className="mb-3 relative">
+                    <div className="absolute inset-0 bg-cyan-500/10 rounded-xl blur-md"></div>
+                    <div className="relative flex items-center gap-3 p-3 bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-xl shadow-lg">
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500/30 to-blue-500/30 flex items-center justify-center border border-cyan-400/30 flex-shrink-0">
+                        <FileText className="w-4 h-4 text-cyan-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-white truncate">{selectedFile.name}</p>
+                        <p className="text-[10px] text-cyan-300/60 font-medium">{(selectedFile.size / 1024).toFixed(1)} Ko</p>
+                      </div>
+                      <button
+                        onClick={removeSelectedFile}
+                        className="flex-shrink-0 w-7 h-7 bg-gradient-to-br from-red-500/20 to-rose-600/20 border border-red-500/30 hover:border-red-400/50 text-red-400 rounded-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-2 items-end">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    accept="*/*"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={sending || uploading}
+                    className="relative flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-slate-800/90 to-slate-900/90 border border-cyan-500/30 hover:border-cyan-400/50 flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed group/attach"
+                    title="Joindre un fichier"
+                  >
+                    <Paperclip className="relative w-4 h-4 sm:w-5 sm:h-5 text-cyan-400" />
+                  </button>
+                  <div className="flex-1">
+                    <textarea
+                      ref={messageInputRef}
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Votre message..."
+                      disabled={sending}
+                      rows={1}
+                      className="w-full px-4 py-2.5 sm:py-3 bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl border border-cyan-500/30 rounded-xl focus:ring-2 focus:ring-cyan-400/30 focus:border-cyan-400/50 outline-none disabled:opacity-40 disabled:cursor-not-allowed resize-none text-sm sm:text-base text-white placeholder-cyan-300/40 hover:border-cyan-400/40 transition-all duration-300 shadow-inner"
+                      style={{ minHeight: '42px', maxHeight: '100px' }}
+                    />
                   </div>
                   <button
-                    onClick={removeSelectedFile}
-                    className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-full flex items-center justify-center transition-colors border border-red-400/40"
-                    title="Retirer le fichier"
+                    type="submit"
+                    disabled={(!newMessage.trim() && !selectedFile) || sending}
+                    className="relative flex-shrink-0 w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-bold hover:from-cyan-400 hover:to-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center shadow-lg shadow-cyan-500/40 hover:shadow-cyan-500/60 hover:scale-105 active:scale-95 border border-cyan-400/50 group/send"
+                    title="Envoyer le message"
                   >
-                    <X className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-400 blur-md opacity-40 group-hover/send:opacity-60 transition-opacity"></div>
+                    {uploading ? (
+                      <div className="relative w-5 h-5 border-2 border-white/80 border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Send className="relative w-4 h-4 sm:w-5 sm:h-5" />
+                    )}
                   </button>
-                </div>
-              )}
-
-              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="relative flex gap-1.5 sm:gap-2 items-end">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  accept="*/*"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={sending || uploading}
-                  className="relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed border border-cyan-400/40 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
-                  title="Joindre un fichier"
-                >
-                  <Paperclip className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-                <div className="flex-1">
-                  <textarea
-                    ref={messageInputRef}
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Votre message..."
-                    disabled={sending}
-                    rows={1}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-cyan-400/30 rounded-full focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400 outline-none disabled:bg-slate-800/50 disabled:cursor-not-allowed resize-none text-[13px] sm:text-sm lg:text-base bg-slate-800/50 text-white placeholder-cyan-300/50 hover:bg-slate-800/70 transition-all duration-200 backdrop-blur-sm shadow-[inset_0_0_10px_rgba(34,211,238,0.1)]"
-                    style={{ minHeight: '38px', maxHeight: '100px' }}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={(!newMessage.trim() && !selectedFile) || sending}
-                  className="relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-full font-bold hover:from-cyan-500 hover:to-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.5)] hover:shadow-[0_0_30px_rgba(34,211,238,0.8)] hover:scale-110 active:scale-95 border border-cyan-400/50"
-                  title="Envoyer le message"
-                >
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 blur-md opacity-50 animate-pulse"></div>
-                  {uploading ? (
-                    <div className="relative w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Send className="relative w-4 h-4 sm:w-5 sm:h-5" />
-                  )}
-                </button>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         ) : (
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl shadow-xl border border-slate-700 flex items-center justify-center h-full">
-            <div className="text-center p-8 sm:p-12 max-w-md mx-auto">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-r from-slate-600/20 to-slate-700/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 text-slate-400" />
+          <div className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-2xl border border-cyan-500/30 overflow-hidden h-full flex items-center justify-center">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0ff_1px,transparent_1px),linear-gradient(to_bottom,#0ff_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.02]"></div>
+            <div className="absolute top-0 left-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-[120px]"></div>
+            <div className="relative text-center p-12">
+              <div className="relative mx-auto mb-6" style={{ width: 64, height: 64 }}>
+                <div className="absolute inset-0 bg-cyan-500/30 rounded-xl blur-lg"></div>
+                <div className="relative w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/50 mx-auto">
+                  <MessageSquare className="w-8 h-8 text-white" />
+                </div>
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">
-                Chat Vendeur
-              </h3>
-              <p className="text-sm sm:text-base text-slate-300">
-                Sélectionnez un vendeur dans la liste pour démarrer ou continuer une conversation
+              <h3 className="text-xl font-black text-white mb-3">Chat Vendeur</h3>
+              <p className="text-cyan-300/70 font-medium">
+                Selectionnez un vendeur dans la liste pour demarrer ou continuer une conversation
               </p>
             </div>
           </div>

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { X, RefreshCw, MessageSquare, LogIn, Copy, Check, Edit2 } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { X, RefreshCw, MessageSquare, LogIn, Copy, Check, Edit2, ClipboardCheck, FileCheck2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { Status } from '../types/Status';
 import ClientEmailSender from './ClientEmailSender';
@@ -38,7 +38,7 @@ interface SellerClientModalProps {
   client: Client;
   editedClient: Client;
   statuses: Status[];
-  modalTab: 'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client';
+  modalTab: 'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client' | 'outils';
   saving: boolean;
   comments: any[];
   newComment: string;
@@ -49,7 +49,7 @@ interface SellerClientModalProps {
   copiedPassword: boolean;
   sellerFullName: string;
   onClose: () => void;
-  onTabChange: (tab: 'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client') => void;
+  onTabChange: (tab: 'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client' | 'outils') => void;
   onFieldChange: (field: keyof Client, value: any) => void;
   onSave: () => void;
   onCommentChange: (value: string) => void;
@@ -58,6 +58,7 @@ interface SellerClientModalProps {
   onCopyToClipboard: (text: string, type: 'email' | 'password') => void;
   onClientLogin?: (client: Client) => void;
   onRefreshClients?: () => Promise<void>;
+  canFillDiagnostic?: boolean;
 }
 
 const SellerClientModal: React.FC<SellerClientModalProps> = ({
@@ -84,6 +85,7 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
   onCopyToClipboard,
   onClientLogin,
   onRefreshClients,
+  canFillDiagnostic = false,
 }) => {
   const passwordInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [isEditingCredentials, setIsEditingCredentials] = useState(false);
@@ -677,71 +679,74 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                 </div>
               </div>
 
-              {/* Toggle Diagnostic Final */}
-              <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-1">Diagnostic Final :</label>
-                    <p className="text-xs text-white/60">Activer/désactiver l'accès au formulaire de diagnostic final</p>
-                  </div>
-                  <button
-                    disabled={isToggling}
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+              {canFillDiagnostic ? (
+                <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-1">Diagnostic Final :</label>
+                      <p className="text-xs text-white/60">Activer/desactiver l'acces au formulaire de diagnostic final</p>
+                    </div>
+                    <button
+                      disabled={isToggling}
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
 
-                      if (isToggling) return;
+                        if (isToggling) return;
 
-                      setIsToggling(true);
-                      const currentValue = editedClient?.diagnostic_final_actif ?? false;
-                      const newValue = !currentValue;
+                        setIsToggling(true);
+                        const currentValue = editedClient?.diagnostic_final_actif ?? false;
+                        const newValue = !currentValue;
 
-                      console.log('🔄 [CLIENT] Toggle clicked - Current:', currentValue, 'New:', newValue, 'Client ID:', client.id);
+                        onFieldChange('diagnostic_final_actif', newValue);
 
-                      onFieldChange('diagnostic_final_actif', newValue);
+                        try {
+                          const { error } = await supabase
+                            .from('clients')
+                            .update({ diagnostic_final_actif: newValue })
+                            .eq('id', client.id);
 
-                      try {
-                        console.log('💾 [CLIENT] Saving to database...');
-                        const { error } = await supabase
-                          .from('clients')
-                          .update({ diagnostic_final_actif: newValue })
-                          .eq('id', client.id);
+                          if (error) throw error;
 
-                        if (error) {
-                          console.error('❌ [CLIENT] Database error:', error);
-                          throw error;
+                          if (onRefreshClients) {
+                            await onRefreshClients();
+                          }
+                        } catch (error) {
+                          console.error('Erreur lors de la sauvegarde:', error);
+                          alert('Erreur lors de la sauvegarde. Veuillez reessayer.');
+                          onFieldChange('diagnostic_final_actif', currentValue);
+                        } finally {
+                          setIsToggling(false);
                         }
-
-                        console.log('✅ [CLIENT] Successfully saved to database');
-
-                        if (onRefreshClients) {
-                          console.log('🔄 [CLIENT] Refreshing clients...');
-                          await onRefreshClients();
-                          console.log('✅ [CLIENT] Clients refreshed');
-                        }
-                      } catch (error) {
-                        console.error('❌ [CLIENT] Error during save:', error);
-                        alert('Erreur lors de la sauvegarde. Veuillez réessayer.');
-                        onFieldChange('diagnostic_final_actif', currentValue);
-                      } finally {
-                        setIsToggling(false);
-                      }
-                    }}
-                    className={`relative inline-flex h-10 w-20 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/30 disabled:opacity-50 disabled:cursor-not-allowed ${
-                      editedClient?.diagnostic_final_actif ? 'bg-green-500' : 'bg-gray-600'
-                    }`}
-                  >
-                    <span
-                      className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
-                        editedClient?.diagnostic_final_actif ? 'translate-x-11' : 'translate-x-1'
+                      }}
+                      className={`relative inline-flex h-10 w-20 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/30 disabled:opacity-50 disabled:cursor-not-allowed ${
+                        editedClient?.diagnostic_final_actif ? 'bg-green-500' : 'bg-gray-600'
                       }`}
-                    />
-                  </button>
+                    >
+                      <span
+                        className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                          editedClient?.diagnostic_final_actif ? 'translate-x-11' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <p className={`text-sm font-bold ${editedClient?.diagnostic_final_actif ? 'text-green-400' : 'text-gray-400'}`}>
+                    {editedClient?.diagnostic_final_actif ? 'Active - Le client peut remplir le formulaire' : 'Desactive - Le client ne peut pas remplir le formulaire'}
+                  </p>
                 </div>
-                <p className={`text-sm font-bold ${editedClient?.diagnostic_final_actif ? 'text-green-400' : 'text-gray-400'}`}>
-                  {editedClient?.diagnostic_final_actif ? 'Activé - Le client peut remplir le formulaire' : 'Désactivé - Le client ne peut pas remplir le formulaire'}
-                </p>
-              </div>
+              ) : (
+                <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-orange-400/20 shadow-xl space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <X className="w-5 h-5 text-orange-400" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-orange-300 uppercase tracking-widest mb-1">Diagnostic Final :</label>
+                      <p className="text-sm text-orange-200/80">Vous n'avez pas l'autorisation de gerer le diagnostic final. Contactez votre administrateur.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Boutons Enregistrer */}
               <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
@@ -1005,7 +1010,69 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
                   </div>
                 )}
 
-                {/* Informations */}
+                {canFillDiagnostic ? (
+                  <div className="bg-gradient-to-br from-[#1e3a5f]/50 to-[#2d4578]/50 border-3 border-white/10 rounded-2xl p-4 sm:p-8 shadow-xl space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-1">Diagnostic Final :</label>
+                        <p className="text-xs text-white/60">Activer/desactiver l'acces au formulaire de diagnostic final</p>
+                      </div>
+                      <button
+                        disabled={isToggling}
+                        onClick={async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (isToggling) return;
+                          setIsToggling(true);
+                          const currentValue = editedClient?.diagnostic_final_actif ?? false;
+                          const newValue = !currentValue;
+                          onFieldChange('diagnostic_final_actif', newValue);
+                          try {
+                            const { error } = await supabase
+                              .from('clients')
+                              .update({ diagnostic_final_actif: newValue })
+                              .eq('id', client.id);
+                            if (error) throw error;
+                            if (onRefreshClients) {
+                              await onRefreshClients();
+                            }
+                          } catch (error) {
+                            console.error('Erreur lors de la sauvegarde:', error);
+                            alert('Erreur lors de la sauvegarde. Veuillez reessayer.');
+                            onFieldChange('diagnostic_final_actif', currentValue);
+                          } finally {
+                            setIsToggling(false);
+                          }
+                        }}
+                        className={`relative inline-flex h-10 w-20 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/30 disabled:opacity-50 disabled:cursor-not-allowed ${
+                          editedClient?.diagnostic_final_actif ? 'bg-green-500' : 'bg-gray-600'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                            editedClient?.diagnostic_final_actif ? 'translate-x-11' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <p className={`text-sm font-bold ${editedClient?.diagnostic_final_actif ? 'text-green-400' : 'text-gray-400'}`}>
+                      {editedClient?.diagnostic_final_actif ? 'Active - Le client peut remplir le formulaire' : 'Desactive - Le client ne peut pas remplir le formulaire'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-orange-400/20 shadow-xl space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <X className="w-5 h-5 text-orange-400" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-orange-300 uppercase tracking-widest mb-1">Diagnostic Final :</label>
+                        <p className="text-sm text-orange-200/80">Vous n'avez pas l'autorisation de gerer le diagnostic final. Contactez votre administrateur.</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-gradient-to-r from-[#2d4578]/30 to-[#1e3a5f]/30 border-2 border-white/10 rounded-xl p-5 shadow-md">
                   <p className="text-sm text-blue-200 font-semibold">
                     <strong className="font-extrabold text-white">Note :</strong> Ces identifiants permettent au client de se connecter à son espace personnel.
@@ -1025,6 +1092,7 @@ const SellerClientModal: React.FC<SellerClientModalProps> = ({
               </div>
             </div>
           )}
+
             </>
           )}
         </div>

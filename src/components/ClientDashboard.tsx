@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send, Trash2, AlertCircle } from 'lucide-react';
+import { User, Mail, Phone, MapPin, FileText, Calendar, LogOut, MessageSquare, Home, ArrowLeft, Lock, Briefcase, Building2, ClipboardCheck, FileCheck, Download, X, ChevronDown, ChevronUp, Users, CheckCircle2, AlertTriangle, FileCheck2, UserCircle2, UserCog, Eye, EyeOff, Save, Menu, Send, Trash2, AlertCircle, TrendingUp, Shield } from 'lucide-react';
 import ChatWindow from './ChatWindow';
 import ClientNotificationSystem from './ClientNotificationSystem';
 import PaymentSection from './PaymentSection';
 import DiagnosticGarageForm from './DiagnosticGarageForm';
 import SectorSelection from './SectorSelection';
+import AvancementTab from './AvancementTab';
 import { generateDUERPPDF, getClientDocuments, deleteDocument } from '../services/pdfService';
 import { diagnosticNotesService } from '../services/diagnosticNotesService';
 import { supabase } from '../lib/supabase';
 import { sendEmail, EmailType } from '../services/emailSendService';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { sectorUnlockService } from '../services/sectorUnlockService';
+import { getCategoriesForSector } from '../data/sectorQuestions';
 
 interface ClientDashboardProps {
   clientData: {
@@ -62,6 +64,9 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
   const [showDiagnosticForm, setShowDiagnosticForm] = useState(false);
   const [selectedSectorType, setSelectedSectorType] = useState<string>('');
   const [unlockedSectorIds, setUnlockedSectorIds] = useState<string[]>([]);
+  const [unlockedSectorNames, setUnlockedSectorNames] = useState<Record<string, string>>({});
+  const [currentTypeDiagnostic, setCurrentTypeDiagnostic] = useState<string>(client.type_diagnostic || '');
+  const sectorSectionRef = useRef<HTMLDivElement>(null);
 
   const [nomConseiller, setNomConseiller] = useState('');
   const [nomSociete, setNomSociete] = useState('');
@@ -101,12 +106,24 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
       try {
         const unlockedSectors = await sectorUnlockService.getUnlockedSectors(parseInt(client.id));
         setUnlockedSectorIds(unlockedSectors.map(s => s.sector_id));
+        const namesMap: Record<string, string> = {};
+        unlockedSectors.forEach(s => { namesMap[s.sector_id] = s.sector_name; });
+        setUnlockedSectorNames(namesMap);
       } catch (error) {
         console.error('Erreur lors du chargement des secteurs débloqués:', error);
       }
     };
 
     loadUnlockedSectors();
+
+    const unsubscribe = sectorUnlockService.subscribeToUnlockedSectors(parseInt(client.id), (sectors) => {
+      setUnlockedSectorIds(sectors.map(s => s.sector_id));
+      const namesMap: Record<string, string> = {};
+      sectors.forEach(s => { namesMap[s.sector_id] = s.sector_name; });
+      setUnlockedSectorNames(namesMap);
+    });
+
+    return () => { unsubscribe(); };
   }, [client.id]);
 
   useEffect(() => {
@@ -179,13 +196,65 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
 
   const [sendingEmail, setSendingEmail] = useState<string | null>(null);
   const [emailMessage, setEmailMessage] = useState<string>('');
+  const [avancementPercentage, setAvancementPercentage] = useState(0);
 
   useEffect(() => {
     loadDocuments();
     if (isAdminViewing) {
       loadAdminNotes();
     }
+    loadAvancementProgress();
   }, []);
+
+  useEffect(() => {
+    if (currentTypeDiagnostic || selectedSectorType) {
+      loadAvancementProgress();
+
+      const subscription = supabase
+        .channel('duerp_responses_menu_updates')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'duerp_evaluation_responses',
+          filter: `client_id=eq.${client.id}`
+        }, () => {
+          loadAvancementProgress();
+        })
+        .subscribe();
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    }
+  }, [client.id, currentTypeDiagnostic, selectedSectorType]);
+
+  const loadAvancementProgress = async () => {
+    const typeDiag = currentTypeDiagnostic || selectedSectorType;
+    if (!typeDiag) {
+      setAvancementPercentage(0);
+      return;
+    }
+
+    try {
+      const { data: responses, error } = await supabase
+        .from('duerp_evaluation_responses')
+        .select('question_id')
+        .eq('client_id', client.id)
+        .eq('type_diagnostic', typeDiag);
+
+      if (error) throw error;
+
+      const sectorCategories = getCategoriesForSector(typeDiag);
+      const totalQuestions = sectorCategories.reduce((sum, cat) => sum + cat.questions.length, 0);
+      const answeredQuestions = new Set(responses?.map(r => r.question_id) || []).size;
+      const percentage = totalQuestions > 0 ? Math.round((answeredQuestions / totalQuestions) * 100) : 0;
+
+      setAvancementPercentage(percentage);
+    } catch (error) {
+      console.error('Erreur lors du calcul de l\'avancement:', error);
+      setAvancementPercentage(0);
+    }
+  };
 
   useEffect(() => {
     const loadClientData = async () => {
@@ -563,6 +632,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
     { id: 'documents', label: 'Accéder à mes documents', icon: FileText },
     { id: 'diagnostic', label: 'Diagnostic DUERP Article L4121-1', icon: ClipboardCheck },
     { id: 'diagnostic-final', label: 'Diagnostic Final', icon: FileCheck2 },
+    { id: 'avancement', label: 'Avancement', icon: TrendingUp },
     { id: 'opco', label: 'OPCO opérateur de compétences', icon: Building2 },
     { id: 'reglement', label: 'Règlement de prise en charge', icon: FileCheck },
     { id: 'chat', label: 'Messagerie', icon: MessageSquare },
@@ -642,6 +712,8 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
+              const showProgress = item.id === 'avancement' && (client.type_diagnostic || selectedSectorType);
+
               return (
                 <button
                   key={item.id}
@@ -662,7 +734,16 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                     <div className="absolute inset-0 bg-white/0 group-hover:bg-white/8 transition-all duration-300"></div>
                   )}
                   <Icon className={`w-5 h-5 md:w-5 md:h-5 relative z-10 ${isActive ? 'text-blue-600' : 'text-white'} transition-all duration-300`} />
-                  <span className="text-left relative z-10">{item.label}</span>
+                  <span className="text-left relative z-10 flex-1">{item.label}</span>
+                  {showProgress && (
+                    <span className={`relative z-10 text-xs font-bold px-2 py-1 rounded-lg ${
+                      isActive
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-cyan-500/30 text-cyan-300'
+                    }`}>
+                      {avancementPercentage}%
+                    </span>
+                  )}
                   {isActive && (
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-blue-600 rounded-l-full"></div>
                   )}
@@ -4309,7 +4390,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto h-[calc(100%-65px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
+              <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 overflow-y-auto h-[calc(100%-65px)] bg-gradient-to-b from-[#1a2847]/80 to-[#2d4578]/60 backdrop-blur-xl">
                 {!client.diagnostic_final_actif ? (
                   <div className="bg-[#1a2847]/50 rounded-xl p-6 sm:p-8 border-2 border-orange-400/30 shadow-md">
                     <div className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -4326,26 +4407,75 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                   </div>
                 ) : !showDiagnosticForm ? (
                   <div className="space-y-6">
-                    <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center space-y-4">
-                      <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto">
-                        <FileCheck2 className="w-12 h-12 text-blue-400" />
+                    {(isAdminViewing || isSellerViewing) ? (
+                      <div className="bg-amber-500/10 backdrop-blur-xl rounded-2xl p-6 border border-amber-400/30 text-center space-y-4">
+                        <div className="w-20 h-20 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto">
+                          <Shield className="w-12 h-12 text-amber-400" />
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-bold text-white">
+                          Attribuer un outil au client
+                        </h3>
+                        <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto">
+                          Cliquez sur un outil pour l'attribuer au client. Le client ne verra que l'outil que vous lui attribuez. Pour changer d'outil, cliquez sur un autre.
+                        </p>
+                        {(unlockedSectorIds.length > 0 || currentTypeDiagnostic) && (
+                          <div className="flex flex-wrap items-center justify-center gap-3">
+                            <button
+                              onClick={() => sectorSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                              className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 rounded-lg px-4 py-2 hover:bg-emerald-500/30 transition-all duration-300 cursor-pointer"
+                            >
+                              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                              <span className="text-sm font-semibold text-emerald-300">
+                                Outil actuellement attribue : {unlockedSectorNames[unlockedSectorIds[0]] || currentTypeDiagnostic.replace(/^\d+\s*/, '') || unlockedSectorIds[0]}
+                              </span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                const sectorType = currentTypeDiagnostic || client.type_diagnostic || unlockedSectorIds[0];
+                                if (sectorType) {
+                                  setSelectedSectorType(sectorType);
+                                  setShowDiagnosticForm(true);
+                                }
+                              }}
+                              className="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-lg px-4 py-2 hover:bg-blue-500/30 transition-all duration-300 cursor-pointer"
+                            >
+                              <ClipboardCheck className="w-4 h-4 text-blue-300" />
+                              <span className="text-sm font-semibold text-blue-300">
+                                Remplir le formulaire
+                              </span>
+                            </button>
+                          </div>
+                        )}
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-white">
-                        Sélectionnez votre secteur d'activité
-                      </h3>
-                      <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto">
-                        Choisissez le secteur d'activité correspondant à votre entreprise pour commencer votre diagnostic
-                      </p>
-                    </div>
+                    ) : (
+                      <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20 text-center space-y-4">
+                        <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto">
+                          <FileCheck2 className="w-12 h-12 text-blue-400" />
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-bold text-white">
+                          Votre outil de diagnostic
+                        </h3>
+                        <p className="text-sm sm:text-base text-white/80 max-w-2xl mx-auto">
+                          Cliquez sur votre outil pour commencer votre diagnostic
+                        </p>
+                      </div>
+                    )}
 
+                    <div ref={sectorSectionRef}>
                     <SectorSelection
-                      currentType={client.type_diagnostic || selectedSectorType}
+                      currentType={currentTypeDiagnostic || selectedSectorType}
                       unlockedSectorIds={unlockedSectorIds}
                       canToggleLock={isAdminViewing || isSellerViewing}
                       clientId={parseInt(client.id)}
                       userType={isAdminViewing ? 'admin' : isSellerViewing ? 'seller' : 'client'}
+                      hideFilters
+                      onOpenForm={(sectorType: string) => {
+                        setSelectedSectorType(sectorType);
+                        setShowDiagnosticForm(true);
+                      }}
                       onSelectSector={async (sectorType: string) => {
                         setSelectedSectorType(sectorType);
+                        setCurrentTypeDiagnostic(sectorType);
                         setShowDiagnosticForm(true);
 
                         try {
@@ -4359,7 +4489,44 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                           console.error('Erreur lors de la mise à jour du type de diagnostic:', error);
                         }
                       }}
+                      onSectorAssigned={async (sectorId: string, sectorName: string) => {
+                        const sectorType = `${sectorId} ${sectorName}`;
+                        setSelectedSectorType(sectorType);
+                        setCurrentTypeDiagnostic(sectorType);
+                        setUnlockedSectorIds([sectorId]);
+                        setUnlockedSectorNames(prev => ({ ...prev, [sectorId]: sectorName }));
+
+                        try {
+                          const { error } = await supabase
+                            .from('clients')
+                            .update({ type_diagnostic: sectorType })
+                            .eq('id', client.id);
+
+                          if (error) throw error;
+                        } catch (error) {
+                          console.error('Erreur lors de la mise à jour du type de diagnostic:', error);
+                        }
+                      }}
+                      onSectorUnassigned={async () => {
+                        setSelectedSectorType('');
+                        setCurrentTypeDiagnostic('');
+                        setUnlockedSectorIds([]);
+                        setUnlockedSectorNames({});
+
+                        try {
+                          const { error } = await supabase
+                            .from('clients')
+                            .update({ type_diagnostic: '' })
+                            .eq('id', client.id);
+
+                          if (error) throw error;
+                        } catch (error) {
+                          console.error('Erreur lors de la suppression du type de diagnostic:', error);
+                        }
+                      }}
                     />
+                    </div>
+
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -4379,6 +4546,10 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                 )}
               </div>
             </div>
+          )}
+
+          {activeTab === 'avancement' && (
+            <AvancementTab clientId={client.id} typeDiagnostic={currentTypeDiagnostic || selectedSectorType} />
           )}
 
           {activeTab === 'opco' && (
@@ -5004,37 +5175,43 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
           {activeTab === 'chat' && (
             <div className="flex flex-col lg:grid lg:grid-cols-4 gap-0 lg:gap-6 overflow-hidden pt-4 lg:pt-6 px-4 md:px-6 lg:px-8 pb-4 lg:pb-6 h-[calc(100vh-10rem)] md:h-[calc(100vh-12rem)] lg:h-[calc(100vh-15rem)]">
               <div className="hidden lg:block lg:col-span-1 space-y-4 h-full">
-                <div className="relative bg-gradient-to-br from-[#0a0e27] via-[#1a1f3a] to-[#0a0e27] rounded-xl shadow-2xl border border-cyan-500/30 p-4 lg:p-6 h-full flex flex-col overflow-hidden">
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40"></div>
+                <div className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-2xl shadow-2xl border border-cyan-500/30 p-4 lg:p-6 h-full flex flex-col overflow-hidden backdrop-blur-2xl">
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,#0ff_1px,transparent_1px),linear-gradient(to_bottom,#0ff_1px,transparent_1px)] bg-[size:60px_60px] opacity-[0.02]"></div>
+                  <div className="absolute top-0 left-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-[120px] animate-pulse"></div>
+                  <div className="absolute bottom-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-30"></div>
 
-                  <div className="relative flex items-center gap-2 mb-3 lg:mb-4">
-                    <div className="relative">
-                      <MessageSquare className="w-4 h-4 lg:w-5 lg:h-5 text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
-                      <div className="absolute inset-0 bg-cyan-400 blur-xl opacity-50 animate-pulse"></div>
+                  <div className="relative flex items-center gap-3 mb-4">
+                    <div className="relative flex-shrink-0">
+                      <div className="absolute inset-0 bg-cyan-500/30 rounded-xl blur-lg"></div>
+                      <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/50">
+                        <MessageSquare className="w-5 h-5 text-white" />
+                      </div>
                     </div>
-                    <h3 className="text-base lg:text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">
+                    <h3 className="text-base lg:text-lg font-black text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-400 bg-clip-text">
                       Conversation
                     </h3>
                   </div>
 
                   <div className="relative space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-cyan-500/40 scrollbar-track-transparent hover:scrollbar-thumb-cyan-400/60">
-                    <div className="relative bg-gradient-to-br from-[#1a2847]/80 to-[#0f1729]/80 rounded-lg p-4 border border-cyan-400/40 backdrop-blur-sm shadow-[0_0_15px_rgba(34,211,238,0.2)] hover:shadow-[0_0_25px_rgba(34,211,238,0.4)] transition-all duration-300">
-                      <div className="absolute top-0 right-0 w-20 h-20 bg-cyan-400/10 rounded-full blur-2xl"></div>
+                    <div className="relative group/card bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 backdrop-blur-xl rounded-xl p-4 border border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 shadow-lg hover:shadow-cyan-500/20">
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-40"></div>
                       <div className="flex items-start gap-3 relative">
-                        <div className="relative flex items-center justify-center w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg shadow-cyan-500/50 flex-shrink-0">
-                          <User className="w-5 h-5 text-white" />
-                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-400 blur-md opacity-50 animate-pulse"></div>
+                        <div className="relative flex-shrink-0">
+                          <div className="absolute inset-0 bg-cyan-500/30 rounded-xl blur-lg"></div>
+                          <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center border border-cyan-400/50 shadow-lg shadow-cyan-500/50">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
                         </div>
                         <div className="flex-1">
-                          <p className="text-xs font-semibold text-cyan-300 mb-1 drop-shadow-[0_0_5px_rgba(34,211,238,0.5)]">
+                          <p className="text-[10px] font-black text-cyan-400 tracking-wider mb-1">
                             {client.vendeur && client.vendeur !== 'Super Admin'
-                              ? 'Votre vendeur'
-                              : 'Votre conseiller'}
+                              ? 'VOTRE VENDEUR'
+                              : 'VOTRE CONSEILLER'}
                           </p>
-                          <p className="text-base font-bold text-white mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                          <p className="text-base font-black text-white mb-2">
                             {client.vendeur && client.vendeur !== 'Super Admin'
                               ? client.vendeur
                               : 'Cabinet FPE'}
@@ -5045,16 +5222,16 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                               (Date.now() - new Date(sellerOnlineStatus.lastConnection).getTime()) < 2 * 60 * 1000;
 
                             return isReallyOnline ? (
-                              <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-500/20 border border-green-400/50 rounded-md shadow-[0_0_10px_rgba(34,197,94,0.3)]">
-                                <div className="relative w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse">
-                                  <div className="absolute inset-0 bg-green-400 rounded-full blur-sm animate-ping"></div>
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/30 rounded-lg">
+                                <div className="relative w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse">
+                                  <div className="absolute inset-0 bg-emerald-400 rounded-full blur-sm animate-ping"></div>
                                 </div>
-                                <span className="text-xs font-semibold text-green-300 drop-shadow-[0_0_5px_rgba(34,197,94,0.5)]">En ligne</span>
+                                <span className="text-xs font-bold text-emerald-400">En ligne</span>
                               </div>
                             ) : (
-                              <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-600/30 border border-slate-500/40 rounded-md">
-                                <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
-                                <span className="text-xs font-semibold text-slate-300">Hors ligne</span>
+                              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-800/50 border border-slate-600/30 rounded-lg">
+                                <div className="w-1.5 h-1.5 bg-slate-500 rounded-full"></div>
+                                <span className="text-xs font-bold text-slate-400">Hors ligne</span>
                               </div>
                             );
                           })()}
@@ -5062,21 +5239,21 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
                       </div>
                     </div>
 
-                    <div className="relative bg-gradient-to-br from-blue-900/40 to-cyan-900/40 border border-blue-400/50 rounded-lg p-4 backdrop-blur-sm shadow-[0_0_15px_rgba(59,130,246,0.2)]">
-                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-500/5 to-transparent rounded-lg"></div>
+                    <div className="relative group/card bg-gradient-to-br from-cyan-500/10 to-blue-500/10 backdrop-blur-xl rounded-xl p-4 border border-cyan-500/30 hover:border-cyan-400/50 transition-all duration-300 shadow-lg">
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-40"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity rounded-xl"></div>
                       <div className="relative flex items-center gap-2 mb-2">
-                        <div className="relative">
-                          <MessageSquare className="w-5 h-5 text-blue-300 drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-                          <div className="absolute inset-0 bg-blue-400 blur-lg opacity-40"></div>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500/30 to-blue-500/30 flex items-center justify-center border border-cyan-400/30">
+                          <MessageSquare className="w-4 h-4 text-cyan-400" />
                         </div>
-                        <h4 className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-cyan-300">
-                          Chat en temps réel
+                        <h4 className="text-sm font-black text-transparent bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text">
+                          Chat en temps reel
                         </h4>
                       </div>
-                      <p className="relative text-xs text-blue-100/90">
+                      <p className="relative text-xs text-cyan-200/70 leading-relaxed">
                         {client.vendeur && client.vendeur !== 'Super Admin'
-                          ? 'Votre vendeur est à votre disposition pour répondre à toutes vos questions.'
-                          : 'Notre équipe est à votre disposition pour répondre à toutes vos questions.'}
+                          ? 'Votre vendeur est a votre disposition pour repondre a toutes vos questions.'
+                          : 'Notre equipe est a votre disposition pour repondre a toutes vos questions.'}
                       </p>
                     </div>
                   </div>
@@ -5084,17 +5261,7 @@ const ClientDashboard: React.FC<ClientDashboardProps> = ({ clientData, onLogout,
               </div>
 
               <div className="flex-1 lg:col-span-3 flex flex-col h-full">
-                <div className="relative flex flex-col h-full bg-gradient-to-br from-[#0a0e27] to-[#1a1f3a] rounded-none lg:rounded-2xl shadow-2xl overflow-hidden w-full border border-cyan-500/30">
-                  <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAwIDEwIEwgNDAgMTAgTSAxMCAwIEwgMTAgNDAgTSAwIDIwIEwgNDAgMjAgTSAyMCAwIEwgMjAgNDAgTSAwIDMwIEwgNDAgMzAgTSAzMCAwIEwgMzAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3lhbiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDUiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-50"></div>
-
-                  <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-cyan-400 to-transparent"></div>
-
-                  <div className="absolute top-2 right-2 flex gap-1">
-                    <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)] animate-pulse"></div>
-                    <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-                    <div className="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.8)] animate-pulse" style={{ animationDelay: '1s' }}></div>
-                  </div>
-
+                <div className="relative flex flex-col h-full rounded-none lg:rounded-2xl shadow-2xl overflow-hidden w-full border border-cyan-500/30">
                   <ChatWindow
                     clientId={client.id}
                     currentUserId={client.id}

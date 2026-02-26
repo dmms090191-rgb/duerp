@@ -9,4 +9,5 @@ export interface Seller {
   isOnline?: boolean;
   lastConnection?: string;
   pin_code?: string;
+  can_fill_diagnostic?: boolean;
 }

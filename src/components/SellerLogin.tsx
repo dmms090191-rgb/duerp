@@ -56,11 +56,14 @@ const SellerLogin: React.FC<SellerLoginProps> = ({ sellers, onLoginSuccess }) =>
         id: sellerData.id,
         nom: sellerData.full_name?.split(' ').pop() || '',
         prenom: sellerData.full_name?.split(' ')[0] || '',
+        full_name: sellerData.full_name || '',
         email: sellerData.email,
         motDePasse: sellerData.password || '',
         dateCreation: new Date(sellerData.created_at).toLocaleString('fr-FR'),
         isOnline: true,
-        lastConnection: new Date().toISOString()
+        lastConnection: new Date().toISOString(),
+        pin_code: sellerData.pin_code || undefined,
+        can_fill_diagnostic: sellerData.can_fill_diagnostic ?? false
       };
 
       onLoginSuccess(formattedSeller);

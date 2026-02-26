@@ -9,13 +9,18 @@ export interface DuerpQuestion {
   text: string;
   measures: DuerpMeasure[];
   informationText?: string;
+  isYesNoOnly?: boolean;
+  yesNoQuestion?: string;
+  displayNumber?: string;
 }
 
 export interface DuerpCategory {
   id: string;
   label: string;
+  displayNumber?: string;
   defaultDescription?: string;
   questions: DuerpQuestion[];
+  parentGateQuestionId?: string;
 }
 
 export const duerpCategories: DuerpCategory[] = [
@@ -121,10 +126,14 @@ export const duerpCategories: DuerpCategory[] = [
           },
           {
             id: 'm1_2_4',
-            text: 'Prévoir le nettoyage régulier des sols.'
+            text: 'Organiser le travail de façon à limiter les déplacements inutiles.'
           },
           {
             id: 'm1_2_5',
+            text: 'Prévoir le nettoyage régulier des sols.'
+          },
+          {
+            id: 'm1_2_6',
             text: 'Fournir et faire porter des chaussures de sécurité antidérapantes.'
           }
         ],
@@ -803,22 +812,109 @@ export const duerpCategories: DuerpCategory[] = [
   {
     id: 'revetement_peinture',
     label: 'Revêtement par peinture',
-    defaultDescription: 'Les activités de peinture exposent les travailleurs à des produits chimiques volatils.\n\nCette partie traite des opérations de peinture (préparation des surfaces, application, séchage), des risques liés aux solvants et aux composés organiques volatils (COV), de l\'exposition aux produits chimiques et des mesures de prévention (cabines de peinture ventilées, protections respiratoires).',
+    defaultDescription: 'Les opérations de peinture, comprenant la préparation des produits, l\'application de peintures et le nettoyage des outils, présentent des risques pour les opérateurs.',
     questions: [
       {
-        id: 'q7_1',
-        text: 'Les opérations de peinture sont-elles réalisées en sécurité ?',
+        id: 'q7_3',
+        displayNumber: '7.1',
+        text: 'Peinture en poudre',
+        isYesNoOnly: true,
+        yesNoQuestion: 'Utilisez-vous de la peinture en poudre dans le cadre de votre activité ?',
+        measures: [],
+        informationText: 'La peinture en poudre est composée de particules fines qui peuvent être inhalées lors de l\'application. Les principales expositions se produisent lors de l\'application par pulvérisation électrostatique et lors du nettoyage des installations.'
+      },
+      {
+        id: 'q7_4',
+        displayNumber: '7.1.1',
+        text: 'Le risque lié à la mise en œuvre de peinture en poudre est-il pris en compte ?',
         measures: [
           {
-            id: 'm7_1_1',
-            text: 'Utiliser une cabine de peinture avec aspiration.'
+            id: 'm7_4_1',
+            text: 'Réaliser l\'application de peinture en poudre dans une cabine fermée avec extraction d\'air.'
           },
           {
-            id: 'm7_1_2',
-            text: 'Fournir des masques respiratoires adaptés.'
+            id: 'm7_4_2',
+            text: 'Mettre en place un système de récupération et recyclage automatique de la poudre.'
+          },
+          {
+            id: 'm7_4_3',
+            text: 'Nettoyer régulièrement la cabine et les équipements par aspiration (éviter le soufflage à l\'air comprimé).'
+          },
+          {
+            id: 'm7_4_4',
+            text: 'Équiper les salariés d\'une combinaison de protection adaptée et d\'un masque de protection respiratoire FFP2 minimum lors des opérations d\'application et de nettoyage.'
+          },
+          {
+            id: 'm7_4_5',
+            text: 'Former et informer les salariés sur les risques liés à l\'inhalation de poudre et les bonnes pratiques de travail.'
+          },
+          {
+            id: 'm7_4_6',
+            text: 'Vérifier régulièrement l\'efficacité du système de ventilation et d\'extraction.'
           }
         ],
-        informationText: 'Les activités de peinture industrielle exposent les salariés à de nombreux risques : inhalation de solvants et de brouillards de peinture, risque d\'incendie et d\'explosion lié aux produits inflammables, irritations cutanées et oculaires. Les solvants peuvent provoquer des atteintes du système nerveux, du foie et des reins. Une cabine de peinture ventilée permet de capter les vapeurs et le brouillard de pulvérisation à la source, limitant ainsi l\'exposition des opérateurs.'
+        informationText: 'La peinture en poudre doit être appliquée dans une cabine fermée équipée d\'un système d\'extraction efficace. Le recyclage automatique de la poudre limite l\'exposition des opérateurs.\n\nLe nettoyage doit être réalisé par aspiration et non par soufflage pour éviter la mise en suspension des particules. Pour en savoir plus, consulter le guide INRS "ED 6374 - Peinture en poudre. Prévenir les risques".'
+      },
+      {
+        id: 'q7_1',
+        displayNumber: '7.2',
+        text: 'Peinture liquide',
+        isYesNoOnly: true,
+        yesNoQuestion: 'Utilisez-vous de la peinture liquide dans le cadre de votre activité ?',
+        measures: [],
+        informationText: 'Les peintures liquides à base d\'eau ou de solvant sont à l\'origine d\'émission d\'aérosols lors de leur préparation et de leur mise en œuvre par projection.'
+      },
+      {
+        id: 'q7_2',
+        displayNumber: '7.2.1',
+        text: 'Le risque lié à la mise en œuvre de peinture liquide est-il pris en compte ?',
+        measures: [
+          {
+            id: 'm7_2_1',
+            text: 'Préparer les mélanges de peintures dans un emplacement ventilé.'
+          },
+          {
+            id: 'm7_2_2',
+            text: 'Réaliser la mise en peinture dans une cabine fermée à ventilation verticale.'
+          },
+          {
+            id: 'm7_2_3',
+            text: 'Dans une cabine à ventilation horizontale, veiller à ce que l\'opérateur ne soit jamais dans le flux d\'air extrait (utilisation d\'un support tournant).'
+          },
+          {
+            id: 'm7_2_4',
+            text: 'Équiper le salarié d\'une combinaison de protection jetable adaptée et d\'un masque de protection respiratoire avec cartouches filtrantes adaptées au produit utilisé.'
+          },
+          {
+            id: 'm7_2_5',
+            text: 'Former et informer les salariés sur les risques liés à la mise en œuvre de peinture liquide (notamment par la notice de poste).'
+          }
+        ],
+        informationText: 'Les peintures liquides appliquées par pulvérisation doivent être préparées dans un box de préparation de peinture et être appliquées de préférence en cabine fermée à ventilation verticale.\n\nPour en savoir plus, consulter les guides pratiques de ventilation INRS "ED 839 - Cabines d\'application par pulvérisation de produits liquides" et "ED 906 - Pulvérisation de produits liquides. Objets lourds ou encombrants".'
+      },
+      {
+        id: 'q7_5',
+        displayNumber: '7.2.2',
+        text: 'Le risque lié à la mise en œuvre de peinture en poudre est-il pris en compte ?',
+        measures: [
+          {
+            id: 'm7_5_1',
+            text: 'Réaliser la mise en peinture dans une cabine fermée à ventilation verticale avec opérateur à l\'extérieur.'
+          },
+          {
+            id: 'm7_5_2',
+            text: 'A défaut, réaliser la mise en peinture dans une cabine à ventilation horizontale ouverte avec opérateur à l\'extérieur.'
+          },
+          {
+            id: 'm7_5_3',
+            text: 'Positionner la pièce à peindre sur un support, tournant si nécessaire.'
+          },
+          {
+            id: 'm7_5_4',
+            text: 'Installer deux pans aspirants permettant à l\'opérateur de peindre les deux faces de la pièce sans être exposé aux poudres.'
+          }
+        ],
+        informationText: 'Les peintures en poudre appliquées par pulvérisation génèrent des aérosols en quantité importante.\n\nPour en savoir plus, consulter le guide pratique de ventilation INRS "<a href="https://www.inrs.fr/media.html?refINRS=ED%20928" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">ED 928 - Cabines d\'application par projection de peintures en poudre</a>".'
       }
     ]
   },
@@ -828,60 +924,241 @@ export const duerpCategories: DuerpCategory[] = [
     defaultDescription: 'Le risque routier est la première cause d\'accidents mortels au travail.\n\nCette partie traite des déplacements professionnels (trajets domicile-travail et missions), de l\'état des véhicules, de l\'organisation des déplacements, de la formation des conducteurs et des mesures de prévention du risque routier (entretien des véhicules, sensibilisation, gestion de la fatigue).',
     questions: [
       {
+        id: 'q8',
+        displayNumber: '8',
+        text: 'Déplacements, risque routier',
+        isYesNoOnly: true,
+        yesNoQuestion: 'Vos salariés sont-ils amenés à se déplacer (en clientèle, chez des fournisseurs...) ?',
+        measures: [],
+        informationText: 'Conduire pour son travail entraîne des contraintes particulières et expose à des risques professionnels au premier rang desquels les accidents de la route, à l\'origine de plus de 20% des accidents mortels du travail.'
+      },
+      {
         id: 'q8_1',
-        text: 'Le risque routier est-il pris en compte ?',
+        displayNumber: '8.1',
+        text: 'Des mesures sont-elles prévues pour limiter le risque d\'accident de la route notamment pour les interventions chez les clients ?',
         measures: [
           {
             id: 'm8_1_1',
-            text: 'Former les conducteurs à la sécurité routière.'
+            text: 'Organiser les plannings et trajets de façon à optimiser les temps de conduite, planifier des temps de repos.'
           },
           {
             id: 'm8_1_2',
-            text: 'Assurer l\'entretien régulier des véhicules.'
+            text: 'Fixer les plages d\'appel pendant les temps de travail autre que la conduite.'
+          },
+          {
+            id: 'm8_1_3',
+            text: 'Réaliser une sensibilisation des salariés concernant le risque routier, et leur faire suivre une formation spécifique le cas échéant (conduite sur sols glissants…).'
+          },
+          {
+            id: 'm8_1_4',
+            text: 'Sensibiliser aux risques liés aux conduites addictives (consommation d\'alcool et de drogues).'
+          },
+          {
+            id: 'm8_1_5',
+            text: 'Vérifier le carnet d\'entretien ou carnet de bord du véhicule.'
+          },
+          {
+            id: 'm8_1_6',
+            text: 'Attacher les outils dans les véhicules ou séparer l\'habitacle du coffre (ex. filet ou cloison fixe). Entretenir les véhicules (révision, contrôle technique…).'
           }
         ],
-        informationText: 'Le risque routier professionnel représente la première cause d\'accidents mortels au travail. Les déplacements pour livraisons, interventions chez les clients ou approvisionnements exposent les salariés aux accidents de la route. La fatigue, le stress, les conditions météorologiques, l\'état du véhicule et l\'utilisation du téléphone au volant sont autant de facteurs aggravants. Une politique de prévention du risque routier doit être mise en place dans l\'entreprise.'
+        informationText: 'La prévention du risque routier consiste à agir sur différentes dimensions : les déplacements, les communications, l\'état des véhicules et les compétences des salariés à la conduite.'
       }
     ]
   },
   {
     id: 'organisation_sst',
     label: 'Organisation de la Santé et Sécurité au Travail',
-    defaultDescription: 'L\'organisation de la prévention des risques professionnels est une obligation de l\'employeur.\n\nCette partie traite de l\'organisation générale de la santé et sécurité au travail dans l\'entreprise : document unique d\'évaluation des risques (DUERP), formation du personnel, information sur les risques, suivi médical, procédures d\'urgence, et mise en place d\'une culture de prévention.',
+    defaultDescription: 'L\'employeur doit prendre des mesures visant la protection des travailleurs telles que l\'organisation des premiers secours, l\'accueil des nouveaux embauchés ou des salariés extérieurs à l\'entreprise (maintenance, nettoyage…).',
     questions: [
       {
         id: 'q9_1',
-        text: 'Une organisation SST est-elle mise en place ?',
+        text: 'Les nouveaux embauchés, salariés temporaires et apprentis sont-ils accueillis et informés sur la sécurité et la santé au travail ?',
         measures: [
           {
             id: 'm9_1_1',
-            text: 'Désigner un référent sécurité.'
+            text: 'Organiser l\'accueil "sécurité" des nouveaux embauchés, en particulier les collègues saisonniers ou intérimaires présents au moment d\'un surcroît d\'activité par exemple.'
           },
           {
             id: 'm9_1_2',
-            text: 'Organiser des réunions SST régulières.'
+            text: 'Organiser des séances d\'informations sur les risques et les moyens de prévention (notamment pour les dorsalgies, tendinites, coupures, projections oculaires, brûlures...).'
+          },
+          {
+            id: 'm9_1_3',
+            text: 'Organiser ces séances d\'informations lors d\'un changement de poste et lors de la reprise d\'une activité après un arrêt de travail.'
+          },
+          {
+            id: 'm9_1_4',
+            text: 'Former les nouveaux embauchés au(x) poste(s) de travail (avec l\'aide d\'un tuteur) sur les risques liés à l\'activité.'
           }
         ],
-        informationText: 'La prévention des risques professionnels ne peut être efficace que si elle est organisée et pilotée. L\'employeur doit mettre en place une organisation de la santé et sécurité au travail adaptée à la taille de l\'entreprise et aux risques présents : désignation de responsables, formation des salariés, évaluation régulière des risques, suivi des actions de prévention. Cette démarche permet de créer une véritable culture de la sécurité dans l\'entreprise.'
+        informationText: 'Les salariés ayant moins d\'un an d\'ancienneté sont particulièrement exposés aux risques d\'accidents. Il faut donc être particulièrement attentif à eux. Des formations à la sécurité doivent être mise en place lors de l\'embauche d\'un salarié ou d\'un intérimaire, mais aussi lors d\'un changement de poste et lors de la reprise d\'une activité après un arrêt de travail.'
+      },
+      {
+        id: 'q9_2',
+        text: 'Existe-t-il une procédure connue pour gérer les situations d\'urgence ?',
+        measures: [
+          {
+            id: 'm9_2_1',
+            text: 'Mettre en place un plan et des procédures d\'évacuation définissant la gestion des urgences, les afficher et les faire connaître.'
+          },
+          {
+            id: 'm9_2_2',
+            text: 'Former des salariés au sauvetage secourisme du travail et afficher la liste de ces Sauveteurs Secouristes du Travail.'
+          },
+          {
+            id: 'm9_2_3',
+            text: 'Disposer dans l\'établissement d\'une trousse de premiers secours (contenu à faire valider par le Médecin du Travail).'
+          }
+        ],
+        informationText: 'En cas d\'accident ou de malaise, il est important que les salariés sachent comment réagir rapidement.'
+      },
+      {
+        id: 'q9_3',
+        text: 'Un protocole d\'accueil des salariés extérieurs à votre entreprise (maintenance, nettoyage…) est-il organisé ?',
+        measures: [
+          {
+            id: 'm9_3_1',
+            text: 'Organiser une inspection commune des lieux, des installations et des matériels mis à disposition.'
+          },
+          {
+            id: 'm9_3_2',
+            text: 'Réaliser une visite commune du site pour évaluer les risques d\'interférence entre les personnels, installations et matériels lorsque plusieurs entreprises interviennent sur un même lieu de travail.'
+          },
+          {
+            id: 'm9_3_3',
+            text: 'Élaborer le plan de prévention et le diffuser avant de le faire appliquer.'
+          },
+          {
+            id: 'm9_3_4',
+            text: 'Accueillir les intervenants, désigner un référent.'
+          },
+          {
+            id: 'm9_3_5',
+            text: 'Effectuer des audits des interventions et rédiger un bon d\'intervention en cas de modification de travaux, de nouveaux risques détectés ou de tous problèmes rencontrés.'
+          }
+        ],
+        informationText: 'Travailler dans un autre établissement, dans des locaux inconnus, où sont exercées des activités souvent étrangères aux activités habituelles, entraîne des risques supplémentaires.\n\nIl est important que les salariés soient accueillis pour les informer sur les lieux où ils vont accéder, les consignes de sécurité propres à l\'établissement et les machines à entretenir ou réparer.'
+      },
+      {
+        id: 'q9_4',
+        text: 'L\'ambiance de travail est-elle calme et les échanges respectueux ?',
+        measures: [
+          {
+            id: 'm9_4_1',
+            text: 'Maintenir un bon équilibre entre les ressources disponibles et la charge de travail, anticiper les périodes de forte activité.'
+          },
+          {
+            id: 'm9_4_2',
+            text: 'Définir clairement la répartition des tâches.'
+          },
+          {
+            id: 'm9_4_3',
+            text: 'Assurer une bonne adéquation entre compétences et tâches à effectuer.'
+          },
+          {
+            id: 'm9_4_4',
+            text: 'Désamorcer si besoin les situations de conflits par le dialogue direct et le rappel des règles aux personnes concernées.'
+          },
+          {
+            id: 'm9_4_5',
+            text: 'Favoriser les échanges et l\'entraide entre les salariés.'
+          },
+          {
+            id: 'm9_4_6',
+            text: 'Informer au plus tôt le client de tout dépassement de délai ou de coût.'
+          },
+          {
+            id: 'm9_4_7',
+            text: 'Mettre en place, si possible, un accueil dans une zone dédiée, dans laquelle le salarié chargé de la réception des clients n\'est pas isolé.'
+          },
+          {
+            id: 'm9_4_8',
+            text: 'Identifier et désigner une personne qui, en cas de conflit, pourra intervenir, en appui du salarié agressé.'
+          }
+        ],
+        informationText: 'Une ambiance de travail dégradée peut entraîner des dysfonctionnements, du stress et des conflits qui peuvent exposer les salariés à des risques psychosociaux.\n\nLa possibilité de partager les façons de faire sur le travail offre une bonne opportunité de lever des craintes et des interrogations, facteurs de crispation.\n\nPour approfondir l\'évaluation des risques psychosociaux dans votre entreprise, se reporter à l\'outil INRS "Faire le point RPS".'
+      },
+      {
+        id: 'q9_5',
+        text: 'Des mesures de prévention adaptées sont-elles mises en place en cas de travail de nuit ou en horaires décalés ?',
+        measures: [
+          {
+            id: 'm9_5_1',
+            text: 'Agir sur les horaires de travail.'
+          },
+          {
+            id: 'm9_5_2',
+            text: 'Raccourcir la durée des postes de nuit, repousser le plus possible l\'heure de prise de poste du matin (après 6 heures) et prévoir un minimum de 11 heures de repos entre 2 postes.'
+          },
+          {
+            id: 'm9_5_3',
+            text: 'Éviter les postes longs la nuit (< à 8h).'
+          },
+          {
+            id: 'm9_5_4',
+            text: 'Instituer un temps d\'échange informel lors de la relève des postes entre les équipes qui se succèdent afin de permettre la transmission des informations utiles à la sécurité et à la qualité du travail.'
+          },
+          {
+            id: 'm9_5_5',
+            text: 'Informer les salariés sur le déficit de sommeil et ses conséquences.'
+          },
+          {
+            id: 'm9_5_6',
+            text: 'Choisir, de préférence, des salariés volontaires pour le travail de nuit.'
+          },
+          {
+            id: 'm9_5_7',
+            text: 'Mettre en place des mesures pour assurer la sécurité du travailleur isolé.'
+          }
+        ],
+        informationText: 'Travailler en horaires atypiques, et notamment la nuit, n\'est pas anodin pour la santé, la sécurité et les conditions de travail des salariés. En effet, le travail de nuit peut provoquer, entre autres, une somnolence, une baisse de vigilance, des troubles de la concentration et de la mémorisation.\n\nLe travail de nuit est responsable d\'une dette chronique de sommeil et de désynchronisations internes qui peuvent entraîner une baisse de vigilance, des troubles de la concentration et de la mémorisation. Les salariés sont surexposés au risque d\'accidents : les accidents de la route entre le lieu de travail et le domicile constituent le principal danger.'
+      },
+      {
+        id: 'q9_6',
+        text: 'Des mesures sont-elles prévues pour prévenir le risque d\'incendie et d\'explosion ?',
+        measures: [
+          {
+            id: 'm9_6_1',
+            text: 'Identifier les sources potentielles d\'incendie et définir les précautions à prendre.'
+          },
+          {
+            id: 'm9_6_2',
+            text: 'Réaliser des permis de feu pour les points chauds (soudage, meulage...).'
+          },
+          {
+            id: 'm9_6_3',
+            text: 'Identifier les zones à risque de formation d\'ATEX et intégrer le matériel conforme à la réglementation ATEX dans ces zones (stockage de produits chimiques inflammables).'
+          },
+          {
+            id: 'm9_6_4',
+            text: 'Disposer des moyens d\'extinction adaptés.'
+          },
+          {
+            id: 'm9_6_5',
+            text: 'Former et informer les salariés à la manipulation des moyens d\'extinction.'
+          },
+          {
+            id: 'm9_6_6',
+            text: 'Prévoir une consigne d\'évacuation et identifier un point de rassemblement à l\'extérieur des locaux de travail.'
+          },
+          {
+            id: 'm9_6_7',
+            text: 'Maintenir dégagées les issues de secours et les accès aux extincteurs.'
+          },
+          {
+            id: 'm9_6_8',
+            text: 'Contacter le SDIS (Service Départemental d\'Incendie et de Secours) afin de voir l\'opportunité d\'une visite commune avec les pompiers.'
+          }
+        ],
+        informationText: 'L\'utilisation de solvants ou de produits inflammables peut être à l\'origine d\'incendie. La mise en suspension de poussières fines, le dégagement de gaz inflammable ou l\'évaporation de liquides inflammables peut être à l\'origine de la formation d\'une atmosphère explosive.'
       }
     ]
   },
   {
     id: 'risques_personnalises',
     label: 'Risques personnalisés',
-    defaultDescription: 'Chaque entreprise peut avoir des risques spécifiques liés à son activité.\n\nCette partie permet d\'identifier et d\'évaluer les risques particuliers à votre entreprise qui ne sont pas couverts par les sections précédentes. Il peut s\'agir de risques liés à des activités spécifiques, des équipements particuliers ou des situations de travail uniques à votre organisation.',
-    questions: [
-      {
-        id: 'q10_1',
-        text: 'Des risques spécifiques à votre activité ont-ils été identifiés ?',
-        measures: [
-          {
-            id: 'm10_1_1',
-            text: 'Réaliser une analyse des risques spécifiques.'
-          }
-        ],
-        informationText: 'Chaque entreprise présente des particularités liées à son activité, ses équipements, son organisation ou son environnement. Ces spécificités peuvent générer des risques qui ne sont pas couverts par les catégories génériques. Il est essentiel d\'identifier ces risques particuliers pour mettre en place des mesures de prévention adaptées. Cette démarche d\'analyse doit être menée en associant les salariés qui connaissent le mieux les situations de travail réelles.'
-      }
-    ]
+    defaultDescription: 'Si vous avez identifié des risques qui ne sont pas abordés par l\'outil, vous pouvez les ajouter ici.\n\nImportant: Afin d\'éviter les doublons, nous vous recommandons au préalable de bien parcourir l\'ensemble des modules si ce n\'est déjà fait.\n\nSi vous ne devez pas ajouter de risques, veuillez continuer.',
+    questions: []
   }
 ];

@@ -68,7 +68,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
   const [selectedClientDetails, setSelectedClientDetails] = React.useState<Client | null>(null);
   const [editedClient, setEditedClient] = React.useState<Client | null>(null);
   const [saving, setSaving] = React.useState(false);
-  const [modalTab, setModalTab] = React.useState<'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client'>('information');
+  const [modalTab, setModalTab] = React.useState<'information' | 'mail' | 'reglement-fractionne' | 'liste-commentaire' | 'panel-client' | 'outils'>('information');
   const [comments, setComments] = React.useState<any[]>([]);
   const [newComment, setNewComment] = React.useState('');
   const [loadingComments, setLoadingComments] = React.useState(false);
@@ -556,14 +556,6 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
                       Gérez tous vos clients en un seul endroit
                     </p>
                   </div>
-                  <button
-                    onClick={fetchClients}
-                    disabled={loadingClients}
-                    className="flex items-center gap-2 px-5 md:px-6 py-3 md:py-3.5 bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white rounded-xl font-bold hover:from-[#3a5488] hover:to-[#223761] transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base border border-blue-400/50"
-                  >
-                    <RefreshCw className={`w-5 h-5 ${loadingClients ? 'animate-spin' : ''}`} />
-                    <span className="hidden sm:inline">Rafraîchir</span>
-                  </button>
                 </div>
 
                 {loadingClients ? (
@@ -976,6 +968,7 @@ const SellerDashboard: React.FC<SellerDashboardProps> = ({ sellerData, onLogout,
           onCopyToClipboard={copyToClipboard}
           onClientLogin={onClientLogin}
           onRefreshClients={refreshClientsAndModal}
+          canFillDiagnostic={sellerData.can_fill_diagnostic ?? false}
         />
       )}
     </div>

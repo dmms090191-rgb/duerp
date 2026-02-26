@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* Scrollbar personnalisé pour le défilement horizontal des cartes clients */
 .scrollbar-thin::-webkit-scrollbar {
   height: 8px;

@@ -174,7 +174,8 @@ function App() {
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined,
-          pin_code: seller.pin_code || undefined
+          pin_code: seller.pin_code || undefined,
+          can_fill_diagnostic: seller.can_fill_diagnostic ?? false
         }));
         setSellers(formattedSellers);
 

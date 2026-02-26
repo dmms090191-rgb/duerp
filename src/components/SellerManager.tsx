@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare, Shield } from 'lucide-react';
+import { ShoppingBag, Plus, List, User, Mail, Lock, Calendar, Trash2, CheckSquare, Square, LogIn, Eye, EyeOff, X, Edit, Save, MessageSquare, Shield, ClipboardCheck } from 'lucide-react';
 import { Seller } from '../types/Seller';
 import { sellerService } from '../services/sellerService';
+import { supabase } from '../lib/supabase';
 
 interface SellerManagerProps {
   sellers: Seller[];
@@ -21,6 +22,7 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
   const [editedPassword, setEditedPassword] = useState('');
   const [isEditingPin, setIsEditingPin] = useState(false);
   const [pinCode, setPinCode] = useState<string[]>(['', '', '', '', '', '']);
+  const [isTogglingDiagnostic, setIsTogglingDiagnostic] = useState(false);
   const pinInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [formData, setFormData] = useState({
     nom: '',
@@ -110,7 +112,8 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
           dateCreation: new Date(seller.created_at).toLocaleString('fr-FR'),
           isOnline: seller.is_online || false,
           lastConnection: seller.last_connection || undefined,
-          pin_code: seller.pin_code || undefined
+          pin_code: seller.pin_code || undefined,
+          can_fill_diagnostic: seller.can_fill_diagnostic ?? false
         }));
 
         formattedSellers.forEach(seller => {
@@ -777,6 +780,62 @@ const SellerManager: React.FC<SellerManagerProps> = ({ sellers, onSellerCreated,
                     </div>
                   )}
                 </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-[#2d4578]/30 to-[#1e3a5f]/30 p-4 sm:p-6 rounded-2xl border-2 border-white/10 shadow-xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-xl flex items-center justify-center">
+                      <ClipboardCheck className="w-5 h-5 text-emerald-400" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-blue-300 uppercase tracking-widest mb-1">Diagnostic Final :</label>
+                      <p className="text-xs text-white/60">Autoriser ce vendeur a faire remplir un diagnostic final a ses clients</p>
+                    </div>
+                  </div>
+                  <button
+                    disabled={isTogglingDiagnostic}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (isTogglingDiagnostic) return;
+                      setIsTogglingDiagnostic(true);
+
+                      const currentValue = selectedSellerDetails.can_fill_diagnostic ?? false;
+                      const newValue = !currentValue;
+
+                      try {
+                        const { error } = await supabase
+                          .from('sellers')
+                          .update({ can_fill_diagnostic: newValue })
+                          .eq('id', selectedSellerDetails.id);
+
+                        if (error) throw error;
+
+                        const updatedSeller = { ...selectedSellerDetails, can_fill_diagnostic: newValue };
+                        setSelectedSellerDetails(updatedSeller);
+                        onSellerUpdated(updatedSeller);
+                      } catch (error) {
+                        console.error('Erreur lors de la sauvegarde:', error);
+                        alert('Erreur lors de la sauvegarde. Veuillez reessayer.');
+                      } finally {
+                        setIsTogglingDiagnostic(false);
+                      }
+                    }}
+                    className={`relative inline-flex h-10 w-20 items-center rounded-full transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-blue-400/30 disabled:opacity-50 disabled:cursor-not-allowed ${
+                      selectedSellerDetails.can_fill_diagnostic ? 'bg-green-500' : 'bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                        selectedSellerDetails.can_fill_diagnostic ? 'translate-x-11' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+                <p className={`text-sm font-bold ${selectedSellerDetails.can_fill_diagnostic ? 'text-green-400' : 'text-gray-400'}`}>
+                  {selectedSellerDetails.can_fill_diagnostic ? 'Active - Le vendeur peut faire remplir le diagnostic final' : 'Desactive - Le vendeur ne peut pas faire remplir le diagnostic final'}
+                </p>
               </div>
             </div>
 

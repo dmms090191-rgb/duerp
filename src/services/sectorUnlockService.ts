@@ -121,6 +121,11 @@ class SectorUnlockService {
     return !!data;
   }
 
+  async selectSingleSector(clientId: number, sectorId: string, sectorName: string, selectedBy?: string): Promise<void> {
+    await this.lockAllSectors(clientId);
+    await this.unlockSector(clientId, sectorId, sectorName, selectedBy);
+  }
+
   async toggleSectorLock(clientId: number, sectorId: string, sectorName: string, toggledBy?: string): Promise<boolean> {
     const isUnlocked = await this.isClientSectorUnlocked(clientId, sectorId);
 

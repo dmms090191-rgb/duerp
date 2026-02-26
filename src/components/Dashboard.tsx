@@ -16,6 +16,7 @@ import EmailSignatureEditor from './EmailSignatureEditor';
 import EmailManagerV2 from './EmailManagerV2';
 import NotificationSystem from './NotificationSystem';
 import TestInvoicePreview from './TestInvoicePreview';
+import MetierTab from './MetierTab';
 import { useOnlineStatus } from '../hooks/useOnlineStatus';
 import { User } from '../types/User';
 import { Lead } from '../types/Lead';
@@ -45,7 +46,8 @@ import {
   Menu,
   X,
   FileSignature,
-  Receipt
+  Receipt,
+  Briefcase
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -94,7 +96,7 @@ const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   useOnlineStatus(user?.id || null, user?.type === 'admin' ? 'admin' : null);
 
-  const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire' | 'email-config' | 'signature' | 'facture-modele'>('bulk-import');
+  const [activeTab, setActiveTab] = React.useState<'bulk-import' | 'leads-tab' | 'leads' | 'registrations' | 'sellers' | 'admins' | 'users-monitor' | 'chat' | 'chat-vendeur' | 'all-accounts' | 'statuses' | 'argumentaire' | 'email-config' | 'signature' | 'facture-modele' | 'metier'>('bulk-import');
   const [selectedClientForChat, setSelectedClientForChat] = React.useState<string | number | null>(null);
   const [selectedSellerForChat, setSelectedSellerForChat] = React.useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
@@ -384,6 +386,17 @@ const Dashboard: React.FC<DashboardProps> = ({
               <Receipt className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
               <span className="truncate">Facture modèle</span>
             </button>
+            <button
+              onClick={() => handleTabChange('metier')}
+              className={`w-full flex items-center gap-3 md:gap-4 px-4 md:px-5 py-3.5 md:py-4 rounded-xl md:rounded-2xl text-sm md:text-base font-bold transition-all duration-300 transform hover:scale-105 ${
+                activeTab === 'metier'
+                  ? 'bg-gradient-to-r from-[#2d4578] to-[#1a2847] text-white shadow-xl shadow-blue-500/30 border border-blue-400/50'
+                  : 'text-white/80 hover:text-white hover:bg-white/10 border border-transparent hover:border-white/20'
+              }`}
+            >
+              <Briefcase className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0" />
+              <span className="truncate">Métier</span>
+            </button>
           </nav>
         </div>
 
@@ -583,6 +596,10 @@ const Dashboard: React.FC<DashboardProps> = ({
 
             {activeTab === 'facture-modele' && (
               <TestInvoicePreview />
+            )}
+
+            {activeTab === 'metier' && (
+              <MetierTab />
             )}
             </div>
           </div>
