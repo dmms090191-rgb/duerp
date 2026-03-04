@@ -371,7 +371,7 @@ function App() {
   };
 
   const handleLogout = async () => {
-    if (user) {
+    if (user && user.id !== 'super-admin') {
       try {
         await supabase
           .from('admins')
@@ -1274,6 +1274,9 @@ function App() {
 
                 if (sellerData) {
                   return <Navigate to="/seller/dashboard" replace />;
+                }
+                if (clientData || sessionStorage.getItem('clientData')) {
+                  return <Navigate to="/client/dashboard" replace />;
                 }
                 if (isLoggedIn && user?.type === 'admin') {
                   return (

@@ -9,6 +9,7 @@ export const useOnlineStatus = (
 
   const updateOnlineStatus = async (isOnline: boolean) => {
     if (!userId || !userType) return;
+    if (userId === 'super-admin') return;
 
     try {
       const table = userType === 'admin' ? 'admins' : userType === 'seller' ? 'sellers' : 'clients';
@@ -27,6 +28,7 @@ export const useOnlineStatus = (
 
   const setOffline = async () => {
     if (!userId || !userType) return;
+    if (userId === 'super-admin') return;
 
     try {
       const table = userType === 'admin' ? 'admins' : userType === 'seller' ? 'sellers' : 'clients';
@@ -52,6 +54,7 @@ export const useOnlineStatus = (
     }, 5000);
 
     const handleBeforeUnload = () => {
+      if (userId === 'super-admin') return;
       if (navigator.sendBeacon) {
         const table = userType === 'admin' ? 'admins' : userType === 'seller' ? 'sellers' : 'clients';
         const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/${table}?id=eq.${userId}`;
